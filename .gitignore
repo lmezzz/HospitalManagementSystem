@@ -1,0 +1,29 @@
+# Build outputs
+bin/
+obj/
+
+# Visual Studio & VS Code
+.vs/
+.vscode/
+
+# User settings
+*.user
+*.suo
+*.userosscache
+
+# Dotnet publish output
+publish/
+
+# Logs and DB files
+*.log
+*.db
+
+# Local appsettings with secrets
+appsettings.Development.json
+
+# Rider
+.idea/
+
+# Mac / Linux
+.DS_Store
+*.swp
