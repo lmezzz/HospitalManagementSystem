@@ -1,0 +1,431 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+:root {
+    --navy: #050816;
+    --navy-soft: #0c1224;
+    --gradient-start: #5f4bff;
+    --gradient-end: #ff8f5a;
+    --gold: #DDA447;
+    --text-main: #6c7391;
+    --muted: #a7a9b5;
+    --radius-lg: 26px;
+    --radius-sm: 18px;
+}
+
+body.hms-body {
+    font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: radial-gradient(circle at top left, #20254a 0, #050816 40%, #050816 100%);
+    color: var(--text-main);
+}
+
+/* NAVBAR */
+.hms-nav {
+    background: linear-gradient(90deg, #050816dd, #050816bb);
+    backdrop-filter: blur(18px);
+    border-bottom: 2px solid #222a4a;
+    
+}
+
+    .hms-nav .navbar-brand {
+        color: #ffffff;
+        
+        margin-top: 6px;
+        letter-spacing: 0.04em;
+    }
+
+.brand-mark {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+}
+
+.hms-nav .nav-link {
+    color: var(--muted);
+    font-size: 0.93rem;
+    transition: color .2s ease, transform .15s ease;
+}
+
+    .hms-nav .nav-link:hover,
+    .hms-nav .nav-link.active {
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+
+/* Buttons */
+.btn-gold {
+    background: var(--gold);
+    color: #111;
+    border: none;
+    font-weight: 500;
+}
+
+    .btn-gold:hover {
+        background: #ffca3a;
+        color: #111;
+    }
+
+.bg-soft-gold {
+    background: rgba(245, 179, 1, 0.12);
+}
+
+.text-gold {
+    color: var(--gold);
+}
+
+/* HERO */
+.hero-wrapper {
+    position: relative;
+}
+
+.hero {
+    padding-top: 3.5rem;
+    padding-bottom: 4rem;
+}
+
+.hero-title {
+    font-size: 2.7rem;
+    line-height: 1.1;
+}
+
+.gradient-text {
+    background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.hero-subtitle {
+    color: var(--muted);
+    max-width: 32rem;
+}
+
+.hero-badges .stat-number {
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+.hero-badges .stat-label {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+/* Glass cards */
+.glass-card {
+    background: radial-gradient(circle at top left, #ffffff22, #ffffff04);
+    border-radius: 30px;
+    padding: 1.8rem;
+    border: 1px solid #ffffff22;
+    box-shadow: 0 18px 55px rgba(3, 5, 25, 0.9);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(16px);
+}
+
+.glass-card-sm {
+    background: #ffffff0e;
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.2rem;
+    border: 1px solid #ffffff22;
+    backdrop-filter: blur(16px);
+}
+
+/* Hero doctor visual */
+.hero-card {
+    width: min(360px, 100%);
+    text-align: center;
+}
+
+.hero-image-circle {
+    position: absolute;
+    inset: -40%;
+    background: radial-gradient(circle at top, var(--gradient-start), transparent 60%);
+    opacity: .9;
+}
+
+.hero-doctor {
+    position: relative;
+    border-radius: 180px;
+    z-index: 1;
+}
+
+.hero-mini-card {
+    position: absolute;
+    left: 1.2rem;
+    bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    z-index: 2;
+    font-size: 0.8rem;
+}
+
+    .hero-mini-card.bottom-right {
+        left: auto;
+        right: 1.2rem;
+        bottom: auto;
+        top: 1.4rem;
+    }
+
+    .hero-mini-card i {
+        font-size: 1.3rem;
+        color: var(--gold);
+    }
+
+.mini-label {
+    
+    font-size: 0.75rem;
+}
+
+.mini-value {
+    font-weight: 500;
+}
+
+/* Sections */
+.section {
+    color: var(--text-main);
+}
+
+.section-header {
+    border-bottom: 1px solid #262c4b;
+    padding-bottom: .6rem;
+}
+
+.section-kicker {
+    font-size: .8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+}
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.section-subtitle {
+    color: var(--muted);
+    font-size: 0.93rem;
+}
+
+/* Service cards */
+.service-card {
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    border-radius: var(--radius-lg);
+    border: 1px solid #ffffff18;
+}
+
+    .service-card p {
+        color: var(--muted);
+        font-size: 0.9rem;
+    }
+
+    .service-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65);
+        border-color: #ffffff44;
+    }
+
+.service-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at top, #ffffffaa, #ffffff22);
+    color: #2b2f5f;
+    margin-bottom: 1rem;
+}
+
+    .service-icon i {
+        font-size: 1.4rem;
+    }
+
+/* Stats strip */
+.stats-strip {
+    background: linear-gradient(135deg, #11152e, #171b39);
+}
+
+.stat-card {
+    text-align: center;
+}
+
+.stat-number-lg {
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: var(--gold);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+/* About section */
+.about-grid {
+    position: relative;
+}
+
+.about-img {
+    border-radius: 26px;
+    object-fit: cover;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.7);
+}
+
+    .about-img.main {
+        width: 80%;
+    }
+
+    .about-img.secondary {
+        width: 48%;
+        position: absolute;
+        right: 0;
+        bottom: -14%;
+    }
+
+.about-badge {
+    position: absolute;
+    left: 6%;
+    bottom: 6%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .1rem;
+}
+
+.about-pill {
+    border-radius: 999px;
+    border: 1px solid #262c4b;
+    padding: .6rem 1rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    background: #050816c7;
+}
+
+    .about-pill i {
+        color: var(--gold);
+    }
+
+/* Footer */
+.footer {
+    border-top: 1px solid #202540;
+    background: #050816;
+}
+
+.footer-heading {
+    font-size: .9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--muted);
+    margin-bottom: .6rem;
+}
+
+.footer-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+    .footer-link:hover {
+        color: var(--gold);
+    }
+
+/* Responsive tweaks */
+@media (max-width: 991.98px) {
+    .hero-title {
+        font-size: 2.2rem;
+    }
+
+    .hero {
+        padding-top: 2.5rem;
+    }
+
+    .about-img.secondary {
+        position: relative;
+        bottom: auto;
+        right: auto;
+        margin-top: 1rem;
+    }
+}
+
+/*PublicNav*/
+.public-nav {
+    background: linear-gradient(90deg, #060b21, #1a1f36, #2e3248);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: none;
+    backdrop-filter: blur(14px);
+}
+
+/* Brand dot */
+.public-brand-dot {
+    width: 15px;
+    height: 15px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #5f4bff, #ff8f5a);
+    display: inline-block;
+}
+
+/* Links */
+.public-nav .nav-link {
+    color: #b9bfd4;
+    font-size: 0.95rem;
+    transition: 0.25s;
+}
+
+    .public-nav .nav-link:hover,
+    .public-nav .nav-link.active {
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+/* Gold Button */
+.btn-gold {
+    background: #DDA447;
+    color: #111;
+    border: none;
+    font-weight: 500;
+}
+
+    .btn-gold:hover {
+        background: #eab75a;
+        color: #111;
+    }
+
+/* Outline button */
+.btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Mobile toggle */
+.navbar-toggler {
+    border: none;
+}
+
+    .navbar-toggler:focus {
+        box-shadow: none;
+    }
