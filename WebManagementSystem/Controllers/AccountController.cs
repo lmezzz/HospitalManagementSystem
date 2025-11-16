@@ -8,5 +8,9 @@ namespace WebManagementSystem.Controllers
         {
             return View("login");  
         }
+        public IActionResult Register()
+        {
+            return View("Register");
+        }
     }
 }

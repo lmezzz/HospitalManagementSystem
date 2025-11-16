@@ -1,5 +1,598 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Login";
 }
+
+<style>
+    :root {
+        --navy: #050816;
+        --gold: #DDA447;
+        --gold-light: #ffce70;
+        --gradient-start: #8d79ff;
+        --gradient-mid: #c06bff;
+        --gradient-end: #ff9b61;
+    }
+
+    /* ================= GLOBAL NAVBAR ================= */
+    .global-nav {
+        background: rgba(5, 8, 22, 0.85);
+        backdrop-filter: blur(12px);
+        padding: 0.8rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.12);
+        position: sticky;
+        top: 0;
+        z-index: 20;
+    }
+
+    .brand-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    }
+
+    .global-nav .nav-link {
+        color: #c5c9e0;
+        font-size: 0.95rem;
+        transition: 0.2s;
+    }
+
+        .global-nav .nav-link:hover,
+        .global-nav .nav-link.active {
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+    .btn-nav-gold {
+        background: linear-gradient(120deg, #ffb84d, #ff9d3f);
+        color: #050816;
+        border-radius: 999px;
+        padding-inline: 1.8rem;
+        font-weight: 600;
+        border: none;
+    }
+
+        .btn-nav-gold:hover {
+            background: linear-gradient(120deg, #ffd278, #ffb064);
+            color: #050816;
+        }
+
+    /* ================= PAGE WRAPPER ================= */
+    .login-wrapper {
+        min-height: calc(100vh - 64px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3rem;
+        padding: 3rem 2rem 3.5rem;
+        position: relative;
+        overflow: hidden;
+        background: radial-gradient(circle at top left, #20254a 0%, var(--navy) 45%, #02030a 100%);
+        isolation: isolate;
+    }
+
+    /* BACKGROUND BLUR IMAGE */
+    .bg-overlay {
+        position: absolute;
+        inset: 0;
+        background: url('/images/bg-medical.jpg') center/cover no-repeat;
+        filter: blur(10px) brightness(0.5);
+        opacity: 0.65;
+        z-index: -3;
+    }
+
+    /* PARTICLE LAYER */
+    .particle-layer {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: -2;
+        background-image: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.18) 0, transparent 45%), radial-gradient(circle at 80% 30%, rgba(255,255,255,0.12) 0, transparent 55%), radial-gradient(circle at 40% 80%, rgba(255,255,255,0.10) 0, transparent 55%);
+        opacity: 0.7;
+        animation: floatParticles 26s linear infinite alternate;
+    }
+
+    @@keyframes floatParticles {
+        0% {
+            transform: translate3d(0,0,0);
+        }
+
+        50% {
+            transform: translate3d(-18px, 12px, 0);
+        }
+
+        100% {
+            transform: translate3d(12px, -16px, 0);
+        }
+    }
+
+    /* FLOATING MEDICAL ICONS */
+    .floating-icon {
+        position: absolute;
+        font-size: 1.9rem;
+        color: rgba(255,255,255,0.65);
+        filter: drop-shadow(0 0 10px rgba(0,0,0,0.65));
+        z-index: -1;
+        opacity: 0.7;
+    }
+
+    .fi1 {
+        top: 18%;
+        left: 8%;
+        animation: floatIcon1 12s ease-in-out infinite;
+    }
+
+    .fi2 {
+        top: 26%;
+        right: 16%;
+        animation: floatIcon2 10s ease-in-out infinite;
+    }
+
+    .fi3 {
+        bottom: 18%;
+        left: 22%;
+        animation: floatIcon3 14s ease-in-out infinite;
+    }
+
+    .fi4 {
+        bottom: 14%;
+        right: 12%;
+        animation: floatIcon4 11s ease-in-out infinite;
+    }
+
+    @@keyframes floatIcon1 {
+        0% {
+            transform: translate3d(0,0,0);
+        }
+
+        50% {
+            transform: translate3d(6px, -10px,0);
+        }
+
+        100% {
+            transform: translate3d(-4px, 6px,0);
+        }
+    }
+
+    @@keyframes floatIcon2 {
+        0% {
+            transform: translate3d(0,0,0);
+        }
+
+        50% {
+            transform: translate3d(-10px, 8px,0) scale(1.05);
+        }
+
+        100% {
+            transform: translate3d(4px,-4px,0);
+        }
+    }
+
+    @@keyframes floatIcon3 {
+        0% {
+            transform: translate3d(0,0,0);
+        }
+
+        50% {
+            transform: translate3d(8px, 10px,0);
+        }
+
+        100% {
+            transform: translate3d(-6px,-4px,0) scale(0.95);
+        }
+    }
+
+    @@keyframes floatIcon4 {
+        0% {
+            transform: translate3d(0,0,0);
+        }
+
+        50% {
+            transform: translate3d(-8px,-10px,0);
+        }
+
+        100% {
+            transform: translate3d(4px, 6px,0);
+        }
+    }
+
+    /* ================= LEFT HERO IMAGE ================= */
+    .left-hero {
+        max-width: 640px;
+        flex: 0 0 46%;
+        transform-style: preserve-3d;
+        transition: transform 0.5s ease-out;
+    }
+
+    .left-hero-img {
+        width: 100%;
+        height: 400px;
+        border-radius: 28px;
+        object-fit: cover;
+        box-shadow: 0 28px 70px rgba(0,0,0,0.7);
+        border: 1px solid rgba(255,255,255,0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .left-hero-img::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top left, rgba(255,255,255,0.18), transparent 55%);
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+
+    /* ================= LOGIN CARD ================= */
+    .login-card {
+        width: 380px;
+        padding: 2.5rem 2.4rem 2.2rem;
+        border-radius: 22px;
+        flex: 0 0 380px;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 0.5s ease-out;
+    }
+
+    .glassy {
+        background: radial-gradient(circle at top left, rgba(255,255,255,0.14), rgba(8,11,30,0.9));
+        backdrop-filter: blur(26px);
+        border: 1px solid rgba(255,255,255,0.24);
+        box-shadow: 0 24px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04);
+        color: #e7e8f5;
+        overflow: hidden;
+    }
+
+    /* Glow pulse ring */
+    .login-card::before {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        border-radius: inherit;
+        background: conic-gradient(from 180deg, rgba(255,200,85,0.0), rgba(255,200,85,0.65), rgba(255,200,85,0.0));
+        mix-blend-mode: screen;
+        opacity: 0;
+        animation: glowPulse 6s ease-in-out infinite;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    @@keyframes glowPulse {
+        0%, 100% {
+            opacity: 0;
+            transform: rotate(0deg);
+        }
+
+        50% {
+            opacity: 0.8;
+            transform: rotate(40deg);
+        }
+    }
+
+    .gradient-text {
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+
+    .login-sub {
+        color: #d0d4ea;
+        font-size: 0.93rem;
+    }
+
+    /* INPUTS */
+    .input-group-custom {
+        margin-bottom: 1.15rem;
+        text-align: left;
+    }
+
+        .input-group-custom label {
+            color: var(--gold-light);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .input-group-custom input {
+            width: 100%;
+            padding: 0.75rem 0.85rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.32);
+            background: rgba(4,7,20,0.85);
+            color: #fff;
+            font-size: 0.93rem;
+            outline: none;
+            transition: 0.2s;
+        }
+
+            .input-group-custom input::placeholder {
+                color: #a4a7c5;
+            }
+
+            .input-group-custom input:focus {
+                border-color: var(--gold-light);
+                box-shadow: 0 0 0 1px rgba(255,214,110,0.9), 0 0 20px rgba(255,214,110,0.45);
+            }
+
+    /* BUTTONS & LINKS */
+    .btn-gold {
+        background: linear-gradient(110deg, #ffb84d, #ff9d3f);
+        color: #050816;
+        font-weight: 700;
+        border-radius: 20px;
+        border: none;
+        padding-block: 0.6rem;
+        font-size: 0.95rem;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.55);
+        transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    }
+
+        .btn-gold:hover {
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+        }
+
+    .text-gold {
+        color: var(--gold-light) !important;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-decoration: none;
+    }
+
+        .text-gold:hover {
+            color: #fff2c0 !important;
+            text-decoration: underline;
+        }
+
+    /* RESPONSIVE */
+    @@media (max-width: 992px) {
+        .login-wrapper {
+            flex-direction: column;
+            gap: 2.5rem;
+            padding-top: 2.5rem;
+        }
+
+        .left-hero {
+            max-width: 540px;
+            flex-basis: auto;
+        }
+
+        .left-hero-img {
+            height: 320px;
+        }
+
+        .login-card {
+            margin: 0;
+            width: 100%;
+            max-width: 420px;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .login-wrapper {
+            padding-inline: 1.25rem;
+        }
+
+        .left-hero-img {
+            height: 260px;
+        }
+
+        .login-card {
+            padding: 2rem 1.6rem 1.8rem;
+        }
+    }
+    /* ================= FORM GRID ================= */
+    .form-row {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .form-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .form-col label {
+            color: var(--gold-light);
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+        }
+
+        /* ================= DARK INPUTS ================= */
+        .form-col input,
+        .form-col select,
+        .form-col textarea {
+            width: 100%;
+            padding: 0.75rem 0.85rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.28);
+            background: rgba(4, 7, 20, 0.85);
+            color: #fff;
+            font-size: 0.93rem;
+            outline: none;
+            transition: 0.2s;
+        }
+
+            .form-col input::placeholder,
+            .form-col textarea::placeholder {
+                color: #a4a7c5;
+            }
+
+            .form-col input:focus,
+            .form-col select:focus,
+            .form-col textarea:focus {
+                border-color: var(--gold-light);
+                box-shadow: 0 0 0 1px rgba(255,214,110,0.9), 0 0 20px rgba(255,214,110,0.45);
+            }
+
+    textarea {
+        resize: none;
+    }
+
+    /* ================= REGISTER CARD WIDTH ================= */
+    .register-card {
+        width: 620px !important;
+        padding: 2.5rem;
+        border-radius: 22px;
+    }
+
+        .register-card.glassy::before {
+            opacity: 0.8; /* glow ring visible */
+        }
+</style>
+<!-- ================= GLOBAL NAVBAR ================= -->
+<nav class="navbar navbar-expand-lg navbar-dark global-nav">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-white d-flex align-items-center" href="/">
+            <span class="brand-dot me-2"></span> MedicaLux
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="mainNav">
+            <ul class="navbar-nav align-items-lg-center gap-lg-4">
+                <li class="nav-item"><a class="nav-link active" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/Services">Services</a></li>
+                <li class="nav-item"><a class="nav-link" href="/Doctors">Doctors</a></li>
+                <li class="nav-item"><a class="nav-link" href="/About">About</a></li>
+                <li class="nav-item">
+                    <a class="btn btn-nav-gold ms-lg-2" href="/Account/Login">Login</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="login-wrapper">
+    <div class="bg-overlay"></div>
+    <div class="particle-layer"></div>
+
+    <!-- Floating icons -->
+    <i class="bi bi-heart-pulse floating-icon fi1"></i>
+    <i class="bi bi-syringe floating-icon fi2"></i>
+    <i class="bi bi-droplet floating-icon fi3"></i>
+    <i class="bi bi-activity floating-icon fi4"></i>
+
+    <!-- LEFT HERO IMAGE -->
+    <div class="left-hero" id="heroPanel">
+        <div class="left-hero-img">
+            <img src="/images/bg-medical.jpg"
+                 alt="Medical technology"
+                 style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
+        </div>
+    </div>
+    <div class="register-card glassy" id="registerCard">
+        <h2 class="gradient-text mb-1">Create an Account</h2>
+        <p class="login-sub mb-4">Join MedicaLux and access premium healthcare services</p>
+
+        <form method="post">
+
+            <!-- Row 1 -->
+            <div class="form-row">
+                <div class="form-col">
+                    <label>First Name</label>
+                    <input type="text" placeholder="Enter first name" required>
+                </div>
+
+                <div class="form-col">
+                    <label>Last Name</label>
+                    <input type="text" placeholder="Enter last name" required>
+                </div>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="form-row">
+                <div class="form-col">
+                    <label>Gender</label>
+                    <select required>
+                        <option disabled selected>Select gender</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+                <div class="form-col">
+                    <label>Date of Birth</label>
+                    <input type="date" required>
+                </div>
+            </div>
+
+            <!-- Row 3 -->
+            <div class="form-row">
+                <div class="form-col">
+                    <label>Phone Number</label>
+                    <input type="text" placeholder="03XX-XXXXXXX" required>
+                </div>
+
+                <div class="form-col">
+                    <label>CNIC</label>
+                    <input type="text" placeholder="XXXXX-XXXXXXX-X" required>
+                </div>
+            </div>
+
+            <!-- Row 4 -->
+            <div class="form-row">
+                <div class="form-col">
+                    <label>Address</label>
+                    <textarea rows="1" placeholder="Full address"></textarea>
+                </div>
+
+                <div class="form-col">
+                    <label>Emergency Contact</label>
+                    <input type="text" placeholder="Emergency contact number" required>
+                </div>
+            </div>
+
+            <!-- Row 5 -->
+            <div class="form-row">
+                <div class="form-col">
+                    <label>Allergies (if any)</label>
+                    <textarea rows="1" placeholder="List allergies"></textarea>
+                </div>
+
+                <div class="form-col">
+                    <label>Chronic Diseases (if any)</label>
+                    <textarea rows="1" placeholder="List chronic conditions"></textarea>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <button class="btn-gold w-100 mt-3" type="submit">Create Account</button>
+
+            <div class="text-center mt-3">
+                <a href="/Account/Login" class="text-gold">Already have an account? Login</a>
+            </div>
+
+        </form>
+    </div>
+    </div>
+<script>
+    (function () {
+        const hero = document.getElementById('heroPanel');
+        const card = document.getElementById('registerCard');
+
+        if (!hero || !card) return;
+
+        document.addEventListener('mousemove', function (e) {
+            const x = (e.clientX / window.innerWidth) - 0.5;
+            const y = (e.clientY / window.innerHeight) - 0.5;
+
+            hero.style.transform =
+                `translate3d(${x * -20}px, ${y * -10}px, 0)
+                 rotateY(${x * -4}deg)
+                 rotateX(${y * 2}deg)`;
+
+            card.style.transform =
+                `translate3d(${x * 16}px, ${y * 8}px, 0)
+                 rotateY(${x * 4}deg)
+                 rotateX(${y * -2}deg)`;
+        });
+    })();
+</script>

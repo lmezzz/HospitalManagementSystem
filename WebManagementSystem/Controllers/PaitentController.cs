@@ -2,9 +2,9 @@
 
 namespace WebManagementSystem.Controllers
 {
-    public class PaitentController : Controller
+    public class PatientController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Dashboard()
         {
             return View();
         }

@@ -4,7 +4,7 @@ namespace WebManagementSystem.Controllers
 {
     public class DoctorController : Controller
     {
-        // GET: /Doctor/Dashboard
+        
         public IActionResult Dashboard()
         {
             return View();
