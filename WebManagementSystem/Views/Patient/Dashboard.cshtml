@@ -1,5 +1,382 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    Layout = "_Layout";
 }
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.12);
+        --gradient-start: #8d79ff;
+        --gradient-mid: #c06bff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        overflow-x: hidden;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* ================= SIDEBAR ================= */
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .menu-item {
+        color: #c9cbe8;
+        padding: 0.65rem 0.8rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.2s;
+        font-weight: 500;
+    }
+
+        .menu-item:hover, .menu-item.active {
+            background: rgba(255,255,255,0.12);
+            color: white;
+        }
+
+    /* ================= TOP BAR ================= */
+    .topbar {
+        margin-left: 240px;
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .topbar h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+    .user-tag {
+        background: rgba(255,255,255,0.1);
+        padding: 0.55rem 1rem;
+        border-radius: 14px;
+        font-size: 0.95rem;
+    }
+
+    /* ================= DASHBOARD GRID ================= */
+    .dashboard-grid {
+        margin-left: 240px;
+        padding: 1rem 2rem 3rem;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+
+    .card {
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 20px;
+        padding: 1.6rem;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        transition: 0.3s;
+    }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.7rem;
+        color: var(--gold-light);
+    }
+
+    .card-content {
+        font-size: 0.95rem;
+        color: #ddd;
+    }
+
+    .profile-wrapper {
+        margin-left: 240px; /* sidebar offset */
+        padding: 2rem 0;
+        display: flex;
+        justify-content: center;
+    }
+
+
+    /* ================= FULL WIDTH CARD ================= */
+    .full-card {
+        grid-column: span 3;
+    }
+
+    /* RESPONSIVE */
+    @@media (max-width: 992px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+            margin-left: 0;
+        }
+
+        .topbar {
+            margin-left: 0;
+        }
+
+        .sidebar {
+            position: absolute;
+            left: -260px;
+        }
+    }
+
+    .register-card input[readonly],
+    .register-card textarea[readonly] {
+        background: rgba(4,7,20,0.65);
+        color: #dcdff5;
+        border-color: rgba(255,255,255,0.18);
+        cursor: default;
+    }
+
+        .register-card input[readonly]:focus,
+        .register-card textarea[readonly]:focus {
+            box-shadow: none !important;
+            border-color: rgba(255,255,255,0.18) !important;
+        }
+
+   
+
+ 
+    }
+    /* ================= FORM GRID (Same as Register) ================= */
+    .form-row {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .form-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .form-col label {
+            color: var(--gold-light);
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+        }
+
+        /* INPUTS (same as register) */
+        .form-col input,
+        .form-col textarea {
+            width: 100%;
+            padding: 0.75rem 0.85rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.28);
+            background: rgba(4, 7, 20, 0.85);
+            color: #fff;
+            font-size: 0.93rem;
+            outline: none;
+        }
+
+            .form-col input[readonly],
+            .form-col textarea[readonly] {
+                background: rgba(4,7,20,0.65);
+                border: 1px solid rgba(255,255,255,0.18);
+            }
+
+    .register-card {
+        width: 900px;
+        padding: 2.5rem;
+        border-radius: 22px;
+        margin-bottom: 2rem;
+    }
+    /* Dark glassy outline box */
+.profile-box {
+    width: 100%;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 18px;
+    overflow: hidden;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Header strip matching your gradient */
+.profile-box-header {
+    background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+    padding: 1rem 1.4rem;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    letter-spacing: 0.3px;
+}
+
+/* Inside layout (2 columns like uni-box) */
+.profile-box-content {
+    padding: 1.8rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 1.4rem;
+    column-gap: 2.2rem;
+}
+
+/* Label + Value styling */
+.info-field label {
+    font-weight: 600;
+    color: var(--gold-light);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.info-field .value {
+    background: rgba(4,7,20,0.85);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    color: #efeff7;
+    font-size: 0.9rem;
+}
+    .profile-section {
+        margin-left: 260px; /* moves entire profile section to the right */
+        padding: 2rem;
+    }
+</style>
+
+
+<!-- ================= SIDEBAR ================= -->
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+
+    <div class="menu-item active">🏠 Dashboard</div>
+    <div class="menu-item">📅 My Appointments</div>
+    <div class="menu-item">🧪 Lab Reports</div>
+    <div class="menu-item">💊 Prescriptions</div>
+    <div class="menu-item">💳 Billing</div>
+    <div class="menu-item">⚙️ Settings</div>
+    <div class="menu-item">🚪 Logout</div>
+</div>
+
+<!-- ================= TOP BAR ================= -->
+<div class="topbar">
+    <h2>Welcome, Patient</h2>
+    <div class="user-tag">Patient ID: 0595</div>
+</div>
+<div class="profile-section">
+
+    <div class="profile-box">
+
+        <div class="profile-box-header">
+            Patient Information
+        </div>
+
+        <div class="profile-box-content">
+
+            <div class="info-field">
+                <label>First Name</label>
+                <div class="value">Wishmah</div>
+                @* @Model.FullName?.Split(" ")[0] *@
+            </div>
+
+            <div class="info-field">
+                <label>Last Name</label>
+                <div class="value">Akhtar</div>
+                @* @Model.FullName?.Split(" ")[1] *@
+            </div>
+
+            <div class="info-field">
+                <label>Gender</label>
+                <div class="value">Female</div>
+                @* @Model.Gender *@
+            </div>
+
+            <div class="info-field">
+                <label>Date of Birth</label>
+                <div class="value">12 / 08 / 2004</div>
+                @* @Model.DateOfBirth?.ToString("dd / MM / yyyy") *@
+            </div>
+
+            <div class="info-field">
+                <label>Phone Number</label>
+                <div class="value">03XX-XXXXXXX</div>
+                @* @Model.Phone *@
+            </div>
+
+            <div class="info-field">
+                <label>CNIC</label>
+                <div class="value">XXXXX-XXXXXXX-X</div>
+                @* @Model.Cnic *@
+            </div>
+
+            <div class="info-field">
+                <label>Emergency Contact</label>
+                <div class="value">03XX-XXXXXXX</div>
+                @* @Model.EmergencyContact *@
+            </div>
+
+            <div class="info-field">
+                <label>Allergies (if any)</label>
+                <div class="value">None</div>
+                @* @Model.Allergies *@
+            </div>
+
+            <div class="info-field">
+                <label>Chronic Diseases (if any)</label>
+                <div class="value">None</div>
+                @* @Model.ChronicConditions *@
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ================= DASHBOARD CARDS ================= -->
+<div class="dashboard-grid">
+
+    <div class="card">
+        <div class="card-title">Upcoming Appointment</div>
+        <div class="card-content">
+            Dr. Ayesha · Cardiology <br>
+            📅 24 Nov · 3:30 PM
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Pending Lab Tests</div>
+        <div class="card-content">2 tests awaiting results</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Outstanding Bills</div>
+        <div class="card-content">PKR 2,500</div>
+    </div>
+
+    <div class="card full-card">
+        <div class="card-title">Recent Activity</div>
+        <div class="card-content">
+            • Lab blood test submitted <br>
+            • Appointment confirmed with Dr. Ali <br>
+            • Prescription updated <br>
+        </div>
+    </div>
+</div>
