@@ -17,365 +17,70 @@
         --radius-sm: 18px;
     }
 
-    body {
-        background: radial-gradient(circle at top left, #1e2347 0%, var(--navy) 50%, var(--navy) 100%);
-        font-family: 'Poppins', sans-serif;
-        color: var(--text-main);
-        overflow-x: hidden;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
+<div class="hero-wrapper">
 
-    /* ===================== NAVBAR ===================== */
-    .hms-nav {
-        background: linear-gradient(90deg, #050816f2, #050816cc);
-        border-bottom: 1px solid #1b1f35;
-        backdrop-filter: blur(18px);
-        width: 100%;
-        padding-left: 3rem !important;
-        padding-right: 3rem !important;
-    }
+    <!-- NAVBAR (for public / patient landing) -->
+    <nav class="navbar navbar-expand-lg hms-nav">
+        <div class="container">
+            <a class="navbar-brand fw-semibold" href="#">
+                <span class="brand-mark"></span> MedicaLux
+            </a>
 
-        .hms-nav .navbar-brand {
-            color: #fff;
-            font-weight: 600;
-            font-size: 1.4rem;
-            letter-spacing: 0.04em;
-        }
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-    .brand-mark {
-        width: 16px;
-        height: 16px;
-        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-        display: inline-block;
-        border-radius: 6px;
-        margin-right: 8px;
-    }
+            <div class="collapse navbar-collapse justify-content-end" id="mainNav">
+                <ul class="navbar-nav align-items-lg-center gap-lg-3">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#doctors">Doctors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
 
-    .hms-nav .nav-link {
-        color: var(--muted);
-        font-size: 0.95rem;
-        transition: 0.25s;
-    }
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light btn-sm rounded-pill px-3" asp-controller="Account" asp-action="Login">
+                            Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-gold btn-sm rounded-pill px-4 ms-lg-2" href="#">
+                            Book Appointment
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-        .hms-nav .nav-link:hover,
-        .hms-nav .nav-link.active {
-            color: #fff;
-            transform: translateY(-1px);
-        }
+    <!-- HERO SECTION -->
+    <section class="hero container py-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="badge bg-soft-gold text-gold mb-3">
+                    Premium Healthcare, Reimagined
+                </span>
 
-    .btn-gold {
-        background: var(--gold);
-        color: #111;
-        border: none;
-        font-weight: 500;
-    }
+                <h1 class="hero-title mb-3">
+                    Protecting Your Health with
+                    <span class="gradient-text">Exceptional Care.</span>
+                </h1>
 
-        .btn-gold:hover {
-            background: var(--gold-light);
-        }
+                <p class="hero-subtitle mb-4">
+                    An elegant hospital management experience for patients, doctors and staff –
+                    combining modern technology with trusted medical expertise.
+                </p>
 
-    /* ===================== HERO ===================== */
-    .gradient-text {
-        background: linear-gradient(90deg, #8d79ff, #d277ff, #ff9b61);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .hero-card {
-        width: min(360px, 100%);
-        text-align: center;
-    }
-
-    .hero-image-circle {
-        position: absolute;
-        inset: -40%;
-        background: radial-gradient(circle at top, var(--gradient-start), transparent 60%);
-        opacity: .9;
-    }
-
-    .hero-doctor {
-        position: relative;
-        border-radius: 180px;
-        z-index: 1;
-    }
-
-    .hero-mini-card {
-        position: absolute;
-        left: 1.2rem;
-        bottom: 1.2rem;
-        display: flex;
-        align-items: center;
-        gap: .6rem;
-        z-index: 2;
-        font-size: 0.8rem;
-    }
-
-        .hero-mini-card.bottom-right {
-            left: auto;
-            right: 1.2rem;
-            right: 1.2rem;
-            bottom: auto;
-            top: 1.4rem;
-        }
-
-        .hero-mini-card i {
-            font-size: 1.3rem;
-            color: var(--gold);
-        }
-
-    .mini-label {
-        font-size: 0.75rem;
-    }
-
-    .mini-value {
-        font-weight: 500;
-    }
-
-    .heartbeat-icon {
-        color: #ff6b6b;
-        animation: heartbeat 1.4s infinite ease-in-out;
-        margin-right: 6px;
-    }
-
-    @@keyframes heartbeat {
-        0% {
-            transform: scale(1);
-        }
-
-        25% {
-            transform: scale(1.18);
-        }
-
-        40% {
-            transform: scale(1);
-        }
-
-        60% {
-            transform: scale(1.18);
-        }
-
-        100% {
-            transform: scale(1);
-        }
-    }
-
-    .premium-text {
-        color: var(--gold);
-        font-weight: 500;
-        letter-spacing: 0.5px;
-        font-size: 0.95rem;
-    }
-
-
-
-    /* GLASS CARD */
-    .glass-card {
-        background: radial-gradient(circle at top left, #ffffff22, #ffffff04);
-        border-radius: 30px;
-        padding: 1.8rem;
-        border: 1px solid #ffffff22;
-        box-shadow: 0 18px 55px rgba(3, 5, 25, 0.9);
-        position: relative;
-        overflow: hidden;
-        backdrop-filter: blur(16px);
-    }
-
-    .glass-card-sm {
-        background: #ffffff0e;
-        border-radius: var(--radius-sm);
-        padding: 1rem 1.2rem;
-        border: 1px solid #ffffff22;
-        backdrop-filter: blur(16px);
-    }
-
-
-
-    /* Floating Labels */
-    .hero-mini-card {
-        position: absolute;
-        background: rgba(255,255,255,0.7);
-        backdrop-filter: blur(14px);
-        border-radius: 12px;
-        padding: 10px 14px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.85rem;
-    }
-
-    .hero-mini-top {
-        top: 14px;
-        right: 14px;
-    }
-
-    .hero-mini-bottom {
-        bottom: 14px;
-        left: 14px;
-    }
-
-    .hero-mini-card i {
-        font-size: 1.2rem;
-        color: #b58c28;
-    }
-
-
-    /* ===================== SERVICES ===================== */
-    .section-title {
-        color: white;
-        font-size: 2rem;
-        font-weight: 600;
-    }
-
-    .section-subtitle {
-        color: var(--muted);
-    }
-
-    .service-card {
-        background: #ffffff0d;
-        border: 1px solid #ffffff22;
-        padding: 2rem;
-        border-radius: var(--radius-lg);
-        transition: 0.25s;
-        backdrop-filter: blur(12px);
-    }
-
-        .service-card:hover {
-            transform: translateY(-5px);
-            border-color: #ffffff44;
-        }
-
-    .service-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: #ffffff15;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--gold);
-        font-size: 1.8rem;
-        margin-bottom: 1rem;
-    }
-
-    /* ===================== STATS ===================== */
-    .stats-strip {
-        background: #080c1b;
-        padding: 3rem 0;
-    }
-
-    .stat-number-lg {
-        font-size: 2rem;
-        color: var(--gold);
-        font-weight: 600;
-    }
-
-    /* ===================== ABOUT  ===================== */
-    /* About section */
-    .about-grid {
-        position: relative;
-    }
-
-    .about-img {
-        border-radius: 26px;
-        object-fit: cover;
-        box-shadow: 0 16px 45px rgba(0, 0, 0, 0.7);
-    }
-
-        .about-img.main {
-            width: 80%;
-        }
-
-        .about-img.secondary {
-            width: 48%;
-            position: absolute;
-            right: 0;
-            bottom: -14%;
-        }
-
-    .about-badge {
-        position: absolute;
-        left: 6%;
-        bottom: 6%;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: .1rem;
-    }
-
-    .about-pill {
-        border-radius: 999px;
-        border: 1px solid #262c4b;
-        padding: .6rem 1rem;
-        font-size: 0.85rem;
-        color: var(--muted);
-        display: inline-flex;
-        align-items: center;
-        gap: .5rem;
-        background: #050816c7;
-    }
-
-        .about-pill i {
-            color: var(--gold);
-        }
-
-
-    /* ===================== FOOTER ===================== */
-    .footer {
-        border-top: 1px solid #1f2340;
-        padding: 3rem 4rem;
-        background: #050816;
-    }
-
-    .footer-heading {
-        color: var(--gold);
-        letter-spacing: .15em;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-    }
-
-    .footer a {
-        color: var(--muted);
-        text-decoration: none;
-    }
-
-        .footer a:hover {
-            color: var(--gold);
-        }
-</style>
-
-
-<!-- ===================== NAVBAR ===================== -->
-<nav class="navbar navbar-expand-lg hms-nav">
-    <div class="w-100 d-flex justify-content-between align-items-center">
-
-        <a class="navbar-brand" href="#">
-            <span class="brand-mark"></span> MedicaLux
-        </a>
-
-        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse justify-content-end" id="menu">
-            <ul class="navbar-nav gap-3">
-
-                <li><a class="nav-link active" href="#">Home</a></li>
-                <li><a class="nav-link" href="#services">Services</a></li>
-                <li><a class="nav-link" href="#about">About</a></li>
-
-                
-                    <a asp-controller="Account" asp-action="login"
-                       class="btn btn-outline-light rounded-pill px-3 py-1">
-                        Login
-                    </a><!-- the link isnt working fix it-->
-                
-
-                <li>
-                    <a asp-controller="Appointment"
-                       asp-action="Create"
-                       class="btn btn-gold rounded-pill px-4 py-1">
-                        Book Appointment
+                <div class="d-flex flex-wrap gap-3 align-items-center">
+                    <a href="#" class="btn btn-gold rounded-pill px-4 py-2">
+                        Get Started
                     </a>
                 </li>
 
