@@ -1,5 +1,228 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    Layout = "_Layout";
 }
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.85);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        left: 0;
+        top: 0;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 2.4rem;
+    }
+
+        .sidebar a {
+            text-decoration: none;
+            color: #c9cbe8;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            transition: 0.2s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+            .sidebar a:hover,
+            .sidebar a.active {
+                background: rgba(255,255,255,0.14);
+                color: white;
+            }
+
+    /* TOP BAR */
+    .topbar {
+        margin-left: 240px;
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* MAIN CONTENT */
+    .pharmacy-section {
+        margin-left: 260px;
+        padding: 2rem 2.2rem;
+    }
+
+    .page-header {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+    }
+
+    /* METRICS GRID */
+    .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2.2rem;
+    }
+
+    .metric-card {
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 16px;
+        padding: 1.5rem;
+        backdrop-filter: blur(12px);
+    }
+
+    .metric-title {
+        font-size: 0.9rem;
+        color: #c9cbe8;
+        margin-bottom: 0.4rem;
+        font-weight: 600;
+    }
+
+    .metric-value {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--gold-light);
+    }
+
+    /* URGENT STOCK ALERT */
+    .urgent-box {
+        margin-top: 1rem;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 18px;
+        padding: 1.8rem;
+        backdrop-filter: blur(12px);
+    }
+
+    .urgent-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #ff7d7d;
+    }
+
+    .urgent-item {
+        background: rgba(255,100,100,0.25);
+        padding: 0.9rem 1.2rem;
+        border-radius: 10px;
+        margin-bottom: 0.8rem;
+        border: 1px solid rgba(255,0,0,0.2);
+    }
+
+        .urgent-item strong {
+            color: #ffbaba;
+        }
+
+    /* QUICK ISSUE */
+    .issue-box {
+        margin-top: 2rem;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.15);
+        padding: 1.8rem;
+        border-radius: 18px;
+        backdrop-filter: blur(12px);
+    }
+
+    .btn-issue {
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        padding: 0.7rem 1.5rem;
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: 0.2s;
+    }
+
+        .btn-issue:hover {
+            filter: brightness(1.1);
+        }
+</style>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+
+    <a asp-controller="Pharmacy" asp-action="Index" class="active">🧪 Dashboard</a>
+    <a asp-controller="Pharmacy" asp-action="IssueMedicine">💊 Issue Medicine</a>
+    <a asp-controller="Pharmacy" asp-action="Inventory">📦 Stock Inventory</a>
+    
+    <a asp-controller="Account" asp-action="Login">🚪 Logout</a>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+    <h2>Welcome, Pharmacy Staff</h2>
+    <div class="user-tag">Pharmacy ID: 0093</div>
+</div>
+
+<!-- MAIN -->
+<div class="pharmacy-section">
+
+    <div class="page-header">Pharmacy Dashboard</div>
+
+    <!-- METRICS -->
+    <div class="metric-grid">
+
+        <div class="metric-card">
+            <div class="metric-title">Total Stock</div>
+            <div class="metric-value">312</div>
+            @* @Model.TotalStock *@
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-title">Low Stock Items</div>
+            <div class="metric-value">7</div>
+            @* @Model.LowStockCount *@
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-title">Out of Stock</div>
+            <div class="metric-value">3</div>
+            @* @Model.OutOfStockCount *@
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-title">Issued Today</div>
+            <div class="metric-value">18</div>
+            @* @Model.TodayIssued *@
+        </div>
+
+    </div>
+
+    <!-- URGENT STOCK ALERT -->
+    <div class="urgent-box">
+        <div class="urgent-title">⚠️ Urgent: Medicines Running Out</div>
+
+        <div class="urgent-item">
+            <strong>Panadol 500mg</strong> — Only <strong>2</strong> left
+            @* @med.Name, @med.Quantity *@
+        </div>
+
+        <div class="urgent-item">
+            <strong>Amoxicillin 250mg</strong> — Only <strong>1</strong> left
+        </div>
+
+        <div class="urgent-item">
+            <strong>ORS Sachets</strong> — Only <strong>0</strong> left
+        </div>
+    </div>
+
+</div>

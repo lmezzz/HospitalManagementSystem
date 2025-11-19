@@ -32,30 +32,47 @@
         border-right: 1px solid rgba(255,255,255,0.1);
         display: flex;
         flex-direction: column;
-        gap: 2.5rem;
+        gap: 2.4rem;
     }
 
     .brand {
         font-size: 1.5rem;
         font-weight: 700;
-        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        background: linear-gradient(90deg, #8d79ff, #ff9b61);
         -webkit-background-clip: text;
         color: transparent;
     }
 
-    .menu-item {
+    /* All links inside sidebar */
+    .sidebar a {
+        text-decoration: none !important;
         color: #c9cbe8;
         padding: 0.65rem 0.8rem;
         border-radius: 10px;
         cursor: pointer;
-        transition: 0.2s;
+        transition: 0.2s ease;
         font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-size: 0.95rem;
     }
 
-        .menu-item:hover, .menu-item.active {
-            background: rgba(255,255,255,0.12);
-            color: white;
+        
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255,255,255,0.14);
+            color: #fff;
         }
+
+       
+        .sidebar a i,
+        .sidebar a img {
+            width: 18px;
+            height: 18px;
+            margin-right: 6px;
+        }
+
 
     /* ================= TOP BAR ================= */
     .topbar {
@@ -114,7 +131,7 @@
     }
 
     .profile-wrapper {
-        margin-left: 240px; /* sidebar offset */
+        margin-left: 240px; 
         padding: 2rem 0;
         display: flex;
         justify-content: center;
@@ -126,7 +143,7 @@
         grid-column: span 3;
     }
 
-    /* RESPONSIVE */
+   
     @@media (max-width: 992px) {
         .dashboard-grid {
             grid-template-columns: 1fr;
@@ -161,7 +178,7 @@
 
  
     }
-    /* ================= FORM GRID (Same as Register) ================= */
+    /* ================= FORM GRID  ================= */
     .form-row {
         display: flex;
         gap: 1.5rem;
@@ -180,7 +197,6 @@
             margin-bottom: 0.35rem;
         }
 
-        /* INPUTS (same as register) */
         .form-col input,
         .form-col textarea {
             width: 100%;
@@ -205,7 +221,7 @@
         border-radius: 22px;
         margin-bottom: 2rem;
     }
-    /* Dark glassy outline box */
+   
 .profile-box {
     width: 100%;
     background: rgba(255,255,255,0.06);
@@ -217,7 +233,7 @@
     margin-bottom: 2rem;
 }
 
-/* Header strip matching your gradient */
+
 .profile-box-header {
     background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
     padding: 1rem 1.4rem;
@@ -230,7 +246,6 @@
     letter-spacing: 0.3px;
 }
 
-/* Inside layout (2 columns like uni-box) */
 .profile-box-content {
     padding: 1.8rem 2rem;
     display: grid;
@@ -239,7 +254,6 @@
     column-gap: 2.2rem;
 }
 
-/* Label + Value styling */
 .info-field label {
     font-weight: 600;
     color: var(--gold-light);
@@ -256,9 +270,46 @@
     font-size: 0.9rem;
 }
     .profile-section {
-        margin-left: 260px; /* moves entire profile section to the right */
+        margin-left: 260px; 
         padding: 2rem;
     }
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .menu-item {
+        color: #c9cbe8;
+        padding: 0.65rem 0.8rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.2s;
+        font-weight: 500;
+    }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: rgba(255,255,255,0.12);
+            color: white;
+        }
 </style>
 
 
@@ -266,13 +317,19 @@
 <div class="sidebar">
     <div class="brand">MedicaLux</div>
 
-    <div class="menu-item active">🏠 Dashboard</div>
-    <div class="menu-item">📅 My Appointments</div>
-    <div class="menu-item">🧪 Lab Reports</div>
-    <div class="menu-item">💊 Prescriptions</div>
-    <div class="menu-item">💳 Billing</div>
-    <div class="menu-item">⚙️ Settings</div>
-    <div class="menu-item">🚪 Logout</div>
+    <a asp-controller="Patient" asp-action="Dashboard" class="menu-item active">🏠 Dashboard</a>
+
+    <a asp-controller="Patient" asp-action="Appointments" class="menu-item">📅 My Appointments</a>
+
+    <a asp-controller="Patient" asp-action="LabReports" class="menu-item">🧪 Lab Reports</a>
+
+    <a asp-controller="Patient" asp-action="Prescriptions" class="menu-item">💊 Prescriptions</a>
+
+    <a asp-controller="Patient" asp-action="Billing" class="menu-item">💳 Billing</a>
+
+    <a asp-controller="Patient" asp-action="Pharmacy" class="menu-item">🏥 Pharmacy</a>
+
+    <a asp-controller="Home" asp-action="Index" class="menu-item">🚪 Logout</a>
 </div>
 
 <!-- ================= TOP BAR ================= -->

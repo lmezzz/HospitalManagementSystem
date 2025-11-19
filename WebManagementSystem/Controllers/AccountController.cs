@@ -12,5 +12,10 @@ namespace WebManagementSystem.Controllers
         {
             return View("Register");
         }
+
+        public IActionResult something()
+        {
+            return View("something");
+        }
     }
 }
