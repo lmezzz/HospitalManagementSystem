@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Login";
 }
-
+<!--https://localhost:7092/Account/Login-->
 <style>
     :root {
         --navy: #050816;
@@ -465,7 +465,7 @@
         if (!hero || !card) return;
 
         document.addEventListener('mousemove', function (e) {
-            const x = (e.clientX / window.innerWidth) - 0.5; // -0.5 to 0.5
+            const x = (e.clientX / window.innerWidth) - 0.5; 
             const y = (e.clientY / window.innerHeight) - 0.5;
 
             const translateHeroX = x * -20;

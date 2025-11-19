@@ -1,0 +1,301 @@
+﻿@{
+    Layout = "_Layout";
+}
+<!--i am like 90 percent shore there needs to be a button which would lead the  user to the billing page
+    but only on those which have either pending or overdue bills-->
+-->
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        overflow-x: hidden;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    /* ================= SIDEBAR ================= */
+
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 2.4rem;
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, #8d79ff, #ff9b61);
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    /* All links inside sidebar */
+    .sidebar a {
+        text-decoration: none !important; /* remove underline */
+        color: #c9cbe8;
+        padding: 0.65rem 0.8rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.2s ease;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-size: 0.95rem;
+    }
+
+        /* Hover & Active state */
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255,255,255,0.14);
+            color: #fff;
+        }
+
+        /* Icons inside links auto-align */
+        .sidebar a i,
+        .sidebar a img {
+            width: 18px;
+            height: 18px;
+            margin-right: 6px;
+        }
+
+
+
+    /* PAGE CONTENT WRAPPER */
+    .billing-section {
+        margin-left: 260px;
+        padding: 2rem 2.5rem;
+    }
+
+    /* Page Title */
+    .billing-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+
+        .billing-title span.icon {
+            width: 22px;
+            height: 22px;
+            background: #8d79ff;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+    /* BILL CARD */
+    .bill-card {
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 18px;
+        padding: 1.8rem 2rem;
+        backdrop-filter: blur(14px);
+        margin-bottom: 1.5rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+
+    .bill-header {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--gold-light);
+        margin-bottom: 0.8rem;
+    }
+
+    .bill-info {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        row-gap: 1rem;
+        column-gap: 2rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .bill-row label {
+        color: #c9cbe8;
+        font-weight: 600;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .bill-row div {
+        background: rgba(4,7,20,0.85);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 0.7rem 1rem;
+        border-radius: 10px;
+        color: #efeff7;
+    }
+
+    /* STATUS BADGES */
+    .status {
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .paid {
+        background: #28b463;
+    }
+
+    .pending {
+        background: #f1c40f;
+        color: black;
+    }
+
+    .overdue {
+        background: #e74c3c;
+    }
+</style>
+<!-- ================= SIDEBAR ================= -->
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+
+    <a asp-controller="Patient" asp-action="Dashboard" class="menu-item">
+        🏠 Dashboard
+    </a>
+
+    <a asp-controller="Patient" asp-action="Appointments" class="menu-item">
+        🏢 My Appointments
+    </a>
+
+    <a asp-controller="Patient" asp-action="LabReports" class="menu-item">
+        🧪 Lab Reports
+    </a>
+
+    <a asp-controller="Patient" asp-action="Prescriptions" class="menu-item">
+        💊 Prescriptions
+    </a>
+
+    <a asp-controller="Patient" asp-action="Billing" class="menu-item active">
+        💳 Billing
+    </a>
+
+    <a asp-controller="Patient" asp-action="Pharmacy" class="menu-item">
+        🏥 Pharmacy
+    </a>
+
+
+    <a asp-controller="Home" asp-action="Index" class="menu-item">
+        🚪 Logout
+    </a>
+</div>
+<!-- ====================== BILLING PAGE ====================== -->
+<div class="billing-section"><!--also needs to loop through -->
+
+    <div class="billing-title">
+        <span class="icon"></span>
+        Billing & Payments
+    </div>
+
+    <!-- BILL 1 -->
+    <div class="bill-card">
+        <div class="bill-header">Consultation Fee — Cardiology</div>
+        <div class="bill-info">
+
+            <div class="bill-row">
+                <label>Bill ID</label>
+                <div>BL-001122</div>
+                @* @bill.BillId *@
+            </div>
+
+            <div class="bill-row">
+                <label>Amount</label>
+                <div>PKR 2,500</div>
+                @* @bill.Amount *@
+            </div>
+
+            <div class="bill-row">
+                <label>Date Issued</label>
+                <div>24 Nov 2025</div>
+                @* @bill.IssueDate?.ToString("dd MMM yyyy") *@
+            </div>
+
+            <div class="bill-row">
+                <label>Status</label>
+                <div class="status paid">Paid</div>
+                @* @bill.Status *@
+            </div>
+        </div>
+    </div>
+
+    <!-- BILL 2 -->
+    <div class="bill-card">
+        <div class="bill-header">Lab Test — Blood Analysis</div>
+        <div class="bill-info">
+
+            <div class="bill-row">
+                <label>Bill ID</label>
+                <div>BL-001133</div>
+                @* @bill.BillId *@
+            </div>
+
+            <div class="bill-row">
+                <label>Amount</label>
+                <div>PKR 1,800</div>
+                @* @bill.Amount *@
+            </div>
+
+            <div class="bill-row">
+                <label>Date Issued</label>
+                <div>10 Nov 2025</div>
+                @* @bill.IssueDate *@
+            </div>
+
+            <div class="bill-row">
+                <label>Status</label>
+                <div class="status pending">Pending</div>
+                @* @bill.Status *@
+            </div>
+
+        </div>
+    </div>
+
+    <!-- BILL 3 -->
+    <div class="bill-card">
+        <div class="bill-header">X-Ray — Chest Scan</div>
+
+        <div class="bill-info">
+            <div class="bill-row">
+                <label>Bill ID</label>
+                <div>BL-001144</div>
+                @* @bill.BillId *@
+            </div>
+
+            <div class="bill-row">
+                <label>Amount</label>
+                <div>PKR 3,200</div>
+                @* @bill.Amount *@
+            </div>
+
+            <div class="bill-row">
+                <label>Date Issued</label>
+                <div>02 Nov 2025</div>
+                @* @bill.IssueDate *@
+            </div>
+
+            <div class="bill-row">
+                <label>Status</label>
+                <div class="status overdue">Overdue</div>
+                @* @bill.Status *@
+            </div>
+        </div>
+    </div>
+
+</div>

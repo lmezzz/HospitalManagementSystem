@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Home";
 }
-
+<!--https://localhost:7092/-->
 <style>
     /* ===================== VARIABLES ===================== */
     :root {
@@ -364,12 +364,21 @@
                 <li><a class="nav-link" href="#services">Services</a></li>
                 <li><a class="nav-link" href="#about">About</a></li>
 
+                
+                    <a asp-controller="Account" asp-action="login"
+                       class="btn btn-outline-light rounded-pill px-3 py-1">
+                        Login
+                    </a><!-- the link isnt working fix it-->
+                
+
                 <li>
-                    <a class="btn btn-outline-light rounded-pill px-3 py-1">Login</a>
+                    <a asp-controller="Appointment"
+                       asp-action="Create"
+                       class="btn btn-gold rounded-pill px-4 py-1">
+                        Book Appointment
+                    </a>
                 </li>
-                <li>
-                    <a class="btn btn-gold rounded-pill px-4 py-1">Book Appointment</a>
-                </li>
+
 
             </ul>
         </div>

@@ -1,0 +1,168 @@
+﻿
+<!--okii dudeee ya need to make sure this page is not accessible by url but only through when somebody enters the wrong id/pass we made sure it redirects after a few secs-->
+@{
+    Layout = null;
+}
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+        background: radial-gradient(circle at top left, #050816, #0a0f2c);
+        color: #fff;
+        overflow: hidden;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .pill {
+        position: fixed;
+        top: -50px;
+        font-size: 24px;
+        opacity: 0.8;
+        animation: fall linear infinite;
+    }
+
+   
+      @@keyframes {
+        0% { transform: translateY(-50px) rotate(0deg); }
+        100% { transform: translateY(110vh) rotate(360deg); }
+    }
+
+    .card {
+        background: rgba(255, 255, 255, 0.08);
+        padding: 40px 50px;
+        border-radius: 18px;
+        text-align: center;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.06);
+        width: 420px;
+        z-index: 10;
+    }
+
+    .emoji {
+        font-size: 55px;
+        margin-bottom: 15px;
+    }
+
+    .title {
+        font-size: 26px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        background: linear-gradient(90deg, #8d79ff, #ff9b61);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    p {
+        font-size: 15px;
+        opacity: 0.85;
+        margin-bottom: 25px;
+        color: #fff;
+    }
+
+    a {
+        text-decoration: none;
+        font-size: 15px;
+        background: linear-gradient(90deg, #8d79ff, #ff9b61);
+        padding: 10px 18px;
+        border-radius: 14px;
+        color: #fff;
+        font-weight: 500;
+        transition: 0.2s ease;
+    }
+
+    a:hover {
+        opacity: 0.8;
+        transform: translateY(-2px);
+    }
+</style>
+
+<div id="pill-container"></div>
+
+<div class="card" id="cardContent"></div>
+
+<script>
+    const variants = [
+        {
+            emoji: "🧐",
+            title: "Umm… Who Sent You Here?",
+            text: "This page doesn’t look like yours. Are you lost or snooping?",
+            button: "Go Back Before Someone Sees"
+        },
+        {
+            emoji: "👀",
+            title: "Sure U Aren’t??",
+            text: "You look confident. But this page ain't yours. Just saying.",
+            button: "Take Me Back"
+        },
+        {
+            emoji: "💊",
+            title: "Prescription Required",
+            text: "You can’t access this page without Permission 500mg.",
+            button: "Go Back to Reception"
+        },
+        {
+            emoji: "🏥",
+            title: "Wrong Ward, Buddy",
+            text: "Restricted area. Unless you're a doctor... or pretending to be one 👀",
+            button: "Return to Lobby"
+        },
+        {
+            emoji: "🩺",
+            title: "Patient Not Authorized",
+            text: "Medical records are sensitive. Curiosity isn't a diagnosis.",
+            button: "Back to Dashboard"
+        },
+        {
+            emoji: "🕵️‍♂️",
+            title: "Suspicious Activity Detected",
+            text: "You walked in confidently, but this page disagrees.",
+            button: "Retreat Strategically"
+        },
+        {
+            emoji: "😭",
+            title: "What Are You Doing Here 😭",
+            text: "How did you even end up here??? Genuinely curious.",
+            button: "Go Back Before You Break Something"
+        },
+        {
+            emoji: "😎",
+            title: "Error 403: Confidence Found",
+            text: "Confidence good. Access not found 💀",
+            button: "Return Home"
+        }
+    ];
+
+    const random = variants[Math.floor(Math.random() * variants.length)];
+
+    document.getElementById("cardContent").innerHTML = `
+        <div class="emoji">${random.emoji}</div>
+        <div class="title">${random.title}</div>
+        <p>${random.text}</p>
+        <a href="/Account/login">${random.button}</a>
+    `;
+
+    const pillContainer = document.getElementById("pill-container");
+    const pills = ["💊", "🧪", "🩺", "💉"];
+
+    function createPill() {
+        const pill = document.createElement("div");
+        pill.classList.add("pill");
+        pill.innerText = pills[Math.floor(Math.random() * pills.length)];
+        pill.style.left = Math.random() * 100 + "vw";
+        pill.style.animationDuration = (3 + Math.random() * 4) + "s";
+
+        pillContainer.appendChild(pill);
+        setTimeout(() => pill.remove(), 7000);
+    }
+
+    setInterval(createPill, 300);
+
+    setTimeout(() => {
+        window.location.href = "/Account/login";
+    }, 5000);
+</script>

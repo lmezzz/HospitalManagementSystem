@@ -10,7 +10,7 @@ namespace WebManagementSystem.Controllers
             return View();
         }
 
-        // Optional extra actions you can add later:
+    
         public IActionResult Appointments()
         {
             return View();

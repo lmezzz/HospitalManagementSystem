@@ -1,0 +1,87 @@
+login-
+change images wagera, the links on the navbar dont work fix that
+login page pai login button should redirect according to the user id 
+like patient goes to patient id etc
+
+register- 
+after creating account it should say account created succesfully and redirect 
+to the login page.
+it also needs input valiudation acc to ailah
+again the navbar inks dont work
+change image
+Something-
+should probably be renamed
+and should not be accessible through url but only when the login is invalid(not my job??)
+
+Home:-
+index page-
+the picture needs to be changed the words on the panel arent visible need to fix
+medical services view all needs to go to somewhereee
+get started should go to login pageeee AAAAAAAAAA
+
+Patient:-
+yaar mairko yai samajh nai aarahaa kii billing tou mai nai bana dii shows the
+paid wagera option buttt pay kidher kr rahe hian humm?? 
+probably should add a button  where the unpaind and overdue bills lead to payment option???
+tou phir hum bills kiu create ker rahe aur yai billitem mai ki horaha hai kiu ho rah hai??
+payment tou card/cash hogi...do we need too configure online payments(should prolly ask)
+
+after creating pages i should prolly ummm connect the links wagera since most of em dont work
+idk y the logout page is going to the landing page buttt ig it works??? should it work?? idkk..
+
+ohhh n it also needs a button too book an appointment
+
+OOO N I WAS thinkingg we should Add a prescrtiption pagee whrre arll the patients prescriptions individually ofc are shownnn and we could doo kaii doctors can see it too but he needs to see  all patients naa??
+1 bird 2 stones?? ajeeb hai ya yrrrr
+YEAA SO Where was iiii...
+ooo n alsoo we need to change the thingy wehre the WELCOME PATIEnt is we need to add the name of the patient aswell
+
+
+Pharmacy:-
+index-
+same thing as patient name of the name of pharmacist as well as id shown
+i love the dashboard no need to change??
+now the issue medicines and stock y are they differentt??
+oooo we can showwww that the medicines that have already been issued and by what pharmacist(yai acha hai) and how much has bee nordered
+the stock page can show all the meds with the +/- sign anddd prioritizingg in descending order (pretty sure tis not my job)
+
+
+Shared:-
+need to figgure out how to9 make shared navbar and the layout so am not using the code aggain and again butttt if ya think abt it each thingy is highlighted 
+seperately in the sidebars right soo can i really make it generalized???
+
+
+Create-
+
+ 
+
+ folders left - doctor - dashboard
+					  -  labreq
+					  -  patient info or patient list??
+					  -  schedule
+
+			  - home - type of doctor page
+					 - medical service 
+
+			  - billing  - bill items
+						 - bills
+						 -payments
+(i have no idea what goes in these)- appointment - create appointment
+												 - details
+												 - index
+			  - lab	-dashboard
+					-order
+					-results
+
+			  - pharmacy - issue medicine
+					     - stock
+
+			
+
+what if humm yai kerainnnn kii instead of making a file in patient for appointment we make a general appointment folder in create and then use it in patient and doctor?? 
+soo likeeee we create the appointment whicxh is basically booking an appointement and the details page show the doctor and patient what they wrote in book appointment
+then y do we have an index pagge in appointmrnt folderrr even the ai  is confuseddd lol okk but then where are we inputting the info of the patient that the doctore takes??? do we need to do thiss
+waitt first off how will the doctor categorize it according to patient huhhhhhhhh i needd assistancee AAAAAAAAAAAAAAAAAAAA okii sooo ummm
+should i create a seperate page for doctors to input his observations and then it gets saved somewhere.... wheree no one knowsssss tis is soo wierdddd
+poor guy im adding stufff and he needds to work moree lol imagine 
+
