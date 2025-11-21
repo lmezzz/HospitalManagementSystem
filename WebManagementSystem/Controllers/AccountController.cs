@@ -12,9 +12,9 @@ namespace WebManagementSystem.Controllers;
 public class AccountController : Controller
 {
 
-    private readonly HMS_DB _context;
+    private readonly HmsContext _context;
 
-    public AccountController(HMS_DB context)
+    public AccountController(HmsContext context)
     {
         _context = context;
     }
@@ -40,7 +40,8 @@ public class AccountController : Controller
             return View(model);
         }
 
-        var hashedInput = HashPassword(model.Password);
+        // var hashedInput = HashPassword(model.Password);
+        var hashedInput = model.Password; // For demonstration purposes only. Do not use plain text passwords in production.
 
         if(user.PasswordHash != hashedInput)
         {
@@ -66,4 +67,65 @@ public class AccountController : Controller
 
         return RedirectToAction("Index", "Home");
     }
+
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync("LoginAuthCookie");
+        return RedirectToAction("Login", "Account");
+    }
+
+    public IActionResult Register()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Register(RegisterPatientViewModel model)
+    {
+
+        
+        
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var user = new AppUser
+        {
+            Username = "pt-" + model.FirstName.ToLower(),
+            // PasswordHash = HashPassword(model.Password),
+            PasswordHash = model.Password, // For demonstration purposes only. Do not use plain text passwords in production.
+            RoleId = 2, // Assuming 2 is the RoleId for Patients
+            //Email = model.email,
+            FullName = model.FirstName+model.LastName,
+            IsActive = true,
+        };
+            var now = DateTime.UtcNow;
+            var createdAt = DateTime.SpecifyKind(now, DateTimeKind.Unspecified);
+            user.CreatedAt = createdAt;
+
+        _context.AppUsers.Add(user);
+        await _context.SaveChangesAsync();
+
+        var patient = new Patient
+        {
+            FullName = model.FirstName+model.LastName,
+            Gender = model.Gender,
+            DateOfBirth = DateOnly.FromDateTime(model.DateOfBirth),
+            Phone = model.PhoneNumber,
+            Cnic = model.Cnic,
+            Address = model.Address,
+            EmergencyContact = model.EmergencyContact,
+            Allergies = model.Allergies,
+            ChronicConditions = model.ChronicDiseases,
+            UserId = user.UserId // Link to the created AppUser
+        };
+
+        _context.Patients.Add(patient);
+        await _context.SaveChangesAsync();
+
+
+        return RedirectToAction("Login", "Account");
+    }
+
 }
