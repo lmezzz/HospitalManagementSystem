@@ -399,10 +399,9 @@
 
         <div class="collapse navbar-collapse justify-content-end" id="mainNav">
             <ul class="navbar-nav align-items-lg-center gap-lg-4">
-                <li class="nav-item"><a class="nav-link active" href="/">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="/Services">Services</a></li>
-                <li class="nav-item"><a class="nav-link" href="/Doctors">Doctors</a></li>
-                <li class="nav-item"><a class="nav-link" href="/About">About</a></li>
+                <li><a class="nav-link active" href="/#home">Home</a></li>
+                <li><a class="nav-link" href="/#services">Services</a></li>
+                <li><a class="nav-link" href="/#about">About</a></li>
                 <li class="nav-item">
                     <a class="btn btn-nav-gold ms-lg-2" href="/Account/Login">Login</a>
                 </li>
@@ -435,24 +434,34 @@
         <p class="login-sub mb-4">Sign into your MedicaLux account</p>
 
         <form asp-controller="Account" asp-action="Login" method="post">
+
+            <!-- USERNAME -->
             <div class="input-group-custom">
                 <label for="Username">User</label>
                 <!-- If you later add a view model, you can swap this for: asp-for="User_Id" -->
                 <input id="Username" name="Username" type="text" placeholder="Username" required />
             </div>
 
+            <!-- PASSWORD -->
             <div class="input-group-custom">
                 <label for="Password">Password</label>
-                <!-- Same here: could be asp-for="Password" once you have a model -->
-                <input id="Password" name="Password" type="password" placeholder="Enter password" required />
+         
+                <input id="Password"
+                       name="Password"
+                       type="password"
+                       placeholder="Enter password"
+                       required />
             </div>
 
+            <!-- SUBMIT BUTTON -->
             <button class="btn-gold w-100 mt-2" type="submit">Login</button>
 
+            <!-- LINKS -->
             <div class="d-flex mt-3 justify-content-between">
                 <a href="#" class="text-gold">Forgot Password?</a>
             </div>
         </form>
+
     </div>
 </div>
 
