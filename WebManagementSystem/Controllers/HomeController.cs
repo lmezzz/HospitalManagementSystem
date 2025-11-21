@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+
+using Microsoft.AspNetCore.Mvc;
+namespace WebManagementSystem.Controllers;
 
 public class HomeController : Controller
 {
