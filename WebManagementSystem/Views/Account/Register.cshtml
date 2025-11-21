@@ -458,10 +458,9 @@
 
         <div class="collapse navbar-collapse justify-content-end" id="mainNav">
             <ul class="navbar-nav align-items-lg-center gap-lg-4">
-                <li class="nav-item"><a class="nav-link active" href="/">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="/Services">Services</a></li>
-                <li class="nav-item"><a class="nav-link" href="/Doctors">Doctors</a></li>
-                <li class="nav-item"><a class="nav-link" href="/About">About</a></li>
+                <li><a class="nav-link active" href="/#home">Home</a></li>
+                <li><a class="nav-link" href="/#services">Services</a></li>
+                <li><a class="nav-link" href="/#about">About</a></li>
                 <li class="nav-item">
                     <a class="btn btn-nav-gold ms-lg-2" href="/Account/Login">Login</a>
                 </li>
@@ -497,12 +496,18 @@
             <div class="form-row">
                 <div class="form-col">
                     <label>First Name</label>
-                    <input type="text" placeholder="Enter first name" required>
+                    <input type="text"
+                           name="FirstName"
+                           placeholder="Enter first name"
+                           required />
                 </div>
 
                 <div class="form-col">
                     <label>Last Name</label>
-                    <input type="text" placeholder="Enter last name" required>
+                    <input type="text"
+                           name="LastName"
+                           placeholder="Enter last name"
+                           required />
                 </div>
             </div>
 
@@ -510,7 +515,7 @@
             <div class="form-row">
                 <div class="form-col">
                     <label>Gender</label>
-                    <select required>
+                    <select name="Gender" required>
                         <option disabled selected>Select gender</option>
                         <option>Male</option>
                         <option>Female</option>
@@ -520,7 +525,9 @@
 
                 <div class="form-col">
                     <label>Date of Birth</label>
-                    <input type="date" required>
+                    <input type="date"
+                           name="DateOfBirth"
+                           required />
                 </div>
             </div>
 
@@ -528,12 +535,29 @@
             <div class="form-row">
                 <div class="form-col">
                     <label>Phone Number</label>
-                    <input type="text" placeholder="03XX-XXXXXXX" required>
+                    <input type="text"
+                           name="Phone"
+                           placeholder="03XX-XXXXXXX"
+                           required />
                 </div>
 
                 <div class="form-col">
                     <label>CNIC</label>
-                    <input type="text" placeholder="XXXXX-XXXXXXX-X" required>
+                    <input type="text"
+                           name="Cnic"
+                           placeholder="XXXXX-XXXXXXX-X"
+                           required />
+                </div>
+            </div>
+
+            <!-- Row 3.5 Email -->
+            <div class="form-row">
+                <div class="form-col">
+                    <label>Email</label>
+                    <input type="email"
+                           name="Email"
+                           placeholder="Enter email address"
+                           required />
                 </div>
             </div>
 
@@ -541,12 +565,17 @@
             <div class="form-row">
                 <div class="form-col">
                     <label>Address</label>
-                    <textarea rows="1" placeholder="Full address"></textarea>
+                    <textarea name="Address"
+                              rows="1"
+                              placeholder="Full address"></textarea>
                 </div>
 
                 <div class="form-col">
                     <label>Emergency Contact</label>
-                    <input type="text" placeholder="Emergency contact number" required>
+                    <input type="text"
+                           name="EmergencyContact"
+                           placeholder="Emergency contact number"
+                           required />
                 </div>
             </div>
 
@@ -554,12 +583,16 @@
             <div class="form-row">
                 <div class="form-col">
                     <label>Allergies (if any)</label>
-                    <textarea rows="1" placeholder="List allergies"></textarea>
+                    <textarea name="Allergies"
+                              rows="1"
+                              placeholder="List allergies"></textarea>
                 </div>
 
                 <div class="form-col">
                     <label>Chronic Diseases (if any)</label>
-                    <textarea rows="1" placeholder="List chronic conditions"></textarea>
+                    <textarea name="ChronicConditions"
+                              rows="1"
+                              placeholder="List chronic conditions"></textarea>
                 </div>
             </div>
 
@@ -572,6 +605,7 @@
 
         </form>
     </div>
+
     </div>
 <script>
     (function () {
