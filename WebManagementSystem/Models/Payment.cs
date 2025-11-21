@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WebManagementSystem.Models;
+namespace WebManagementSystem;
 
 public partial class Payment
 {
