@@ -1,0 +1,302 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --gold-light: #ffce70;
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        overflow-x: hidden;
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* ================= SIDEBAR ================= */
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.95);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        left: 0;
+        top: 0;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 2.4rem;
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .sidebar a {
+        text-decoration: none;
+        color: #c9cbe8;
+        padding: 0.65rem 0.8rem;
+        border-radius: 10px;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-size: 0.95rem;
+    }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+        }
+
+    /* ================= PAGE ================= */
+    .page-wrapper {
+        margin-left: 260px;
+        padding: 2rem 2.4rem;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+    }
+
+    /* ================= SEARCH + FILTER BAR ================= */
+    .search-bar {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.8rem;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        background: rgba(4,7,20,0.9);
+        border: 1px solid rgba(255,255,255,0.25);
+        color: #fff;
+        font-size: 0.95rem;
+    }
+
+    .filter-select {
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        background: rgba(4,7,20,0.9);
+        color: #fff;
+        border: 1px solid rgba(255,255,255,0.25);
+        font-size: 0.95rem;
+    }
+
+    /* ================= TABLE ================= */
+    .glass-card {
+        background: rgba(255,255,255,0.05);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.14);
+        backdrop-filter: blur(16px);
+        padding: 1.6rem;
+        box-shadow: 0 18px 45px rgba(0,0,0,0.55);
+    }
+
+    table {
+        width: 100%;
+        color: white;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+    }
+
+    thead {
+        background: rgba(255,255,255,0.08);
+    }
+
+    th {
+        padding: 0.9rem;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    td {
+        padding: 0.8rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .pill {
+        padding: 0.32rem 0.7rem;
+        font-size: 0.78rem;
+        border-radius: 999px;
+        font-weight: 600;
+    }
+
+    .pill-green {
+        background: #27ae60;
+    }
+
+    .pill-orange {
+        background: #f39c12;
+        color: #050816;
+    }
+
+    .pill-red {
+        background: #c0392b;
+    }
+
+    .btn-view {
+        background: linear-gradient(110deg, #ffb84d, #ff9d3f);
+        padding: 0.45rem 1rem;
+        border-radius: 12px;
+        border: none;
+        color: #050816;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-decoration: none;
+    }
+
+        .btn-view:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+</style>
+
+<!-- ================= SIDEBAR ================= -->
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+
+    <a asp-controller="Doctor" asp-action="Dashboard">🏠 Dashboard</a>
+    <a asp-controller="Doctor" asp-action="Appointments">📅 Appointments</a>
+    <a asp-controller="Doctor" asp-action="Patients">👤 Patients</a>
+    <a asp-controller="Doctor" asp-action="LabRequests">🧪 Lab Requests</a>
+    <a class="active" asp-controller="Doctor" asp-action="LabReports">📄 Lab Reports</a>
+    <a asp-controller="Doctor" asp-action="Prescriptions">💊 Prescriptions</a>
+    <a asp-controller="Account" asp-action="Login">🚪 Logout</a>
+</div>
+
+<!-- ================= PAGE CONTENT ================= -->
+<div class="page-wrapper">
+
+    <h1 class="page-title">📄 Lab Reports</h1>
+
+    <!-- SEARCH + FILTER -->
+    <div class="search-bar">
+        <input type="text"
+               class="search-input"
+               placeholder="Search by patient name..." />
+        @* placeholder="Search by @Model.Patient.Name" *@
+
+        <select class="filter-select">
+            <option>All</option>
+            <option>Pending</option>
+            <option>Completed</option>
+            <option>Urgent</option>
+        </select>
+    </div>
+
+    <!-- TABLE -->
+    <div class="glass-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Test</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Report</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <!-- 1 -->
+                <tr>
+                    <td>Sarah Khan</td>
+                    <td>Blood CBC</td>
+                    <td><span class="pill pill-orange">Pending</span></td>
+                    <td>24 Nov 2025</td>
+                    <td>
+                        <a class="btn-view">View</a>
+                        @* asp-route-id="@report.LabReportId" *@
+                    </td>
+                </tr>
+
+                <!-- 2 -->
+                <tr>
+                    <td>Ahmed Ali</td>
+                    <td>X-Ray (Chest)</td>
+                    <td><span class="pill pill-green">Completed</span></td>
+                    <td>22 Nov 2025</td>
+                    <td>
+                        <a class="btn-view">View</a>
+                    </td>
+                </tr>
+
+                <!-- 3 -->
+                <tr>
+                    <td>Maria Hussain</td>
+                    <td>Thyroid Panel</td>
+                    <td><span class="pill pill-red">Urgent</span></td>
+                    <td>21 Nov 2025</td>
+                    <td>
+                        <a class="btn-view">View</a>
+                    </td>
+                </tr>
+
+                <!-- 4 -->
+                <tr>
+                    <td>Bilal Qureshi</td>
+                    <td>Blood Glucose</td>
+                    <td><span class="pill pill-green">Completed</span></td>
+                    <td>20 Nov 2025</td>
+                    <td>
+                        <a class="btn-view">View</a>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+    <script>
+        // SEARCH FILTER
+        const searchInput = document.querySelector(".search-input");
+        const rows = document.querySelectorAll("tbody tr");
+
+        searchInput.addEventListener("keyup", function () {
+            const value = this.value.toLowerCase();
+
+            rows.forEach(row => {
+                const patientName = row.children[0].textContent.toLowerCase();
+
+                row.style.display =
+                    patientName.includes(value) ? "" : "none";
+            });
+        });
+
+        // STATUS DROPDOWN FILTER
+        const statusFilter = document.querySelector(".filter-select");
+
+        statusFilter.addEventListener("change", function () {
+            const filter = this.value;
+
+            rows.forEach(row => {
+                const statusText = row.querySelector(".pill").textContent.trim();
+
+                if (filter === "All" || statusText === filter) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+    </script>
+
+
