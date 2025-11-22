@@ -1,5 +1,143 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    Layout = "_Layout";
 }
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        padding: 2rem 1.5rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        border-right: 1px solid rgba(255,255,255,0.12);
+        backdrop-filter: blur(14px);
+    }
+
+        .sidebar a {
+            text-decoration: none;
+            color: #c9cbe8;
+            padding: .7rem .9rem;
+            border-radius: 10px;
+            transition: .2s;
+        }
+
+            .sidebar a:hover,
+            .sidebar a.active {
+                background: rgba(255,255,255,0.14);
+                color: white;
+            }
+
+    .lab-section {
+        margin-left: 260px;
+        padding: 2rem 2.5rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+        margin-bottom: 2rem;
+    }
+
+    .glass-card {
+        width: 75%;
+        padding: 2rem;
+        border-radius: 20px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+    }
+
+    label {
+        display: block;
+        color: #e0e3fa;
+        margin-bottom: .3rem;
+    }
+
+    select, input {
+        width: 100%;
+        padding: .8rem;
+        margin-bottom: 1.2rem;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+    }
+
+    .submit-btn {
+        padding: .9rem 1.6rem;
+        border-radius: 12px;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        border: none;
+        font-weight: 700;
+        cursor: pointer;
+        color: white;
+    }
+
+    select option {
+        background-color: #0d1128 !important;
+        color: #ffffff !important;
+    }
+</style>
+
+
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+    <a asp-action="Dashboard">🧪 Lab Dashboard</a>
+    <a asp-action="Orders">📄 Lab Orders</a>
+    <a asp-action="Results" class="active">📤 Upload Results</a>
+    <a asp-controller="Account" asp-action="Login">🚪 Logout</a>
+</div>
+
+<div class="lab-section">
+
+    <div class="page-title">📤 Upload Lab Result (PDF)</div>
+
+    <div class="glass-card">
+
+        <label>Patient</label>
+        <select>
+            <option>Sarah Khan</option>
+            <option>Ahmed Ali</option>
+            <option>Maria Hussain</option>
+        </select>
+
+        <label>Test Type</label>
+        <select>
+            <option>Blood Test - CBC</option>
+            <option>Liver Function Test</option>
+            <option>Urine Test</option>
+            <option>X-Ray</option>
+            <option>MRI</option>
+        </select>
+
+        <label>Upload PDF Report</label>
+        <input type="file" accept="application/pdf" />
+
+        <button class="submit-btn">Upload Result</button>
+
+    </div>
+
+</div>
