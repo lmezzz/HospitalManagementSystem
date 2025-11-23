@@ -1,5 +1,144 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    Layout = "_Layout";
 }
+
+<style>
+    :root {
+        --navy: #050816;
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        padding: 2rem;
+        position: fixed;
+        left: 0;
+        top: 0;
+        display: flex;
+        gap: 2rem;
+        flex-direction: column;
+        border-right: 1px solid rgba(255,255,255,0.12);
+        backdrop-filter: blur(14px);
+    }
+
+        .sidebar a {
+            color: #c9cbe8;
+            text-decoration: none;
+            padding: .7rem .9rem;
+            border-radius: 10px;
+            transition: .2s;
+            font-size: .95rem;
+        }
+
+            .sidebar a:hover,
+            .sidebar a.active {
+                background: rgba(255,255,255,0.14);
+                color: white;
+            }
+
+    .lab-section {
+        margin-left: 260px;
+        padding: 2rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+        margin-bottom: 2rem;
+    }
+
+    .table-wrap {
+        width: 90%;
+        background: rgba(255,255,255,0.08);
+        border-radius: 20px;
+        padding: 1.8rem;
+        border: 1px solid rgba(255,255,255,0.12);
+        backdrop-filter: blur(15px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        color: white;
+    }
+
+    th, td {
+        padding: .85rem;
+        border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+
+    th {
+        background: rgba(255,255,255,0.14);
+        text-align: left;
+    }
+
+    .done-btn {
+        padding: .5rem .9rem;
+        background: linear-gradient(90deg, #7aff9d, #3ee07a);
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        color: #000;
+    }
+</style>
+
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+    <a asp-action="Dashboard" >🧪 Lab Dashboard</a>
+    <a asp-action="Orders" class="active">📄 Lab Orders</a>
+    <a asp-action="Results">📤 Upload Results</a>
+    <a asp-controller="Account" asp-action="Login">🚪 Logout</a>
+</div>
+
+<div class="lab-section">
+
+    <div class="page-title">📄 Lab Orders</div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Test Requested</th>
+                    <th>Priority</th>
+                    <th>Doctor Notes</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>Sarah Khan</td>
+                    <td>Blood Test - CBC</td>
+                    <td style="color: #ff6b6b; font-weight:700;">URGENT</td>
+                    <td>Weakness, fatigue</td>
+                    <td><button class="done-btn">Mark as Done</button></td>
+                </tr>
+
+                <tr>
+                    <td>Ahmed Ali</td>
+                    <td>Liver Function Test</td>
+                    <td style="color: #ffd36e; font-weight:700;">Normal</td>
+                    <td>Chronic liver issue</td>
+                    <td><button class="done-btn">Mark as Done</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>

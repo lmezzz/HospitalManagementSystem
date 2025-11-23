@@ -1,9 +1,8 @@
-﻿@{
+﻿
+
+@{
     Layout = "_Layout";
-}
-<!--i am like 90 percent shore there needs to be a button which would lead the  user to the billing page
-    but only on those which have either pending or overdue bills-->
--->
+} 
 <style>
     :root {
         --navy: #050816;
@@ -162,6 +161,25 @@
     .overdue {
         background: #e74c3c;
     }
+
+    .btn-pay {
+        display: inline-block;
+        margin-top: 1rem;
+        background: linear-gradient(110deg, #ffb84d, #ff9d3f);
+        padding: 0.55rem 1.4rem;
+        border-radius: 14px;
+        color: #050816;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-decoration: none;
+        box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+        transition: 0.15s ease;
+    }
+
+        .btn-pay:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
 </style>
 <!-- ================= SIDEBAR ================= -->
 <div class="sidebar">
@@ -197,105 +215,92 @@
     </a>
 </div>
 <!-- ====================== BILLING PAGE ====================== -->
-<div class="billing-section"><!--also needs to loop through -->
 
-    <div class="billing-title">
-        <span class="icon"></span>
-        Billing & Payments
-    </div>
 
-    <!-- BILL 1 -->
+<div class="billing-section">
+
     <div class="bill-card">
         <div class="bill-header">Consultation Fee — Cardiology</div>
         <div class="bill-info">
-
             <div class="bill-row">
                 <label>Bill ID</label>
-                <div>BL-001122</div>
-                @* @bill.BillId *@
+                <div>BL-001122</div>  @* @bill.BillId *@
             </div>
-
             <div class="bill-row">
                 <label>Amount</label>
-                <div>PKR 2,500</div>
-                @* @bill.Amount *@
+                <div>PKR 2,500</div>  @* @bill.Amount *@
             </div>
-
             <div class="bill-row">
                 <label>Date Issued</label>
-                <div>24 Nov 2025</div>
-                @* @bill.IssueDate?.ToString("dd MMM yyyy") *@
+                <div>24 Nov 2025</div>  @* @bill.IssueDate *@
             </div>
-
             <div class="bill-row">
                 <label>Status</label>
-                <div class="status paid">Paid</div>
-                @* @bill.Status *@
+                <div class="status paid">Paid</div>  @* @bill.Status *@
             </div>
         </div>
     </div>
 
-    <!-- BILL 2 -->
     <div class="bill-card">
         <div class="bill-header">Lab Test — Blood Analysis</div>
         <div class="bill-info">
-
             <div class="bill-row">
                 <label>Bill ID</label>
                 <div>BL-001133</div>
-                @* @bill.BillId *@
             </div>
 
             <div class="bill-row">
                 <label>Amount</label>
                 <div>PKR 1,800</div>
-                @* @bill.Amount *@
             </div>
 
             <div class="bill-row">
                 <label>Date Issued</label>
                 <div>10 Nov 2025</div>
-                @* @bill.IssueDate *@
             </div>
 
             <div class="bill-row">
                 <label>Status</label>
                 <div class="status pending">Pending</div>
-                @* @bill.Status *@
             </div>
-
         </div>
+
+        <!-- 🔥 Show button because Pending -->
+        <a href="/Billing/Payments" class="btn-pay">Pay Now</a>
     </div>
 
-    <!-- BILL 3 -->
     <div class="bill-card">
         <div class="bill-header">X-Ray — Chest Scan</div>
-
         <div class="bill-info">
             <div class="bill-row">
                 <label>Bill ID</label>
                 <div>BL-001144</div>
-                @* @bill.BillId *@
             </div>
 
             <div class="bill-row">
                 <label>Amount</label>
                 <div>PKR 3,200</div>
-                @* @bill.Amount *@
             </div>
 
             <div class="bill-row">
                 <label>Date Issued</label>
                 <div>02 Nov 2025</div>
-                @* @bill.IssueDate *@
             </div>
 
             <div class="bill-row">
                 <label>Status</label>
                 <div class="status overdue">Overdue</div>
-                @* @bill.Status *@
             </div>
         </div>
+
+        <a href="~/Billing/Payments" class="btn-pay">Pay Now</a>
+
+
+       
     </div>
 
+
 </div>
+
+
+

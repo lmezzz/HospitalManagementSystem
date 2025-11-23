@@ -13,12 +13,11 @@
 
     body {
         background: radial-gradient(circle at top left, #20254a, #050816 60%);
-        color: black;
+        color: white;
         font-family: 'Segoe UI', sans-serif;
         overflow-x: hidden;
     }
 
-    /* ---------- SIDEBAR ---------- */
     .sidebar {
         width: 240px;
         height: 100vh;
@@ -61,7 +60,6 @@
             color: white;
         }
 
-    /* ---------- MAIN CONTENT ---------- */
     .doctor-section {
         margin-left: 260px;
         padding: 2rem 2.5rem;
@@ -76,80 +74,72 @@
         color: transparent;
     }
 
-    /* ---------- FORM CARD ---------- */
     .glass-card {
+        width: 75%;
         background: rgba(255,255,255,0.06);
         border-radius: 20px;
         border: 1px solid rgba(255,255,255,0.15);
         backdrop-filter: blur(15px);
         padding: 2rem;
+        margin-bottom: 2rem;
         box-shadow: 0 10px 25px rgba(0,0,0,0.45);
-        width: 65%;
     }
 
     .section-title {
-        color: #ffff;
         font-size: 1.3rem;
         font-weight: 700;
+        color: var(--gold-light);
         margin-bottom: 1rem;
     }
 
     label {
         font-size: 1rem;
         color: #e0e3fa;
-        font-weight: 500;
+        margin-bottom: .3rem;
         display: block;
-        margin-bottom: .4rem;
+        font-weight: 500;
     }
 
-    select, textarea, input {
+    select, input {
         width: 100%;
         padding: .8rem;
         border-radius: 12px;
         background: rgba(255,255,255,0.08);
         border: 1px solid rgba(255,255,255,0.2);
+        backdrop-filter: blur(12px);
         color: white;
         margin-bottom: 1.2rem;
-        backdrop-filter: blur(10px);
         font-size: .95rem;
     }
 
-        select:focus, textarea:focus, input:focus {
-            outline: none;
-            border-color: var(--gold-light);
+        select option {
+            background-color: #0d1128;
+            color: white;
         }
-
-    textarea {
-        height: 130px;
-        resize: none;
-    }
-
-    /* ---------- BUTTON ---------- */
-    .submit-btn {
-        padding: .9rem 1.6rem;
-        border: none;
-        border-radius: 12px;
-        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
-        color: white;
-        font-size: 1rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: .2s ease;
-    }
-
-        .submit-btn:hover {
-            opacity: .85;
-        }
-
-    select option {
-        background-color: #0d1128; 
-        color: white;
-    }
-
 
     select {
         color-scheme: dark;
     }
+
+    input::placeholder {
+        color: #dcdcec;
+    }
+
+    .add-btn {
+        margin-top: .5rem;
+        padding: .8rem 1.3rem;
+        border-radius: 12px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+        transition: .2s ease;
+    }
+
+        .add-btn:hover {
+            opacity: .85;
+        }
 </style>
 
 <!-- SIDEBAR -->
@@ -158,54 +148,49 @@
 
     <a asp-action="Dashboard">🏥 Dashboard</a>
     <a asp-action="CurrentSession">👤 Current Session</a>
-    <a asp-action="LabRequest" class="active">🧪 Lab Request</a>
-    <a asp-action="Prescriptions">💊 Prescriptions</a>
+    <a asp-action="LabRequest">🧪 Lab Request</a>
+    <a asp-action="Prescriptions" class="active">💊 Prescriptions</a>
     <a asp-action="LabReports">📄 Lab Reports</a>
     <a asp-action="Appointments">📅 Appointments</a>
-    <a asp-action="Patients">🧍 All Patients</a>
     <a asp-controller="Account" asp-action="Login">🚪 Logout</a>
 </div>
 
 <!-- MAIN CONTENT -->
 <div class="doctor-section">
 
-    <div class="page-title">🧪 Lab Test Request</div>
+    <div class="page-title">💊 Manage Prescriptions</div>
 
     <div class="glass-card">
-        <div class="section-title">Request Details</div>
+        <div class="section-title">Add Prescription Item</div>
 
-        <!-- PATIENT DROPDOWN -->
-        <label>Select Patient</label>
+        <label>Patient</label>
         <select>
             <option>Sarah Khan</option>
-            <option>Ahsan Ali</option>
+            <option>Ahmed Ali</option>
             <option>Maria Hussain</option>
         </select>
 
-        <!-- TEST TYPE -->
-        <label>Test Type</label>
+        <label>Medication</label>
         <select>
-            <option>Blood Test</option>
-            <option>Urine Test</option>
-            <option>X-Ray</option>
-            <option>MRI</option>
-            <option>Covid PCR</option>
+            <option>Panadol</option>
+            <option>Augmentin</option>
+            <option>Zyrtec</option>
+            <option>Vitamin D</option>
         </select>
 
-        <!-- PRIORITY -->
-        <label>Priority</label>
-        <select>
-            <option>Normal</option>
-            <option>Urgent</option>
-            <option>Critical</option>
-        </select>
+        <label>Dosage</label>
+        <input placeholder="e.g., 500mg" />
 
-        <!-- NOTES -->
-        <label>Additional Notes</label>
-        <textarea placeholder="Add any details for the lab..."></textarea>
+        <label>Frequency</label>
+        <input placeholder="e.g., 3 times a day" />
 
-        <!-- BUTTON -->
-        <button class="submit-btn">Submit Request</button>
+        <label>Duration</label>
+        <input placeholder="e.g., 5 days" />
+
+        <label>Quantity</label>
+        <input placeholder="e.g., 10 tablets" />
+
+        <button class="add-btn">Add Prescription Item</button>
     </div>
 
 </div>

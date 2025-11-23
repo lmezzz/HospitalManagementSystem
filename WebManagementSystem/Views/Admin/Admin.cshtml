@@ -1,0 +1,186 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+        --input-bg: rgba(255,255,255,0.08);
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.85);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        gap: 2.4rem;
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .sidebar a {
+        text-decoration: none;
+        color: #c9cbe8;
+        padding: .65rem .8rem;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        font-size: .95rem;
+        transition: .2s;
+    }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255,255,255,0.14);
+            color: white;
+        }
+
+    /* MAIN */
+    .admin-section {
+        margin-left: 260px;
+        padding: 2rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+        margin-bottom: 2rem;
+    }
+
+    .glass-card {
+        width: 75%;
+        background: rgba(255,255,255,0.06);
+        padding: 2rem;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.15);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        backdrop-filter: blur(14px);
+    }
+
+    label {
+        font-weight: 500;
+        margin-bottom: .3rem;
+        display: block;
+        color: #e0e3fa;
+    }
+
+    input, select {
+        width: 100%;
+        padding: .8rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.2);
+        background: var(--input-bg);
+        color: white;
+        margin-bottom: 1.2rem;
+        backdrop-filter: blur(10px);
+    }
+
+        input::placeholder {
+            color: #dcdcec;
+        }
+
+        select option {
+            background-color: #0d1128;
+            color: white;
+        }
+
+    select {
+        color-scheme: dark;
+    }
+
+    .submit-btn {
+        padding: .9rem 1.6rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        color: white;
+        transition: .2s ease;
+        font-size: 1rem;
+    }
+
+        .submit-btn:hover {
+            opacity: .85;
+        }
+</style>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+
+    <a asp-action="Admin" class="active">➕ Add Doctor</a>
+    <a asp-action="DoctorList">🧑‍⚕️ View Doctors</a>
+    <a asp-controller="Account" asp-action="Login">🚪 Logout</a>
+</div>
+
+<!-- MAIN -->
+<div class="admin-section">
+
+    <div class="page-title">➕ Register New Doctor</div>
+
+    <div class="glass-card">
+
+        <label>Full Name</label>
+        <input placeholder="Enter doctor's full name" />
+
+        <label>Email</label>
+        <input type="email" placeholder="doctor@example.com" />
+
+        <label>Phone</label>
+        <input placeholder="03XX-XXXXXXX" />
+
+        <label>Specialization</label>
+        <select>
+            <option>General Physician</option>
+            <option>Cardiologist</option>
+            <option>Dermatologist</option>
+            <option>Neurologist</option>
+            <option>Orthopedic</option>
+        </select>
+
+        <label>Gender</label>
+        <select>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+        </select>
+
+        <label>CNIC / ID</label>
+        <input placeholder="e.g. 42101-1234567-8" />
+
+        <label>Password</label>
+        <input type="password" placeholder="Create password" />
+
+        <button class="submit-btn">Add Doctor</button>
+
+    </div>
+
+</div>

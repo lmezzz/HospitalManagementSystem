@@ -1,5 +1,198 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    Layout = "_Layout";
 }
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI';
+        overflow-x: hidden;
+    }
+
+    .patient-section {
+        margin-left: 0;
+        padding: 2rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .bill-card {
+        background: rgba(255,255,255,0.06);
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.15);
+        padding: 1.8rem;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(15px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+    }
+
+    .bill-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--gold-light);
+        margin-bottom: 1rem;
+    }
+
+    .row {
+        margin-bottom: .5rem;
+        font-size: 1rem;
+    }
+
+    .label {
+        font-weight: 600;
+        color: #e0e3fa;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+        table th {
+            background: rgba(255,255,255,0.12);
+            padding: 0.8rem;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        table td {
+            padding: 0.8rem;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+
+    select {
+        width: 220px;
+        padding: .6rem;
+        border-radius: 10px;
+        margin-top: 1rem;
+        background: rgba(255,255,255,0.08);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+        select option {
+            background-color: #0d1128;
+            color: white;
+        }
+</style>
+
+<div class="patient-section">
+
+    <div class="page-title">💳 My Bills & Payments</div>
+
+    <!-- BILL 1024 -->
+    <div class="bill-card">
+        <div class="bill-title">Bill #1024</div>
+
+        <div class="row"><span class="label">Consultation Fee:</span> Rs 1500</div>
+        <div class="row"><span class="label">Lab Charges:</span> Rs 2200</div>
+        <div class="row"><span class="label">Medication:</span> Rs 800</div>
+        <div class="row"><span class="label">Total:</span> Rs 4500</div>
+        <div class="row"><span class="label">Status:</span> Pending</div>
+
+        <label style="margin-top: 1rem;">Choose Payment Method</label>
+        <select id="paymentMethod_1024" onchange="redirectPayment(1024)">
+            <option value="">Select a method</option>
+            <option value="cash">Cash</option>
+            <option value="card">Credit / Debit Card</option>
+            <option value="jazzcash">JazzCash</option>
+            <option value="easypaisa">Easypaisa</option>
+        </select>
+
+        <br /><br />
+
+        <div class="bill-title">Payments for this Bill</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Payment ID</th>
+                    <th>Amount Paid</th>
+                    <th>Method</th>
+                    <th>Date & Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>501</td>
+                    <td>2000</td>
+                    <td>JazzCash</td>
+                    <td>10 Nov 2025 - 03:45 PM</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- BILL 1025 -->
+    <div class="bill-card">
+        <div class="bill-title">Bill #1025</div>
+
+        <div class="row"><span class="label">Consultation Fee:</span> Rs 1500</div>
+        <div class="row"><span class="label">Lab Charges:</span> Rs 0</div>
+        <div class="row"><span class="label">Medication:</span> Rs 600</div>
+        <div class="row"><span class="label">Total:</span> Rs 2100</div>
+        <div class="row"><span class="label">Status:</span> Paid</div>
+
+        <label style="margin-top: 1rem;">Choose Payment Method</label>
+        <select id="paymentMethod_1025" onchange="redirectPayment(1025)">
+            <option value="">Select a method</option>
+            <option value="cash">Cash</option>
+            <option value="card">Credit / Debit Card</option>
+            <option value="jazzcash">JazzCash</option>
+            <option value="easypaisa">Easypaisa</option>
+        </select>
+
+        <br /><br />
+
+        <div class="bill-title">Payments for this Bill</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Payment ID</th>
+                    <th>Amount Paid</th>
+                    <th>Method</th>
+                    <th>Date & Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>506</td>
+                    <td>2100</td>
+                    <td>Cash</td>
+                    <td>11 Nov 2025 - 01:10 PM</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    function redirectPayment(billId) {
+        const method = document.getElementById("paymentMethod_" + billId).value;
+        if (!method) return;
+
+        const base = "/Billing/";
+
+        if (method === "cash") window.location.href = base + "CashPayment?billId=" + billId;
+        if (method === "card") window.location.href = base + "CardPayment?billId=" + billId;
+        if (method === "jazzcash") window.location.href = base + "JazzCashPayment?billId=" + billId;
+        if (method === "easypaisa") window.location.href = base + "EasypaisaPayment?billId=" + billId;
+    }
+</script>

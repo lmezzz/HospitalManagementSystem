@@ -1,5 +1,191 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    Layout = "_Layout";
 }
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+        --red-warning: #ff6b6b;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+        overflow-x: hidden;
+    }
+
+    /* ---------------- SIDEBAR ---------------- */
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.12);
+        display: flex;
+        flex-direction: column;
+        gap: 2.4rem;
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .sidebar a {
+        text-decoration: none !important;
+        color: #c9cbe8;
+        padding: .65rem .8rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: .2s ease;
+        font-weight: 500;
+        display: flex;
+        gap: .7rem;
+        font-size: .95rem;
+    }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255,255,255,0.14);
+            color: white;
+        }
+
+    /* ---------------- MAIN SECTION ---------------- */
+    .pharmacy-section {
+        margin-left: 260px;
+        padding: 2rem 2.5rem;
+    }
+
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    /* ---------------- TABLE WRAPPER ---------------- */
+    .table-wrap {
+        width: 85%;
+        background: rgba(255,255,255,0.06);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.15);
+        backdrop-filter: blur(15px);
+        padding: 2rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        text-align: left;
+        padding: .9rem;
+        background: rgba(255,255,255,0.15);
+        font-weight: 600;
+        color: #fff;
+    }
+
+    td {
+        padding: .9rem;
+        border-bottom: 1px solid rgba(255,255,255,0.12);
+        color: #e3e6ff;
+    }
+
+    .low-stock {
+        color: var(--red-warning);
+        font-weight: 700;
+    }
+
+    .stock-ok {
+        color: var(--gold-light);
+        font-weight: 600;
+    }
+
+    .stock-green {
+        color: #55ff9b;
+        font-weight: 600;
+    }
+</style>
+
+
+<!-- ============ SIDEBAR ============ -->
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+
+    <a asp-controller="Pharmacy" asp-action="Index">🧪 Dashboard</a>
+    <a asp-controller="Pharmacy" asp-action="IssueMedicine" >💊 Issue Medicine</a>
+    <a asp-controller="Pharmacy" asp-action="Stock" class="active">📦 Stock Inventory</a>
+
+    <a asp-controller="Account" asp-action="Login">🚪 Logout</a>
+</div>
+
+<!-- ============ MAIN CONTENT ============ -->
+<div class="pharmacy-section">
+
+    <div class="page-title">📦 Medicine Stock</div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Medicine</th>
+                    <th>Current Stock</th>
+                    <th>Unit</th>
+                    <th>Status</th>
+                    <th>Last Updated</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>Panadol 500mg</td>
+                    <td>120</td>
+                    <td>Tablets</td>
+                    <td class="stock-green">In Stock</td>
+                    <td>21 Nov 2025</td>
+                </tr>
+
+                <tr>
+                    <td>Augmentin 625mg</td>
+                    <td>30</td>
+                    <td>Tablets</td>
+                    <td class="stock-ok">Low</td>
+                    <td>20 Nov 2025</td>
+                </tr>
+
+                <tr>
+                    <td>Zyrtec Syrup</td>
+                    <td>5</td>
+                    <td>Bottles</td>
+                    <td class="low-stock">Critical</td>
+                    <td>18 Nov 2025</td>
+                </tr>
+
+                <tr>
+                    <td>Vitamin D 2000IU</td>
+                    <td>200</td>
+                    <td>Capsules</td>
+                    <td class="stock-green">In Stock</td>
+                    <td>21 Nov 2025</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>

@@ -1,5 +1,124 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    Layout = "_Layout";
 }
+
+<style>
+    :root {
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .form-card {
+        margin: auto;
+        margin-top: 3rem;
+        width: 60%;
+        background: rgba(255,255,255,0.08);
+        padding: 2rem;
+        border-radius: 20px;
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.15);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+    }
+
+    label {
+        display: block;
+        margin-bottom: .3rem;
+        color: #e3e6ff;
+    }
+
+    select, input, textarea {
+        width: 100%;
+        padding: .8rem;
+        margin-bottom: 1.2rem;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+    }
+
+    .submit-btn {
+        padding: .8rem 1.4rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+    }
+</style>
+
+<div class="form-card">
+
+    <h2 style="margin-bottom:1.5rem; color:var(--gold-light);">
+        Book Appointment
+    </h2>
+
+    <!-- SELECT DOCTOR -->
+    <label>Select Doctor</label>
+    <select id="doctorSelect" name="doctorId">
+        <option value="1">Dr. Ayesha Khan — Cardiologist</option>
+        <option value="2">Dr. Ali Raza — Dermatologist</option>
+        <option value="3">Dr. Sarah Ahmed — Neurologist</option>
+    </select>
+
+    <!-- TIMESLOTS -->
+    <label>Available Time Slots</label>
+    <select id="timeSlotSelect" name="timeSlot">
+        <option>Select a doctor first</option>
+    </select>
+
+    <!-- PATIENT FORM -->
+    <form asp-action="Create" method="post">
+        <input type="hidden" id="hiddenDoctor" name="doctorId" />
+
+        <label>Your Name</label>
+        <input name="patientName" required />
+
+        <label>Phone Number</label>
+        <input name="phone" required />
+
+        <label>Email</label>
+        <input name="email" />
+
+        <label>Reason for Appointment</label>
+        <textarea name="reason" required></textarea>
+
+        <input type="hidden" id="hiddenSlot" name="timeSlot" />
+
+        <button class="submit-btn">Book Appointment</button>
+    </form>
+</div>
+
+<!-- AJAX SCRIPT -->
+<script>
+    const doctorSelect = document.getElementById("doctorSelect");
+    const slotSelect = document.getElementById("timeSlotSelect");
+    const hiddenDoctor = document.getElementById("hiddenDoctor");
+    const hiddenSlot = document.getElementById("hiddenSlot");
+
+    // when doctor changes → get timeslots
+    doctorSelect.addEventListener("change", function () {
+        hiddenDoctor.value = doctorSelect.value;
+
+        fetch(`/Appointment/GetTimeSlots?doctorId=${doctorSelect.value}`)
+            .then(r => r.json())
+            .then(slots => {
+                slotSelect.innerHTML = "";
+                slots.forEach(s => {
+                    slotSelect.innerHTML += `<option>${s}</option>`;
+                });
+            });
+    });
+
+    // sync final selected slot
+    slotSelect.addEventListener("change", function () {
+        hiddenSlot.value = slotSelect.value;
+    });
+</script>
