@@ -1,0 +1,38 @@
+@model IEnumerable<AppUser>
+
+<h2>App Users</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New User</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Active</th>
+            <th>Created At</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.FullName</td>
+            <td>@user.Email</td>
+            <td>@user.Username</td>
+            <td>@user.Role?.RoleName</td>
+            <td>@user.IsActive</td>
+            <td>@(user.CreatedAt.HasValue ? user.CreatedAt.Value.ToString("yyyy-MM-dd HH:mm") : "")</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-sm btn-warning">Edit</a>
+                <a asp-action="Delete" asp-route-id="@user.UserId" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

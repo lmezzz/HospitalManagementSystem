@@ -1,0 +1,16 @@
+@model AppUser
+
+<h2>Delete User</h2>
+
+<h4>Are you sure you want to delete this user?</h4>
+<div>
+    <strong>@Model.FullName (@Model.Username)</strong><br />
+    <small>Email: @Model.Email</small><br />
+    <small>Role: @Model.Role?.RoleName</small>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="UserId" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
