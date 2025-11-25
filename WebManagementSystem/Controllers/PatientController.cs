@@ -278,7 +278,7 @@ public class PatientController : Controller
         {
             PatientId = patient.PatientId,
             PatientName = patient.FullName ?? "",
-            DateOfBirth = patient.DateOfBirth,
+            DateOfBirth = patient.DateOfBirth.HasValue ? patient.DateOfBirth.Value.ToDateTime(TimeOnly.MinValue) : (DateTime?)null,
             Age = patient.DateOfBirth.HasValue
                 ? DateTime.Today.Year - patient.DateOfBirth.Value.Year
                 : null,
@@ -343,7 +343,7 @@ public class PatientController : Controller
     {
         var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
         var patient = await _context.Patients
-            .Include(p => p.AppUser)
+            .Include(p => p.User)
             .FirstOrDefaultAsync(p => p.UserId == userId);
 
         if (patient == null)
@@ -358,7 +358,7 @@ public class PatientController : Controller
             Phone = patient.Phone ?? "",
             CNIC = patient.Cnic ?? "",
             Address = patient.Address ?? "",
-            Email = patient.AppUser?.Email ?? "",
+            Email = patient.User?.Email ?? "",
             Allergies = patient.Allergies,
             ChronicConditions = patient.ChronicConditions,
             EmergencyContact = patient.EmergencyContact
@@ -381,7 +381,7 @@ public class PatientController : Controller
 
         patient.FullName = model.FullName;
         patient.Gender = model.Gender;
-        patient.DateOfBirth = model.DateOfBirth;
+        patient.DateOfBirth = DateOnly.FromDateTime(model.DateOfBirth);
         patient.Phone = model.Phone;
         patient.Address = model.Address;
         patient.Allergies = model.Allergies;

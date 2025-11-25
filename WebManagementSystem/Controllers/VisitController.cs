@@ -315,7 +315,7 @@ public class VisitController : Controller
         {
             PatientId = patientId,
             PatientName = patient.FullName ?? "",
-            DateOfBirth = patient.DateOfBirth,
+            DateOfBirth = patient.DateOfBirth.HasValue ? patient.DateOfBirth.Value.ToDateTime(TimeOnly.MinValue) : (DateTime?)null,
             Age = patient.DateOfBirth.HasValue
                 ? DateTime.Today.Year - patient.DateOfBirth.Value.Year
                 : null,

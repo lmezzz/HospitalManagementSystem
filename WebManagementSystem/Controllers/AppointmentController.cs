@@ -147,20 +147,22 @@ public class AppointmentController : Controller
         }
 
         // Find or create schedule slot
+        var scheduleDate = DateOnly.FromDateTime(model.ScheduledDate);
+        var scheduleTime = TimeOnly.FromTimeSpan(model.ScheduledTime);
+        
         var schedule = await _context.Schedules
             .FirstOrDefaultAsync(s => s.DoctorId == model.DoctorId &&
-                                     s.SlotDate.HasValue &&
-                                     s.SlotDate.Value.Date == model.ScheduledDate.Date &&
-                                     s.StartTime == model.ScheduledTime);
+                                     s.SlotDate == scheduleDate &&
+                                     s.StartTime == scheduleTime);
 
         if (schedule == null)
         {
             schedule = new Schedule
             {
                 DoctorId = model.DoctorId,
-                SlotDate = model.ScheduledDate,
-                StartTime = model.ScheduledTime,
-                EndTime = model.ScheduledTime.Add(TimeSpan.FromMinutes(30)), // Default 30 min slots
+                SlotDate = scheduleDate,
+                StartTime = scheduleTime,
+                EndTime = scheduleTime.Add(TimeSpan.FromMinutes(30)), // Default 30 min slots
                 IsAvailable = false
             };
             _context.Schedules.Add(schedule);
@@ -311,18 +313,19 @@ public class AppointmentController : Controller
     [HttpGet]
     public async Task<IActionResult> GetAvailableSlots(int doctorId, DateTime date)
     {
+        var scheduleDate = DateOnly.FromDateTime(date);
+        
         var schedules = await _context.Schedules
             .Where(s => s.DoctorId == doctorId &&
-                       s.SlotDate.HasValue &&
-                       s.SlotDate.Value.Date == date.Date &&
+                       s.SlotDate == scheduleDate &&
                        s.IsAvailable == true)
             .OrderBy(s => s.StartTime)
             .Select(s => new TimeSlotDto
             {
                 ScheduleId = s.ScheduleId,
-                StartTime = s.StartTime ?? TimeSpan.Zero,
-                EndTime = s.EndTime ?? TimeSpan.Zero,
-                DisplayTime = s.StartTime!.Value.ToString(@"hh\:mm") + " - " + s.EndTime!.Value.ToString(@"hh\:mm")
+                StartTime = new TimeSpan(s.StartTime.Hour, s.StartTime.Minute, s.StartTime.Second),
+                EndTime = new TimeSpan(s.EndTime.Hour, s.EndTime.Minute, s.EndTime.Second),
+                DisplayTime = s.StartTime.ToString(@"HH\:mm") + " - " + s.EndTime.ToString(@"HH\:mm")
             })
             .ToListAsync();
 
@@ -340,11 +343,13 @@ public class AppointmentController : Controller
         }
 
         // Check if schedule already exists
+        var scheduleDate = DateOnly.FromDateTime(model.SlotDate);
+        var scheduleStartTime = TimeOnly.FromTimeSpan(model.StartTime);
+        
         var existing = await _context.Schedules
             .AnyAsync(s => s.DoctorId == model.DoctorId &&
-                          s.SlotDate.HasValue &&
-                          s.SlotDate.Value.Date == model.SlotDate.Date &&
-                          s.StartTime == model.StartTime);
+                          s.SlotDate == scheduleDate &&
+                          s.StartTime == scheduleStartTime);
 
         if (existing)
         {
@@ -354,9 +359,9 @@ public class AppointmentController : Controller
         var schedule = new Schedule
         {
             DoctorId = model.DoctorId,
-            SlotDate = model.SlotDate,
-            StartTime = model.StartTime,
-            EndTime = model.EndTime,
+            SlotDate = scheduleDate,
+            StartTime = scheduleStartTime,
+            EndTime = TimeOnly.FromTimeSpan(model.EndTime),
             IsAvailable = model.IsAvailable
         };
 
@@ -442,16 +447,17 @@ public class AppointmentController : Controller
     [HttpGet]
     public async Task<IActionResult> GetDoctorSchedule(int doctorId, DateTime date)
     {
+        var scheduleDate = DateOnly.FromDateTime(date);
+        
         var schedules = await _context.Schedules
             .Where(s => s.DoctorId == doctorId &&
-                       s.SlotDate.HasValue &&
-                       s.SlotDate.Value.Date == date.Date)
+                       s.SlotDate == scheduleDate)
             .OrderBy(s => s.StartTime)
             .Select(s => new
             {
                 s.ScheduleId,
-                s.StartTime,
-                s.EndTime,
+                StartTime = new TimeSpan(s.StartTime.Hour, s.StartTime.Minute, s.StartTime.Second),
+                EndTime = new TimeSpan(s.EndTime.Hour, s.EndTime.Minute, s.EndTime.Second),
                 s.IsAvailable,
                 HasAppointment = _context.Appointments.Any(a => a.ScheduleId == s.ScheduleId && a.Status != "Cancelled")
             })

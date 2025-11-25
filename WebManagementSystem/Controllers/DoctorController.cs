@@ -146,13 +146,13 @@ public class DoctorController : Controller
                 PatientId = p.PatientId,
                 FullName = p.FullName ?? "",
                 Gender = p.Gender ?? "",
-                DateOfBirth = p.DateOfBirth,
+                DateOfBirth = p.DateOfBirth.HasValue ? p.DateOfBirth.Value.ToDateTime(TimeOnly.MinValue) : (DateTime?)null,
                 Age = p.DateOfBirth.HasValue
                     ? DateTime.Today.Year - p.DateOfBirth.Value.Year
                     : null,
                 Phone = p.Phone ?? "",
                 CNIC = p.Cnic ?? "",
-                Email = p.AppUser!.Email ?? "",
+                Email = p.User!.Email ?? "",
                 LastVisit = _context.Visits
                     .Where(v => v.PatientId == p.PatientId && v.DoctorId == userId)
                     .OrderByDescending(v => v.VisitTime)
@@ -332,10 +332,11 @@ public class DoctorController : Controller
         var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
         var selectedDate = date ?? DateTime.Today;
 
+        var scheduleDate = DateOnly.FromDateTime(selectedDate);
+        
         var schedules = await _context.Schedules
             .Where(s => s.DoctorId == userId &&
-                       s.SlotDate.HasValue &&
-                       s.SlotDate.Value.Date == selectedDate.Date)
+                       s.SlotDate == scheduleDate)
             .OrderBy(s => s.StartTime)
             .ToListAsync();
 

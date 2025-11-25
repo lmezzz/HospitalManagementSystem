@@ -132,6 +132,10 @@ public class PendingPrescriptionDto
     public string DoctorName { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public int ItemCount { get; set; }
+    public decimal TotalAmount { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public bool CanDispense { get; set; }
+    public string? IssueReason { get; set; }
 }
 
 public class LowStockMedicationDto
