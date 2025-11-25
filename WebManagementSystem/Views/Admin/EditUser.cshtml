@@ -1,6 +1,9 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 @model WebManagementSystem.Models.ViewModels.EditUserViewModel
 @{
+    var roleOptions = new SelectList(Model.AvailableRoles, "RoleId", "RoleName", Model.RoleId);
+}
+@{
     ViewData["Title"] = "Edit User";
 }
 
@@ -37,7 +40,7 @@
                         <div class="mb-3">
                             <label asp-for="RoleId" class="form-label">Role</label>
                             <select asp-for="RoleId" class="form-select"
-                                    asp-items="@(new SelectList(Model.AvailableRoles, nameof(RoleSelectDto.RoleId), nameof(RoleSelectDto.RoleName), Model.RoleId))">
+                                    asp-items="roleOptions">
                             </select>
                         </div>
 

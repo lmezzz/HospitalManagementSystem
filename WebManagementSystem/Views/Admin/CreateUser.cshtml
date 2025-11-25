@@ -1,6 +1,9 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 @model WebManagementSystem.Models.ViewModels.CreateUserViewModel
 @{
+    var roleOptions = new SelectList(Model.AvailableRoles, "RoleId", "RoleName");
+}
+@{
     ViewData["Title"] = "Create User";
 }
 
@@ -50,7 +53,7 @@
                         <div class="mb-3 mt-2">
                             <label asp-for="RoleId" class="form-label">Role</label>
                             <select asp-for="RoleId" class="form-select"
-                                    asp-items="@(new SelectList(Model.AvailableRoles, nameof(RoleSelectDto.RoleId), nameof(RoleSelectDto.RoleName)))">
+                                    asp-items="roleOptions">
                                 <option value="">Select a role</option>
                             </select>
                             <span asp-validation-for="RoleId" class="text-danger"></span>

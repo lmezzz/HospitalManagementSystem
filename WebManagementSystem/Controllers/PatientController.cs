@@ -354,7 +354,9 @@ public class PatientController : Controller
             PatientId = patient.PatientId,
             FullName = patient.FullName ?? "",
             Gender = patient.Gender ?? "",
-            DateOfBirth = patient.DateOfBirth ?? DateTime.Today,
+            DateOfBirth = patient.DateOfBirth.HasValue
+                ? patient.DateOfBirth.Value.ToDateTime(TimeOnly.MinValue)
+                : DateTime.Today,
             Phone = patient.Phone ?? "",
             CNIC = patient.Cnic ?? "",
             Address = patient.Address ?? "",
@@ -368,16 +370,20 @@ public class PatientController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateProfile(EditPatientViewModel model)
     {
         if (!ModelState.IsValid)
         {
-            return Json(new { success = false, message = "Invalid data" });
+            return View("Profile", model);
         }
 
         var patient = await _context.Patients.FindAsync(model.PatientId);
         if (patient == null)
-            return Json(new { success = false, message = "Patient not found" });
+        {
+            TempData["ErrorMessage"] = "Patient not found.";
+            return RedirectToAction(nameof(Profile));
+        }
 
         patient.FullName = model.FullName;
         patient.Gender = model.Gender;
@@ -390,6 +396,7 @@ public class PatientController : Controller
 
         await _context.SaveChangesAsync();
 
-        return Json(new { success = true, message = "Profile updated successfully" });
+        TempData["SuccessMessage"] = "Profile updated successfully.";
+        return RedirectToAction(nameof(Profile));
     }
 }
