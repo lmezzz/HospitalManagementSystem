@@ -124,6 +124,10 @@ public class AdminController : Controller
             ActiveFilter = activeFilter
         };
 
+        ViewBag.Roles = await _context.Roles
+            .OrderBy(r => r.RoleName)
+            .ToListAsync();
+
         return View(viewModel);
     }
 
@@ -145,6 +149,7 @@ public class AdminController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateUser(CreateUserViewModel model)
     {
         if (!ModelState.IsValid)
@@ -188,7 +193,8 @@ public class AdminController : Controller
         _context.AppUsers.Add(user);
         await _context.SaveChangesAsync();
 
-        return Json(new { success = true, message = "User created successfully", userId = user.UserId });
+        TempData["SuccessMessage"] = "User created successfully.";
+        return RedirectToAction(nameof(Users));
     }
 
     [HttpGet]
@@ -220,6 +226,7 @@ public class AdminController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditUser(EditUserViewModel model)
     {
         if (!ModelState.IsValid)
@@ -255,26 +262,35 @@ public class AdminController : Controller
 
         await _context.SaveChangesAsync();
 
-        return Json(new { success = true, message = "User updated successfully" });
+        TempData["SuccessMessage"] = "User updated successfully.";
+        return RedirectToAction(nameof(Users));
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteUser(int id)
     {
         var user = await _context.AppUsers.FindAsync(id);
         if (user == null)
-            return Json(new { success = false, message = "User not found" });
+        {
+            TempData["ErrorMessage"] = "User not found.";
+            return RedirectToAction(nameof(Users));
+        }
 
         // Don't allow deleting yourself
         var currentUsername = User.Identity?.Name;
         if (user.Username == currentUsername)
-            return Json(new { success = false, message = "Cannot delete your own account" });
+        {
+            TempData["ErrorMessage"] = "Cannot delete your own account.";
+            return RedirectToAction(nameof(Users));
+        }
 
         // Soft delete by deactivating
         user.IsActive = false;
         await _context.SaveChangesAsync();
 
-        return Json(new { success = true, message = "User deactivated successfully" });
+        TempData["SuccessMessage"] = "User deactivated successfully.";
+        return RedirectToAction(nameof(Users));
     }
 
     [HttpGet]
@@ -423,58 +439,4 @@ public class AdminController : Controller
         return View(viewModel);
     }
 
-    // AJAX endpoints
-    [HttpGet]
-    public async Task<IActionResult> GetUsersList(int page = 1, int pageSize = 10, string search = "")
-    {
-        var query = _context.AppUsers.Include(u => u.Role).AsQueryable();
-
-        if (!string.IsNullOrEmpty(search))
-        {
-            query = query.Where(u =>
-                u.Username!.Contains(search) ||
-                u.FullName!.Contains(search) ||
-                u.Email!.Contains(search));
-        }
-
-        var totalCount = await query.CountAsync();
-
-        var users = await query
-            .OrderByDescending(u => u.CreatedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(u => new
-            {
-                u.UserId,
-                u.Username,
-                u.Email,
-                u.FullName,
-                RoleName = u.Role!.RoleName,
-                u.IsActive,
-                CreatedAt = u.CreatedAt!.Value.ToString("MMM dd, yyyy")
-            })
-            .ToListAsync();
-
-        return Json(new
-        {
-            data = users,
-            totalCount,
-            page,
-            pageSize,
-            totalPages = (int)Math.Ceiling((double)totalCount / pageSize)
-        });
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> ToggleUserStatus(int id)
-    {
-        var user = await _context.AppUsers.FindAsync(id);
-        if (user == null)
-            return Json(new { success = false, message = "User not found" });
-
-        user.IsActive = !user.IsActive;
-        await _context.SaveChangesAsync();
-
-        return Json(new { success = true, isActive = user.IsActive, message = $"User {(user.IsActive == true ? "activated" : "deactivated")} successfully" });
-    }
 }
