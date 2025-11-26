@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WebManagementSystem.Models;
+namespace WebManagementSystem;
 
 public partial class Patient
 {
@@ -27,11 +27,15 @@ public partial class Patient
 
     public DateTime? CreatedAt { get; set; }
 
+    public int UserId { get; set; }
+
     public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
     public virtual ICollection<Bill> Bills { get; set; } = new List<Bill>();
 
     public virtual ICollection<LabOrder> LabOrders { get; set; } = new List<LabOrder>();
+
+    public virtual AppUser User { get; set; } = null!;
 
     public virtual ICollection<Visit> Visits { get; set; } = new List<Visit>();
 }

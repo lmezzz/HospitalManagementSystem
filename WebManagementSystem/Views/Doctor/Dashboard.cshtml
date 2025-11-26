@@ -1,0 +1,278 @@
+﻿@model WebManagementSystem.Models.ViewModels.DoctorDashboardViewModel
+@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        overflow-x: hidden;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* =============== SIDEBAR ================== */
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 2.4rem;
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .sidebar a {
+        text-decoration: none !important;
+        color: #c9cbe8;
+        padding: 0.65rem 0.8rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.2s ease;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-size: 0.95rem;
+    }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255,255,255,0.14);
+            color: #fff;
+        }
+
+    /* =============== PAGE WRAPPER ================== */
+    .doctor-section {
+        margin-left: 260px;
+        padding: 2rem 2.5rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    /* =============== DASHBOARD CARDS ================== */
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+
+    .doctor-card {
+        background: var(--glass);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.15);
+        backdrop-filter: blur(14px);
+        padding: 1.6rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        transition: 0.25s ease;
+    }
+
+        .doctor-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .doctor-card .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gold-light);
+            margin-bottom: 0.6rem;
+        }
+
+        .doctor-card .stat-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-top: 0.3rem;
+            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+    /* =============== CURRENT SESSION BOX ================== */
+    .session-box {
+        margin-top: 2.2rem;
+        padding: 1.8rem 2rem;
+        border-radius: 20px;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+    }
+
+    .session-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+    }
+
+    .session-box button {
+        background: rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255,0.4);
+        padding: 0.7rem 1.2rem;
+        margin-top: 1rem;
+        border-radius: 10px;
+        font-weight: 600;
+        color: white;
+        backdrop-filter: blur(8px);
+        transition: 0.2s ease;
+    }
+
+        .session-box button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+    /* =============== TABLE ================== */
+    .table-wrap {
+        margin-top: 2.2rem;
+        background: rgba(255,255,255,0.06);
+        padding: 1.8rem;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.15);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        color: white;
+    }
+
+        table th {
+            padding: 0.8rem;
+            text-align: left;
+            background: rgba(255,255,255,0.12);
+            font-weight: 600;
+        }
+
+        table td {
+            padding: 0.8rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: #dcdcec;
+        }
+</style>
+
+<!-- ============ SIDEBAR ============ -->
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+
+    <a asp-action="Dashboard" class="active">🏥 Dashboard</a>
+    <a asp-action="CurrentSessionLatest">👤 Current Session</a>
+    <a asp-action="Appointments">📅 Appointments</a>
+    <a asp-action="Prescriptions">💊 Prescriptions</a>
+    <a asp-action="LabReports">📄 Lab Reports</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" class="menu-item" style="background: none; border: none; color: #c9cbe8; padding: 0.65rem 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
+</div>
+
+
+<!-- ============ MAIN CONTENT ============ -->
+<div class="doctor-section">
+
+    <div class="page-title">👨‍⚕️ Doctor Dashboard</div>
+
+    <!-- ========== SUMMARY CARDS ========== -->
+    <div class="card-grid">
+
+        <div class="doctor-card">
+            <div class="card-title">Today's Appointments</div>
+            <div class="stat-number">@Model.TodaysAppointments</div>
+        </div>
+
+        <div class="doctor-card">
+            <div class="card-title">Completed Today</div>
+            <div class="stat-number">@Model.CompletedToday</div>
+        </div>
+
+        <div class="doctor-card">
+            <div class="card-title">Pending Today</div>
+            <div class="stat-number">@Model.PendingToday</div>
+        </div>
+
+    </div>
+
+    <!-- ========== CURRENT SESSION BOX ========== -->
+    @if (Model.TodaysSchedule != null && Model.TodaysSchedule.Any(a => a.Status == "InProgress" || a.Status == "In Session"))
+    {
+        var currentSession = Model.TodaysSchedule.FirstOrDefault(a => a.Status == "InProgress" || a.Status == "In Session");
+        if (currentSession != null)
+        {
+    <div class="session-box">
+        <div class="session-title">Currently in Session</div>
+                <div>@currentSession.PatientName · @currentSession.Reason</div>
+                <a asp-action="CurrentSession" asp-route-appointmentId="@currentSession.AppointmentId" style="text-decoration: none;">
+        <button>Continue Session</button>
+                </a>
+    </div>
+        }
+    }
+
+    <!-- ========== APPOINTMENTS TABLE ========== -->
+    <div class="table-wrap">
+        <h4 style="color: var(--gold-light); margin-bottom:1rem;">Today's Appointments</h4>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Time</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model.TodaysSchedule != null && Model.TodaysSchedule.Any())
+                {
+                    @foreach (var appointment in Model.TodaysSchedule)
+                    {
+                <tr>
+                            <td>@appointment.PatientName</td>
+                            <td>@appointment.ScheduledTime.ToString("hh:mm tt")</td>
+                            <td>@appointment.Reason</td>
+                            <td>
+                                <span style="padding: .3rem .6rem; border-radius: 6px; font-size: 0.85rem; 
+                                    background: @(appointment.Status == "Completed" ? "rgba(74,255,150,0.2)" : appointment.Status == "InProgress" || appointment.Status == "In Session" ? "rgba(255,200,74,0.2)" : "rgba(100,150,255,0.2)");
+                                    color: @(appointment.Status == "Completed" ? "#74ffbe" : appointment.Status == "InProgress" || appointment.Status == "In Session" ? "#ffd36e" : "#9bb5ff");">
+                                    @appointment.Status
+                                </span>
+                            </td>
+                </tr>
+                    }
+                }
+                else
+                {
+                <tr>
+                        <td colspan="4" style="text-align: center; padding: 2rem; color: #8f93a7;">No appointments scheduled for today</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

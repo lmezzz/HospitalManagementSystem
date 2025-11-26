@@ -1,0 +1,292 @@
+﻿@model WebManagementSystem.Models.ViewModels.PharmacyDashboardViewModel
+@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Toast Notification Styles */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
+    .toast {
+        min-width: 300px;
+        background: rgba(255,255,255,0.95);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        backdrop-filter: blur(10px);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .toast.success {
+        border-left: 4px solid #28a745;
+        color: #155724;
+    }
+
+    .toast.error {
+        border-left: 4px solid #dc3545;
+        color: #721c24;
+    }
+
+    @@keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.85);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        left: 0;
+        top: 0;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 2.4rem;
+    }
+
+        .sidebar a {
+            text-decoration: none;
+            color: #c9cbe8;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            transition: 0.2s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+            .sidebar a:hover,
+            .sidebar a.active {
+                background: rgba(255,255,255,0.14);
+                color: white;
+            }
+
+    /* TOP BAR */
+    .topbar {
+        margin-left: 240px;
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* MAIN CONTENT */
+    .pharmacy-section {
+        margin-left: 260px;
+        padding: 2rem 2.2rem;
+    }
+
+    .page-header {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+    }
+
+    /* METRICS GRID */
+    .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2.2rem;
+    }
+
+    .metric-card {
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 16px;
+        padding: 1.5rem;
+        backdrop-filter: blur(12px);
+    }
+
+    .metric-title {
+        font-size: 0.9rem;
+        color: #c9cbe8;
+        margin-bottom: 0.4rem;
+        font-weight: 600;
+    }
+
+    .metric-value {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--gold-light);
+    }
+
+    /* URGENT STOCK ALERT */
+    .urgent-box {
+        margin-top: 1rem;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 18px;
+        padding: 1.8rem;
+        backdrop-filter: blur(12px);
+    }
+
+    .urgent-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #ff7d7d;
+    }
+
+    .urgent-item {
+        background: rgba(255,100,100,0.25);
+        padding: 0.9rem 1.2rem;
+        border-radius: 10px;
+        margin-bottom: 0.8rem;
+        border: 1px solid rgba(255,0,0,0.2);
+    }
+
+        .urgent-item strong {
+            color: #ffbaba;
+        }
+
+    /* QUICK ISSUE */
+    .issue-box {
+        margin-top: 2rem;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.15);
+        padding: 1.8rem;
+        border-radius: 18px;
+        backdrop-filter: blur(12px);
+    }
+
+    .btn-issue {
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        padding: 0.7rem 1.5rem;
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: 0.2s;
+    }
+
+        .btn-issue:hover {
+            filter: brightness(1.1);
+        }
+</style>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+
+    <a asp-controller="Pharmacy" asp-action="Index" class="active">🧪 Dashboard</a>
+    <a asp-controller="Pharmacy" asp-action="IssueMedicine">💊 Issue Medicine</a>
+    <a asp-controller="Pharmacy" asp-action="Stock">📦 Stock Inventory</a>
+    
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: 0.7rem 1rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+    <h2>Welcome, Pharmacy Staff</h2>
+</div>
+
+<!-- Toast Notifications -->
+<div class="toast-container">
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="toast success" id="successToast">
+            <strong>✓ Success:</strong> @successMessage
+        </div>
+    }
+    @if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <div class="toast error" id="errorToast">
+            <strong>✗ Error:</strong> @errorMessage
+        </div>
+    }
+</div>
+
+<!-- MAIN -->
+<div class="pharmacy-section">
+
+    <div class="page-header">Pharmacy Dashboard</div>
+
+    <!-- METRICS -->
+    <div class="metric-grid">
+
+        <div class="metric-card">
+            <div class="metric-title">Pending Prescriptions</div>
+            <div class="metric-value">@Model.PendingPrescriptions</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-title">Low Stock Items</div>
+            <div class="metric-value">@Model.LowStockItems</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-title">Dispensed Today</div>
+            <div class="metric-value">@Model.DispensedToday</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-title">Queue Items</div>
+            <div class="metric-value">@(Model.PendingQueue?.Count ?? 0)</div>
+        </div>
+
+    </div>
+
+    <!-- URGENT STOCK ALERT -->
+    @if (Model.LowStockMedications != null && Model.LowStockMedications.Any())
+    {
+    <div class="urgent-box">
+        <div class="urgent-title">⚠️ Urgent: Medicines Running Out</div>
+
+            @foreach (var med in Model.LowStockMedications.Take(10))
+            {
+        <div class="urgent-item">
+                    <strong>@med.Name</strong> — Only <strong>@med.StockQuantity</strong> left (Threshold: @med.LowStockThreshold)
+        </div>
+            }
+        </div>
+    }
+
+</div>
+
+<script>
+    // Auto-hide toast notifications after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const toasts = document.querySelectorAll('.toast');
+        toasts.forEach(toast => {
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        });
+    });
+</script>

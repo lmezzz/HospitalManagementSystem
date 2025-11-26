@@ -1,0 +1,179 @@
+﻿@model WebManagementSystem.Models.ViewModels.LabDashboardViewModel
+@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        font-family: 'Segoe UI', sans-serif;
+        color: white;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        padding: 2rem 1.5rem;
+        position: fixed;
+        left: 0;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        border-right: 1px solid rgba(255,255,255,0.12);
+        backdrop-filter: blur(14px);
+    }
+
+    .brand {
+        font-size: 1.6rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .sidebar a {
+        text-decoration: none !important;
+        color: #c9cbe8;
+        padding: .7rem .8rem;
+        border-radius: 10px;
+        transition: .2s;
+        font-size: .95rem;
+    }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255,255,255,0.14);
+            color: white;
+        }
+
+    .lab-section {
+        margin-left: 260px;
+        padding: 2rem 2.5rem;
+    }
+
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+        margin-bottom: 2rem;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        width: 90%;
+    }
+
+    .card {
+        background: rgba(255,255,255,0.06);
+        padding: 1.8rem;
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        backdrop-filter: blur(14px);
+        transition: .2s;
+    }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+
+    .card-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--gold-light);
+        margin-bottom: .4rem;
+    }
+
+    .card-num {
+        font-size: 2.4rem;
+        font-weight: 900;
+        color: white;
+    }
+</style>
+
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+    <a asp-action="Dashboard" class="active">🧪 Lab Dashboard</a>
+    <a asp-action="Orders">📄 Lab Orders</a>
+    <a asp-action="Results">📤 Upload Results</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: .7rem .8rem; border-radius: 10px; cursor: pointer; font-size: .95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
+</div>
+
+<div class="lab-section">
+
+    <div class="page-title">🧪 Lab Dashboard</div>
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="card-title">Pending Orders</div>
+            <div class="card-num">@Model.PendingOrders</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">In Progress</div>
+            <div class="card-num">@Model.InProgress</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Completed Today</div>
+            <div class="card-num">@Model.CompletedToday</div>
+        </div>
+
+    </div>
+
+    @if (Model.PendingLabOrders != null && Model.PendingLabOrders.Any())
+    {
+        <div style="margin-top: 2rem; width: 90%;">
+            <h3 style="margin-bottom: 1rem; font-size: 1.3rem;">Pending Lab Orders</h3>
+            <div style="background: rgba(255,255,255,0.06); border-radius: 18px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.12);">
+                <table style="width: 100%; border-collapse: collapse; color: white;">
+                    <thead>
+                        <tr style="background: rgba(255,255,255,0.12);">
+                            <th style="padding: 0.8rem; text-align: left;">Patient</th>
+                            <th style="padding: 0.8rem; text-align: left;">Test</th>
+                            <th style="padding: 0.8rem; text-align: left;">Priority</th>
+                            <th style="padding: 0.8rem; text-align: left;">Order Time</th>
+                            <th style="padding: 0.8rem; text-align: left;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.PendingLabOrders.Take(10))
+                        {
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <td style="padding: 0.8rem;">@order.PatientName</td>
+                                <td style="padding: 0.8rem;">@order.TestName</td>
+                                <td style="padding: 0.8rem; color: @(order.Priority == "Urgent" || order.Priority == "Stat" ? "#ff6b6b" : "#ffd36e"); font-weight: 600;">@order.Priority</td>
+                                <td style="padding: 0.8rem;">@order.OrderTime.ToString("MMM dd, yyyy HH:mm")</td>
+                                <td style="padding: 0.8rem;">
+                                    <span style="padding: .3rem .6rem; border-radius: 6px; font-size: 0.85rem; 
+                                        background: rgba(255,200,74,0.2); color: #ffd36e;">
+                                        @order.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace WebManagementSystem.Models;
+namespace WebManagementSystem;
 
-public partial class HMS_DB : DbContext
+public partial class HmsContext : DbContext
 {
-    public HMS_DB(DbContextOptions<HMS_DB> options)
+    public HmsContext(DbContextOptions<HmsContext> options)
         : base(options)
     {
     }
@@ -41,7 +41,6 @@ public partial class HMS_DB : DbContext
 
     public virtual DbSet<Visit> Visits { get; set; }
 
-    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AppUser>(entity =>
@@ -273,6 +272,8 @@ public partial class HMS_DB : DbContext
 
             entity.ToTable("patient");
 
+            entity.HasIndex(e => e.UserId, "UX_Patient_user_id").IsUnique();
+
             entity.Property(e => e.PatientId).HasColumnName("patient_id");
             entity.Property(e => e.Address).HasColumnName("address");
             entity.Property(e => e.Allergies).HasColumnName("allergies");
@@ -297,6 +298,12 @@ public partial class HMS_DB : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(30)
                 .HasColumnName("phone");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithOne(p => p.Patient)
+                .HasForeignKey<Patient>(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Patient_AppUser");
         });
 
         modelBuilder.Entity<Payment>(entity =>

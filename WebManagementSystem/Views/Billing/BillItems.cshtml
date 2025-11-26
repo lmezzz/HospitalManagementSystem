@@ -1,0 +1,256 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        backdrop-filter: blur(18px);
+        padding: 2rem 1.5rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2.4rem;
+        border-right: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .brand {
+        font-size: 1.6rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .sidebar a {
+        text-decoration: none;
+        color: #c9cbe8;
+        padding: .65rem .8rem;
+        border-radius: 10px;
+        font-size: .95rem;
+        font-weight: 500;
+        transition: .2s;
+    }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255,255,255,0.14);
+            color: white;
+        }
+
+    /* MAIN */
+    .bill-section {
+        margin-left: 260px;
+        padding: 2rem 2.5rem;
+    }
+
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    /* FORM CARD */
+    .glass-card {
+        width: 75%;
+        background: rgba(255,255,255,0.06);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255,255,255,0.15);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+        backdrop-filter: blur(15px);
+        margin-bottom: 2rem;
+    }
+
+    label {
+        font-weight: 500;
+        color: #e0e3fa;
+        display: block;
+        margin-bottom: .3rem;
+    }
+
+    select, input {
+        width: 100%;
+        padding: .8rem;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+        margin-bottom: 1.2rem;
+    }
+
+        select option {
+            background: #0d1128;
+            color: white;
+        }
+
+    select {
+        color-scheme: dark;
+    }
+
+    input::placeholder {
+        color: #dcdcec;
+    }
+
+    .submit-btn {
+        padding: .9rem 1.6rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        color: white;
+        transition: .2s ease;
+    }
+
+        .submit-btn:hover {
+            opacity: 0.85;
+        }
+
+    /* TABLE */
+    .table-wrap {
+        width: 75%;
+        background: rgba(255,255,255,0.06);
+        border-radius: 20px;
+        padding: 1.8rem;
+        border: 1px solid rgba(255,255,255,0.15);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        padding: .85rem;
+        text-align: left;
+        background: rgba(255,255,255,0.12);
+        font-weight: 600;
+    }
+
+    td {
+        padding: .85rem;
+        border-bottom: 1px solid rgba(255,255,255,0.12);
+        color: #e3e6ff;
+    }
+</style>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+
+    <a asp-action="Bills">💳 Billing Dashboard</a>
+    <a asp-action="BillItem" class="active">🧾 Bill Items</a>
+    <a asp-controller="Auth" asp-action="Logout">🚪 Logout</a>
+</div>
+
+<!-- MAIN -->
+<div class="bill-section">
+
+    <div class="page-title">🧾 Add Bill Item</div>
+
+    <!-- FORM CARD -->
+    <div class="glass-card">
+
+        <label>Patient</label>
+        <select>
+            <option>Sarah Khan</option>
+            <option>Ahmed Ali</option>
+            <option>Maria Hussain</option>
+        </select>
+
+        <label>Service / Item</label>
+        <select>
+            <option>Consultation Fee</option>
+            <option>X-Ray</option>
+            <option>Blood Test</option>
+            <option>Medication</option>
+        </select>
+
+        <label>Quantity</label>
+        <input type="number" placeholder="e.g., 1, 2, 3" />
+
+        <label>Unit Price (PKR)</label>
+        <input type="number" placeholder="e.g., 1500" />
+
+        <label>Total (Auto Calculate)</label>
+        <input type="text" placeholder="Will calculate automatically" readonly />
+
+        <button class="submit-btn">Add Bill Item</button>
+    </div>
+
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+
+        <h3 style="color: var(--gold-light); margin-bottom:1rem;">Recent Bill Items</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>Sarah Khan</td>
+                    <td>Consultation Fee</td>
+                    <td>1</td>
+                    <td>1500</td>
+                    <td>1500</td>
+                    <td>21 Nov 2025</td>
+                </tr>
+
+                <tr>
+                    <td>Ahmed Ali</td>
+                    <td>X-Ray</td>
+                    <td>1</td>
+                    <td>2000</td>
+                    <td>2000</td>
+                    <td>20 Nov 2025</td>
+                </tr>
+
+                <tr>
+                    <td>Maria Hussain</td>
+                    <td>Blood Test</td>
+                    <td>1</td>
+                    <td>1200</td>
+                    <td>1200</td>
+                    <td>19 Nov 2025</td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+</div>

@@ -1,0 +1,633 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+<!--https://localhost:7092/-->
+<style>
+    /* ===================== VARIABLES ===================== */
+    :root {
+        --navy: #1a1d33;
+        --navy-soft: #0c1224;
+        --gold: #DDA447;
+        --gold-light: #ffca3a;
+        --text-main: #c7c9d6;
+        --muted: #8f93a7;
+        --gradient-start: #5f4bff;
+        --gradient-end: #ff8f5a;
+        --radius-lg: 26px;
+        --radius-sm: 18px;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #1e2347 0%, var(--navy) 50%, var(--navy) 100%);
+        font-family: 'Poppins', sans-serif;
+        color: var(--text-main);
+        overflow-x: hidden;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* ===================== NAVBAR ===================== */
+    .hms-nav {
+        background: linear-gradient(90deg, #050816f2, #050816cc);
+        border-bottom: 1px solid #1b1f35;
+        backdrop-filter: blur(18px);
+        width: 100%;
+        padding-left: 3rem !important;
+        padding-right: 3rem !important;
+    }
+
+        .hms-nav .navbar-brand {
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.4rem;
+            letter-spacing: 0.04em;
+        }
+
+    .brand-mark {
+        width: 16px;
+        height: 16px;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        display: inline-block;
+        border-radius: 6px;
+        margin-right: 8px;
+    }
+
+    .hms-nav .nav-link {
+        color: var(--muted);
+        font-size: 0.95rem;
+        transition: 0.25s;
+    }
+
+        .hms-nav .nav-link:hover,
+        .hms-nav .nav-link.active {
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+    .btn-gold {
+        background: var(--gold);
+        color: #111;
+        border: none;
+        font-weight: 500;
+    }
+
+        .btn-gold:hover {
+            background: var(--gold-light);
+        }
+
+    /* ===================== HERO ===================== */
+    .gradient-text {
+        background: linear-gradient(90deg, #8d79ff, #d277ff, #ff9b61);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-card {
+        width: min(360px, 100%);
+        text-align: center;
+    }
+
+    .hero-image-circle {
+        position: absolute;
+        inset: -40%;
+        background: radial-gradient(circle at top, var(--gradient-start), transparent 60%);
+        opacity: .9;
+    }
+
+    .hero-doctor {
+        position: relative;
+        border-radius: 180px;
+        z-index: 1;
+    }
+
+    .hero-mini-card {
+        position: absolute;
+        left: 1.2rem;
+        bottom: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        z-index: 2;
+        font-size: 0.8rem;
+    }
+
+        .hero-mini-card.bottom-right {
+            left: auto;
+            right: 1.2rem;
+            right: 1.2rem;
+            bottom: auto;
+            top: 1.4rem;
+        }
+
+        .hero-mini-card i {
+            font-size: 1.3rem;
+            color: var(--gold);
+        }
+
+    .mini-label {
+        font-size: 0.75rem;
+    }
+
+    .mini-value {
+        font-weight: 500;
+    }
+
+    .heartbeat-icon {
+        color: #ff6b6b;
+        animation: heartbeat 1.4s infinite ease-in-out;
+        margin-right: 6px;
+    }
+
+    @@keyframes heartbeat {
+        0% {
+            transform: scale(1);
+        }
+
+        25% {
+            transform: scale(1.18);
+        }
+
+        40% {
+            transform: scale(1);
+        }
+
+        60% {
+            transform: scale(1.18);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .premium-text {
+        color: var(--gold);
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        font-size: 0.95rem;
+    }
+
+
+
+    /* GLASS CARD */
+    .glass-card {
+        background: radial-gradient(circle at top left, #ffffff22, #ffffff04);
+        border-radius: 30px;
+        padding: 1.8rem;
+        border: 1px solid #ffffff22;
+        box-shadow: 0 18px 55px rgba(3, 5, 25, 0.9);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(16px);
+    }
+
+    .glass-card-sm {
+        background: #ffffff0e;
+        border-radius: var(--radius-sm);
+        padding: 1rem 1.2rem;
+        border: 1px solid #ffffff22;
+        backdrop-filter: blur(16px);
+    }
+
+
+
+    /* Floating Labels */
+    .hero-mini-card {
+        position: absolute;
+        background: rgba(255,255,255,0.7);
+        backdrop-filter: blur(14px);
+        border-radius: 12px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+    }
+
+    .hero-mini-top {
+        top: 14px;
+        right: 14px;
+    }
+
+    .hero-mini-bottom {
+        bottom: 14px;
+        left: 14px;
+    }
+
+    .hero-mini-card i {
+        font-size: 1.2rem;
+        color: #b58c28;
+    }
+
+
+    /* ===================== SERVICES ===================== */
+    .section-title {
+        color: white;
+        font-size: 2rem;
+        font-weight: 600;
+    }
+
+    .section-subtitle {
+        color: var(--muted);
+    }
+
+    .service-card {
+        background: #ffffff0d;
+        border: 1px solid #ffffff22;
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        transition: 0.25s;
+        backdrop-filter: blur(12px);
+    }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            border-color: #ffffff44;
+        }
+
+    .service-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #ffffff15;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gold);
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+
+    /* ===================== STATS ===================== */
+    .stats-strip {
+        background: #080c1b;
+        padding: 3rem 0;
+    }
+
+    .stat-number-lg {
+        font-size: 2rem;
+        color: var(--gold);
+        font-weight: 600;
+    }
+
+    /* ===================== ABOUT  ===================== */
+    /* About section */
+    .about-grid {
+        position: relative;
+    }
+
+    .about-img {
+        border-radius: 26px;
+        object-fit: cover;
+        box-shadow: 0 16px 45px rgba(0, 0, 0, 0.7);
+    }
+
+        .about-img.main {
+            width: 80%;
+        }
+
+        .about-img.secondary {
+            width: 48%;
+            position: absolute;
+            right: 0;
+            bottom: -14%;
+        }
+
+    .about-badge {
+        position: absolute;
+        left: 6%;
+        bottom: 6%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .1rem;
+    }
+
+    .about-pill {
+        border-radius: 999px;
+        border: 1px solid #262c4b;
+        padding: .6rem 1rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        background: #050816c7;
+    }
+
+        .about-pill i {
+            color: var(--gold);
+        }
+
+
+    /* ===================== FOOTER ===================== */
+    .footer {
+        border-top: 1px solid #1f2340;
+        padding: 3rem 4rem;
+        background: #050816;
+    }
+
+    .footer-heading {
+        color: var(--gold);
+        letter-spacing: .15em;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+    }
+
+    .footer a {
+        color: var(--muted);
+        text-decoration: none;
+    }
+
+        .footer a:hover {
+            color: var(--gold);
+        }
+</style>
+
+
+<!-- ===================== NAVBAR ===================== -->
+<nav class="navbar navbar-expand-lg hms-nav">
+    <div class="w-100 d-flex justify-content-between align-items-center">
+
+        <a class="navbar-brand" href="#">
+            <span class="brand-mark"></span> MedicaLux
+        </a>
+
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="menu">
+            <ul class="navbar-nav gap-3">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    var roleName = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
+                    var dashboardUrl = roleName switch
+                    {
+                        "Admin" => Url.Action("Dashboard", "Admin"),
+                        "Doctor" => Url.Action("Dashboard", "Doctor"),
+                        "Patient" => Url.Action("Dashboard", "Patient"),
+                        "Pharmacist" => Url.Action("Index", "Pharmacy"),
+                        "LabTechnician" => Url.Action("Dashboard", "Lab"),
+                        "Receptionist" => Url.Action("Index", "Appointment"),
+                        "Billing" => Url.Action("Index", "Billing"),
+                        _ => Url.Action("Index", "Home")
+                    };
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> @User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="@dashboardUrl">Dashboard</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    <button type="submit" class="dropdown-item">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                <li><a class="nav-link active" href="#home">Home</a></li>
+                <li><a class="nav-link" href="#services">Services</a></li>
+                <li><a class="nav-link" href="#about">About</a></li>
+
+                <li>
+                    <a asp-controller="Account" asp-action="Login"
+                       class="btn btn-outline-light rounded-pill px-3 py-1">
+                        Login
+                    </a>
+                </li>
+
+                <li>
+                    <a asp-controller="Appointment" asp-action="Create"
+                       class="btn btn-gold rounded-pill px-4 py-1">
+                        Book Appointment
+                    </a>
+                </li>
+                }
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+
+<!-- ===================== HERO ===================== -->
+<section id="home" class="hero container py-5">
+
+    <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+            <span class="premium-text">
+                Premium Healthcare, Reimagined
+            </span>
+
+
+            <h1 class="hero-title mb-3">
+                Protecting Your Health with
+                <span class="gradient-text">Exceptional Care.</span>
+            </h1>
+
+            <p class="hero-subtitle mb-4">
+                An elegant hospital management experience for patients, doctors and staff –
+                combining modern technology with trusted medical expertise.
+            </p>
+
+            <div class="d-flex flex-wrap gap-3 align-items-center">
+                <a asp-controller="Account" asp-action="Register"
+                   class="btn btn-gold rounded-pill px-4 py-2">
+                    Get Started
+                </a>
+
+            </div>
+
+            <div class="d-flex gap-4 mt-4 hero-badges">
+                <div>
+                    <div class="stat-number">10+</div>
+                    <div class="stat-label">Years of Excellence</div>
+                </div>
+                <div>
+                    <div class="stat-number">8000+</div>
+                    <div class="stat-label">Satisfied Patients</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 d-flex justify-content-center">
+            <div class="hero-card glass-card">
+                <div class="hero-image-circle"></div>
+                <img src="https://images.pexels.com/photos/3714743/pexels-photo-3714743.jpeg?auto=compress&cs=tinysrgb&w=600"
+                     class="img-fluid hero-doctor" alt="Doctor" />
+                <div class="hero-mini-card glass-card-sm">
+                    <i class="bi bi-heart-pulse-fill"></i>
+                    <div>
+                        <div class="mini-label">24/7 Emergency</div>
+                        <div class="mini-value">
+                            <i class="bi bi-heart-pulse-fill heartbeat-icon"></i>
+                            Priority Care
+                        </div>
+
+                    </div>
+                </div>
+                <div class="hero-mini-card glass-card-sm bottom-right">
+                    <i class="bi bi-shield-check"></i>
+                    <div>
+                        <div class="mini-label">ISO Certified</div>
+                        <div class="mini-value">Secure & Trusted</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ===================== SERVICES ===================== -->
+<section id="services" class="section container py-5">
+    <div class="section-header d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <span class="section-kicker">Services</span>
+            <h2 class="section-title">A Curated Range of Medical Services</h2>
+            <p class="section-subtitle">
+                From routine checkups to complex surgery, choose from our carefully designed service lines.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="service-card glass-card h-100">
+                <div class="service-icon">
+                    <i class="bi bi-briefcase-medical"></i>
+                </div>
+                <h5>Surgery</h5>
+                <p>State-of-the-art surgical suites with highly experienced consultants and staff.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="service-card glass-card h-100">
+                <div class="service-icon">
+                    <i class="bi bi-syringe"></i>
+                </div>
+                <h5>Vaccination</h5>
+                <p>Comprehensive immunization programs for children, adults and corporate clients.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="service-card glass-card h-100">
+                <div class="service-icon">
+                    <i class="bi bi-ambulance"></i>
+                </div>
+                <h5>Emergency</h5>
+                <p>24/7 emergency department designed for rapid response and critical care.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ===================== STATS ===================== -->
+<section class="stats-strip text-center">
+    <div class="row g-4 mx-0">
+        <div class="col-md-3">
+            <div class="stat-number-lg">10+</div>
+            <div class="stat-label">Years With You</div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-number-lg">200+</div>
+            <div class="stat-label">Awards</div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-number-lg">25+</div>
+            <div class="stat-label">Specialist Doctors</div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-number-lg">8000+</div>
+            <div class="stat-label">Patients Treated</div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ABOUT -->
+<section id="about" class="section container py-5">
+    <div class="row g-5 align-items-center">
+        <div class="col-lg-6">
+            <div class="about-grid">
+                <img src="https://images.pexels.com/photos/6129685/pexels-photo-6129685.jpeg?auto=compress&cs=tinysrgb&w=600"
+                     class="about-img main" />
+                <img src="https://images.pexels.com/photos/8460047/pexels-photo-8460047.jpeg?auto=compress&cs=tinysrgb&w=600"
+                     class="about-img secondary" />
+                <div class="about-badge glass-card-sm">
+                    <span class="stat-number-lg">10</span>
+                    <span class="stat-label">Years of Experience</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <span class="section-kicker">About Us</span>
+            <h2 class="section-title">A Luxury Approach to Everyday Care</h2>
+            <p class="section-subtitle mb-4">
+                We blend clinical excellence with a calm, refined environment to create a hospital
+                experience that feels considered, safe and beautifully simple.
+            </p>
+
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <div class="about-pill">
+                        <i class="bi bi-phone-vibrate"></i> 24/7 Emergency Help
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="about-pill">
+                        <i class="bi bi-person-heart"></i> Qualified Specialists
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="about-pill">
+                        <i class="bi bi-clipboard-pulse"></i> Evidence-based Care
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="about-pill">
+                        <i class="bi bi-shield-lock"></i> Secure Records
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="footer">
+    <div class="row mx-0 justify-content-between">
+
+        <div class="col-md-3">
+            <h4 class="text-white fw-bold">MedicaLux</h4>
+            <p class="text-muted small">Premium healthcare with elegance and trust.</p>
+        </div>
+
+        <div class="col-md-3">
+            <h6 class="footer-heading">Quick Links</h6>
+            <a href="#">Doctors</a><br>
+            <a href="#">Services</a><br>
+            <a href="#">Contact</a>
+        </div>
+
+        <div class="col-md-3">
+            <h6 class="footer-heading">Visit Us</h6>
+            <p class="text-muted small">123 Medica Lane</p>
+            <p class="text-muted small">+92-000-0000000</p>
+        </div>
+
+    </div>
+</footer>

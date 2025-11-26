@@ -1,0 +1,80 @@
+﻿@{
+    Layout = "_Layout";
+
+    var name = TempData["Name"];
+    var doctor = TempData["Doctor"];
+    var phone = TempData["Phone"];
+    var email = TempData["Email"];
+    var slot = TempData["Slot"];
+    var reason = TempData["Reason"];
+}
+
+<style>
+    :root {
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        font-family: 'Segoe UI', sans-serif;
+        color: white;
+    }
+
+    .confirm-box {
+        margin: auto;
+        margin-top: 5rem;
+        width: 60%;
+        background: rgba(255,255,255,0.07);
+        padding: 2.5rem;
+        border-radius: 20px;
+        backdrop-filter: blur(14px);
+        border: 1px solid rgba(255,255,255,0.15);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    }
+
+    h1 {
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+        font-size: 2.2rem;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .detail {
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        color: #e5e7ff;
+    }
+
+    .label {
+        color: var(--gold-light);
+        font-weight: 700;
+    }
+</style>
+
+<div class="confirm-box">
+
+    <h1>Appointment Request Received!</h1>
+
+    <p style="text-align:center; font-size:1.15rem; margin-bottom:2rem;">
+        You will receive a confirmation via email or SMS shortly.
+    </p>
+
+    <div class="detail"><span class="label">Patient Name:</span> @name</div>
+
+    <div class="detail"><span class="label">Doctor Selected:</span> @doctor</div>
+
+    <div class="detail"><span class="label">Phone Number:</span> @phone</div>
+
+    <div class="detail"><span class="label">Email:</span> @email</div>
+
+    <div class="detail"><span class="label">Time Slot:</span> @slot</div>
+
+    <div class="detail">
+        <span class="label">Reason for Appointment:</span> @reason
+    </div>
+</div>

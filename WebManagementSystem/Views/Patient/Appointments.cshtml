@@ -1,0 +1,229 @@
+﻿@model WebManagementSystem.Models.ViewModels.AppointmentListViewModel
+@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --gold-light: #ffce70;
+        --gradient-start: #8d79ff;
+        --gradient-mid: #c06bff;
+        --gradient-end: #ff9b61;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .appointments-wrapper {
+        margin-left: 240px;
+        padding: 2rem 2rem 3rem;
+    }
+    /* ================= SIDEBAR ================= */
+  
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 2.4rem;
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, #8d79ff, #ff9b61);
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+   
+    .sidebar a {
+        text-decoration: none !important; 
+        color: #c9cbe8;
+        padding: 0.65rem 0.8rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.2s ease;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-size: 0.95rem;
+    }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255,255,255,0.14);
+            color: #fff;
+        }
+
+     
+        .sidebar a i,
+        .sidebar a img {
+            width: 18px;
+            height: 18px;
+            margin-right: 6px;
+        }
+
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+        margin-bottom: 1.5rem;
+    }
+
+    .appointment-card {
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 18px;
+        padding: 1.5rem 1.8rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+        transition: 0.25s;
+    }
+
+        .appointment-card:hover {
+            transform: translateY(-4px);
+        }
+
+    .appt-header {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--gold-light);
+        margin-bottom: 0.6rem;
+    }
+
+    .appt-info {
+        font-size: 0.95rem;
+        color: #e2e4f1;
+        line-height: 1.55rem;
+    }
+
+    .badge {
+        padding: 0.25rem 0.7rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-top: 0.4rem;
+    }
+
+    .badge-upcoming {
+        background: rgba(255,215,100,0.2);
+        color: #ffd764;
+    }
+
+    .badge-completed {
+        background: rgba(80,255,150,0.2);
+        color: #74ffbe;
+    }
+
+    .badge-cancelled {
+        background: rgba(255,100,100,0.2);
+        color: #ff8a8a;
+    }
+</style>
+<!-- ================= SIDEBAR ================= -->
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+
+    <a asp-controller="Patient" asp-action="Dashboard" class="menu-item">
+        🏠 Dashboard
+    </a>
+
+    <a asp-controller="Patient" asp-action="Appointments" class="menu-item active">
+        🏢 My Appointments
+    </a>
+    <a asp-controller="Appointment" asp-action="Create" class="menu-item">
+        ➕ Book Appointment
+    </a>
+    <a asp-controller="Patient" asp-action="LabReports" class="menu-item">
+        🧪 Lab Reports
+    </a>
+
+    <a asp-controller="Patient" asp-action="Prescriptions" class="menu-item">
+        💊 Prescriptions
+    </a>
+
+    <a asp-controller="Patient" asp-action="Billing" class="menu-item">
+        💳 Billing
+    </a>
+
+    <a asp-controller="Patient" asp-action="Pharmacy" class="menu-item">
+        🏥 Pharmacy
+    </a>
+
+
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" class="menu-item" style="background: none; border: none; color: #c9cbe8; padding: 0.65rem 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
+</div>
+
+
+
+<div class="appointments-wrapper">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 class="page-title" style="margin: 0;">📅 My Appointments</h2>
+        <a asp-controller="Appointment" asp-action="Create" style="background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end)); padding: 0.75rem 1.5rem; border-radius: 12px; color: white; text-decoration: none; font-weight: 700; font-size: 1rem; transition: transform 0.2s; display: inline-block;">
+            ➕ Book New Appointment
+        </a>
+    </div>
+
+    @if (Model.Appointments != null && Model.Appointments.Any())
+    {
+        @foreach (var appointment in Model.Appointments)
+        {
+            <div class="appointment-card">
+                <div class="appt-header">
+                    @appointment.DoctorName
+                </div>
+
+                <div class="appt-info">
+                    📅 Date: <strong>@(appointment.ScheduledTime?.ToString("dd MMM yyyy") ?? "N/A")</strong>
+
+                    <br>
+
+                    ⏰ Time: <strong>@(appointment.ScheduledTime?.ToString("hh:mm tt") ?? "N/A")</strong>
+
+                    <br>
+
+                    📝 Reason: <strong>@(appointment.Reason ?? "General Checkup")</strong>
+                </div>
+
+                @{
+                    var statusClass = appointment.Status?.ToLower() switch
+                    {
+                        "scheduled" or "upcoming" => "badge-upcoming",
+                        "completed" => "badge-completed",
+                        "cancelled" => "badge-cancelled",
+                        _ => "badge-upcoming"
+                    };
+                }
+                <span class="badge @statusClass">@(appointment.Status ?? "Scheduled")</span>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="appointment-card" style="text-align: center; padding: 3rem;">
+            <p style="color: #8f93a7; font-size: 1.1rem;">No appointments found</p>
+        </div>
+    }
+
+</div>

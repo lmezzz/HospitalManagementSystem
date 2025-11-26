@@ -1,0 +1,199 @@
+﻿@model WebManagementSystem.Models.ViewModels.PrescriptionListViewModel
+@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        backdrop-filter: blur(18px);
+        padding: 2rem 1.5rem;
+        position: fixed;
+        left: 0;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2.4rem;
+        border-right: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .sidebar a {
+        text-decoration: none !important;
+        color: #c9cbe8;
+        padding: .65rem .8rem;
+        border-radius: 10px;
+        font-weight: 500;
+        font-size: .95rem;
+        display: flex;
+        align-items: center;
+        gap: .7rem;
+        transition: .2s ease;
+    }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255,255,255,0.14);
+            color: white;
+        }
+
+    .doctor-section {
+        margin-left: 260px;
+        padding: 2rem 2.5rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .glass-card {
+        width: 75%;
+        background: rgba(255,255,255,0.06);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.15);
+        backdrop-filter: blur(15px);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--gold-light);
+        margin-bottom: 1rem;
+    }
+
+    label {
+        font-size: 1rem;
+        color: #e0e3fa;
+        margin-bottom: .3rem;
+        display: block;
+        font-weight: 500;
+    }
+
+    select, input {
+        width: 100%;
+        padding: .8rem;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.2);
+        backdrop-filter: blur(12px);
+        color: white;
+        margin-bottom: 1.2rem;
+        font-size: .95rem;
+    }
+
+        select option {
+            background-color: #0d1128;
+            color: white;
+        }
+
+    select {
+        color-scheme: dark;
+    }
+
+    input::placeholder {
+        color: #dcdcec;
+    }
+
+    .add-btn {
+        margin-top: .5rem;
+        padding: .8rem 1.3rem;
+        border-radius: 12px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+        transition: .2s ease;
+    }
+
+        .add-btn:hover {
+            opacity: .85;
+        }
+</style>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+
+    <a asp-action="Dashboard">🏥 Dashboard</a>
+    <a asp-action="CurrentSession">👤 Current Session</a>
+    <a asp-action="LabRequest">🧪 Lab Request</a>
+    <a asp-action="Prescriptions" class="active">💊 Prescriptions</a>
+    <a asp-action="LabReports">📄 Lab Reports</a>
+    <a asp-action="Appointments">📅 Appointments</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: .7rem .8rem; border-radius: 10px; cursor: pointer; font-size: .95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="doctor-section">
+
+    <div class="page-title">💊 Manage Prescriptions</div>
+
+    <div class="glass-card">
+        <div class="section-title">Add Prescription Item</div>
+
+        <label>Patient</label>
+        <select>
+            <option>Sarah Khan</option>
+            <option>Ahmed Ali</option>
+            <option>Maria Hussain</option>
+        </select>
+
+        <label>Medication</label>
+        <select>
+            <option>Panadol</option>
+            <option>Augmentin</option>
+            <option>Zyrtec</option>
+            <option>Vitamin D</option>
+        </select>
+
+        <label>Dosage</label>
+        <input placeholder="e.g., 500mg" />
+
+        <label>Frequency</label>
+        <input placeholder="e.g., 3 times a day" />
+
+        <label>Duration</label>
+        <input placeholder="e.g., 5 days" />
+
+        <label>Quantity</label>
+        <input placeholder="e.g., 10 tablets" />
+
+        <button class="add-btn">Add Prescription Item</button>
+    </div>
+
+</div>

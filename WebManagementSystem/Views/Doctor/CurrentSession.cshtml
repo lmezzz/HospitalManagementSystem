@@ -1,0 +1,250 @@
+﻿@model WebManagementSystem.Models.ViewModels.CurrentSessionViewModel
+@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        overflow-x: hidden;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* =============== SIDEBAR ================== */
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 2.4rem;
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .sidebar a {
+        text-decoration: none !important;
+        color: #c9cbe8;
+        padding: 0.65rem 0.8rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.2s ease;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-size: 0.95rem;
+    }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255,255,255,0.14);
+            color: #fff;
+        }
+
+    /* =============== PAGE WRAPPER ================== */
+    .doctor-section {
+        margin-left: 260px;
+        padding: 2rem 2.5rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    /* =============== GLASS CARDS ================== */
+    .glass-card {
+        background: rgba(255,255,255,0.06);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.15);
+        backdrop-filter: blur(14px);
+        padding: 1.8rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        margin-bottom: 2rem;
+    }
+
+    .section-title {
+        color: var(--gold-light);
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .info-text {
+        font-size: 1rem;
+        color: #e0e3fa;
+        margin-bottom: .8rem;
+    }
+
+    .notes-box {
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    textarea {
+        width: 100%;
+        padding: 1rem;
+        height: 180px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.08);
+        color: white;
+        resize: none;
+        backdrop-filter: blur(10px);
+    }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--gold-light);
+        }
+
+    .save-btn {
+        margin-top: 1rem;
+        padding: 0.8rem 1.4rem;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+        transition: 0.2s ease;
+    }
+
+        .save-btn:hover {
+            opacity: 0.85;
+        }
+
+    .lab-btn {
+        margin-top: 1.5rem;
+        padding: 0.8rem 1.4rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.25);
+        background: rgba(255,255,255,0.12);
+        color: white;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+        .lab-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+</style>
+
+
+<!-- ============ SIDEBAR ============ -->
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+
+    <a asp-action="Dashboard">🏥 Dashboard</a>
+    <a asp-action="CurrentSessionLatest" class="active">👤 Current Session</a>
+    <a asp-action="Appointments">📅 Appointments</a>
+    <a asp-action="Prescriptions">💊 Prescriptions</a>
+    <a asp-action="LabReports">📄 Lab Reports</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" class="menu-item" style="background: none; border: none; color: #c9cbe8; padding: 0.65rem 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
+</div>
+
+
+<!-- ============ MAIN CONTENT ============ -->
+<div class="doctor-section">
+
+    <div class="page-title">👤 Current Patient Session</div>
+
+    @if (Model == null)
+    {
+        <div class="glass-card">
+            <div class="section-title">No session selected</div>
+            <div class="info-text">
+                There is no active appointment in session. Please choose an appointment from the dashboard.
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- PATIENT INFORMATION -->
+        <div class="glass-card">
+            <div class="section-title">Patient Details</div>
+
+            <div class="info-text"><strong>Name:</strong> @Model.PatientName</div>
+            <div class="info-text"><strong>Age:</strong> @(Model.PatientAge?.ToString() ?? "N/A")</div>
+            <div class="info-text"><strong>Gender:</strong> @(string.IsNullOrEmpty(Model.PatientGender) ? "N/A" : Model.PatientGender)</div>
+            <div class="info-text"><strong>Phone:</strong> @(string.IsNullOrEmpty(Model.PatientPhone) ? "N/A" : Model.PatientPhone)</div>
+        </div>
+
+        <!-- SESSION DETAILS -->
+        <div class="glass-card">
+            <div class="section-title">Session Overview</div>
+
+            <div class="info-text"><strong>Appointment Status:</strong> @(!string.IsNullOrEmpty(Model.Status) ? Model.Status : "Scheduled")</div>
+            <div class="info-text"><strong>Scheduled Time:</strong> @(Model.ScheduledTime?.ToString("dddd, dd MMM yyyy · hh:mm tt") ?? "N/A")</div>
+            <div class="info-text"><strong>Reason:</strong> @(string.IsNullOrEmpty(Model.Reason) ? "General consultation" : Model.Reason)</div>
+
+            @if (!string.IsNullOrEmpty(Model.Symptoms))
+            {
+                <div class="info-text"><strong>Symptoms:</strong> @Model.Symptoms</div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.Diagnosis))
+            {
+                <div class="info-text"><strong>Diagnosis:</strong> @Model.Diagnosis</div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.Notes))
+            {
+                <div class="info-text"><strong>Notes:</strong> @Model.Notes</div>
+            }
+            else
+            {
+                <div class="info-text"><strong>Notes:</strong> No notes recorded yet.</div>
+            }
+
+            <div style="margin-top: 1.5rem;">
+                @if (Model.VisitId.HasValue)
+                {
+                    <a asp-controller="Visit" asp-action="Details" asp-route-id="@Model.VisitId" class="save-btn" style="margin-right: 1rem;">View Visit</a>
+                    <a asp-action="LabRequest" asp-route-visitId="@Model.VisitId" class="lab-btn">🧪 Request Lab Test</a>
+                }
+                else
+                {
+                    <div class="info-text" style="margin-bottom: 1rem;">
+                        No visit has been recorded for this appointment. Create a visit to enable lab requests and prescriptions.
+                    </div>
+                    <a asp-controller="Visit" asp-action="Create" asp-route-appointmentId="@Model.AppointmentId" class="lab-btn">Start Visit &amp; Record Notes</a>
+                }
+            </div>
+        </div>
+    }
+
+</div>

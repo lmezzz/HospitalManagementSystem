@@ -1,0 +1,127 @@
+@model WebManagementSystem.Models.ViewModels.SystemReportViewModel
+@{
+    ViewData["Title"] = "System Report";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">System Report</h2>
+            <small class="text-muted">Last updated @Model.ReportDate.ToString("dd MMM yyyy HH:mm")</small>
+        </div>
+        <a asp-action="Dashboard" class="btn btn-light">Back to dashboard</a>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted text-uppercase small mb-1">Total Users</p>
+                    <h3>@Model.TotalUsers</h3>
+                    <p class="text-success small mb-0">@Model.ActiveUsers active</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted text-uppercase small mb-1">Appointments</p>
+                    <h3>@Model.TotalAppointments</h3>
+                    <p class="small mb-0">Today: @Model.AppointmentsToday</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted text-uppercase small mb-1">Revenue (month)</p>
+                    <h3>@Model.RevenueThisMonth.ToString("C")</h3>
+                    <p class="small mb-0">Outstanding: @Model.TotalOutstanding.ToString("C")</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted text-uppercase small mb-1">Lab Orders</p>
+                    <h3>@Model.PendingLabOrders pending</h3>
+                    <p class="small mb-0">Medications low stock: @Model.LowStockMedications</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-1">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0">
+                    <strong>Appointment trend (30 days)</strong>
+                </div>
+                <div class="card-body">
+                    @if (Model.AppointmentTrends.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead class="text-muted small">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Appointments</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.AppointmentTrends.OrderBy(t => t.Date))
+                                    {
+                                        <tr>
+                                            <td>@item.Date.ToString("dd MMM")</td>
+                                            <td>@item.Count</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No appointment data available for the selected period.</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0">
+                    <strong>Revenue trend (30 days)</strong>
+                </div>
+                <div class="card-body">
+                    @if (Model.RevenueTrends.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead class="text-muted small">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.RevenueTrends.OrderBy(t => t.Date))
+                                    {
+                                        <tr>
+                                            <td>@item.Date.ToString("dd MMM")</td>
+                                            <td>@item.Amount.ToString("C")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No revenue data available for the selected period.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

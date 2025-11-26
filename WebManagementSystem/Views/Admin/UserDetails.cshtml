@@ -1,0 +1,94 @@
+@model WebManagementSystem.Models.ViewModels.UserDetailsViewModel
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">@Model.FullName</h2>
+            <small class="text-muted">@Model.RoleName</small>
+        </div>
+        <div class="btn-group">
+            <a asp-action="EditUser" asp-route-id="@Model.UserId" class="btn btn-outline-primary">Edit</a>
+            <a asp-action="Users" class="btn btn-light">Back to users</a>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase small">Profile</h6>
+                    <dl class="row mb-0">
+                        <dt class="col-5">Username</dt>
+                        <dd class="col-7">@Model.Username</dd>
+
+                        <dt class="col-5">Email</dt>
+                        <dd class="col-7">@Model.Email</dd>
+
+                        <dt class="col-5">Status</dt>
+                        <dd class="col-7">
+                            <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
+                                @(Model.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </dd>
+
+                        <dt class="col-5">Created</dt>
+                        <dd class="col-7">@Model.CreatedAt.ToString("dd MMM yyyy")</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase small">Role Insights</h6>
+
+                    @if (Model.RoleName == "Doctor" && Model.DoctorStats is not null)
+                    {
+                        <div class="row text-center">
+                            <div class="col">
+                                <p class="text-muted mb-1 small">Appointments</p>
+                                <h4>@Model.DoctorStats.TotalAppointments</h4>
+                            </div>
+                            <div class="col">
+                                <p class="text-muted mb-1 small">Patients</p>
+                                <h4>@Model.DoctorStats.TotalPatients</h4>
+                            </div>
+                            <div class="col">
+                                <p class="text-muted mb-1 small">Visits</p>
+                                <h4>@Model.DoctorStats.TotalVisits</h4>
+                            </div>
+                        </div>
+                        <hr />
+                        <p class="mb-1"><strong>Revenue:</strong> @Model.DoctorStats.TotalRevenue.ToString("C")</p>
+                        <p class="mb-0"><strong>Last Appointment:</strong> @(Model.DoctorStats.LastAppointment?.ToString("dd MMM yyyy HH:mm") ?? "N/A")</p>
+                    }
+                    else if (Model.RoleName == "Patient" && Model.PatientStats is not null)
+                    {
+                        <div class="row text-center">
+                            <div class="col">
+                                <p class="text-muted mb-1 small">Appointments</p>
+                                <h4>@Model.PatientStats.TotalAppointments</h4>
+                            </div>
+                            <div class="col">
+                                <p class="text-muted mb-1 small">Visits</p>
+                                <h4>@Model.PatientStats.TotalVisits</h4>
+                            </div>
+                        </div>
+                        <hr />
+                        <p class="mb-1"><strong>Total Billed:</strong> @Model.PatientStats.TotalBillAmount.ToString("C")</p>
+                        <p class="mb-1"><strong>Outstanding:</strong> @Model.PatientStats.OutstandingBalance.ToString("C")</p>
+                        <p class="mb-0"><strong>Last Visit:</strong> @(Model.PatientStats.LastVisit?.ToString("dd MMM yyyy") ?? "N/A")</p>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No role-specific metrics are available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

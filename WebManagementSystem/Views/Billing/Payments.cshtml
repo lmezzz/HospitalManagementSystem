@@ -1,0 +1,188 @@
+﻿@model WebManagementSystem.Models.ViewModels.PaymentListViewModel
+@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI';
+        overflow-x: hidden;
+    }
+
+    .patient-section {
+        margin-left: 0;
+        padding: 2rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .bill-card {
+        background: rgba(255,255,255,0.06);
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.15);
+        padding: 1.8rem;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(15px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+    }
+
+    .bill-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--gold-light);
+        margin-bottom: 1rem;
+    }
+
+    .row {
+        margin-bottom: .5rem;
+        font-size: 1rem;
+    }
+
+    .label {
+        font-weight: 600;
+        color: #e0e3fa;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+        table th {
+            background: rgba(255,255,255,0.12);
+            padding: 0.8rem;
+            font-weight: 600;
+            text-align: left;
+            color: var(--gold-light);
+        }
+
+        table td {
+            padding: 0.8rem;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+            color: #e3e6ff;
+        }
+
+    select {
+        width: 220px;
+        padding: .6rem;
+        border-radius: 10px;
+        margin-top: 1rem;
+        background: rgba(255,255,255,0.08);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+        select option {
+            background-color: #0d1128;
+            color: white;
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #8f93a7;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="patient-section">
+    <div class="page-title">💳 Payments</div>
+
+    @if (Model.Payments != null && Model.Payments.Any())
+    {
+        @if (Model.BillId.HasValue)
+        {
+            <div class="bill-card">
+                <div class="bill-title">Payments for Bill #@Model.BillId</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Payment ID</th>
+                            <th>Amount Paid</th>
+                            <th>Method</th>
+                            <th>Date & Time</th>
+                            <th>Reference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var payment in Model.Payments)
+                        {
+                            <tr>
+                                <td>#@payment.PaymentId</td>
+                                <td>Rs. @payment.AmountPaid.ToString("N2")</td>
+                                <td>@payment.PaymentMethod</td>
+                                <td>@payment.PaymentTime.ToString("MMM dd, yyyy HH:mm")</td>
+                                <td>@payment.ReferenceNumber</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            @foreach (var paymentGroup in Model.Payments.GroupBy(p => p.BillId))
+            {
+                <div class="bill-card">
+                    <div class="bill-title">Bill #@paymentGroup.Key - @paymentGroup.First().BillNumber</div>
+                    <div class="row">
+                        <span class="label">Patient:</span> @paymentGroup.First().PatientName
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Payment ID</th>
+                                <th>Amount Paid</th>
+                                <th>Method</th>
+                                <th>Date & Time</th>
+                                <th>Reference</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var payment in paymentGroup)
+                            {
+                                <tr>
+                                    <td>#@payment.PaymentId</td>
+                                    <td>Rs. @payment.AmountPaid.ToString("N2")</td>
+                                    <td>@payment.PaymentMethod</td>
+                                    <td>@payment.PaymentTime.ToString("MMM dd, yyyy HH:mm")</td>
+                                    <td>@payment.ReferenceNumber</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">💳</div>
+            <h3 style="color: #d4d6e8; margin-bottom: 0.5rem;">No Payments Found</h3>
+            <p>No payment records found.</p>
+        </div>
+    }
+</div>

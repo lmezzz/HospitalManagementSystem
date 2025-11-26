@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WebManagementSystem.Models;
+namespace WebManagementSystem;
 
 public partial class AppUser
 {
@@ -26,6 +26,8 @@ public partial class AppUser
     public virtual ICollection<LabOrder> LabOrders { get; set; } = new List<LabOrder>();
 
     public virtual ICollection<LabResult> LabResults { get; set; } = new List<LabResult>();
+
+    public virtual Patient? Patient { get; set; }
 
     public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
 

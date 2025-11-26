@@ -1,0 +1,278 @@
+﻿@model WebManagementSystem.Models.ViewModels.BillListViewModel
+@{
+    Layout = "_Layout";
+} 
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        overflow-x: hidden;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 2.4rem;
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, #8d79ff, #ff9b61);
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .sidebar a {
+        text-decoration: none !important;
+        color: #c9cbe8;
+        padding: 0.65rem 0.8rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.2s ease;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-size: 0.95rem;
+    }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255,255,255,0.14);
+            color: #fff;
+        }
+
+    .billing-section {
+        margin-left: 260px;
+        padding: 2rem 2.5rem;
+    }
+
+    .billing-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1.8rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+        }
+
+    .bill-card {
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 18px;
+        padding: 1.8rem 2rem;
+        backdrop-filter: blur(14px);
+        margin-bottom: 1.5rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+
+    .bill-header {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--gold-light);
+        margin-bottom: 0.8rem;
+    }
+
+    .bill-info {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        row-gap: 1rem;
+        column-gap: 2rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .bill-row label {
+        color: #c9cbe8;
+        font-weight: 600;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .bill-row div {
+        background: rgba(4,7,20,0.85);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 0.7rem 1rem;
+        border-radius: 10px;
+        color: #efeff7;
+    }
+
+    .status {
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .status.paid {
+        background: #28b463;
+        color: white;
+    }
+
+    .status.pending,
+    .status.unpaid {
+        background: #f1c40f;
+        color: black;
+    }
+
+    .status.partial {
+        background: #ff9800;
+        color: white;
+    }
+
+    .status.overdue {
+        background: #e74c3c;
+        color: white;
+    }
+
+    .btn-pay {
+        display: inline-block;
+        margin-top: 1rem;
+        background: linear-gradient(110deg, #ffb84d, #ff9d3f);
+        padding: 0.55rem 1.4rem;
+        border-radius: 14px;
+        color: #050816;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-decoration: none;
+        box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+        transition: 0.15s ease;
+    }
+
+        .btn-pay:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #8f93a7;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+    <a asp-controller="Patient" asp-action="Dashboard">🏠 Dashboard</a>
+    <a asp-controller="Patient" asp-action="Appointments">🏢 My Appointments</a>
+    <a asp-controller="Patient" asp-action="LabReports">🧪 Lab Reports</a>
+    <a asp-controller="Patient" asp-action="Prescriptions">💊 Prescriptions</a>
+    <a asp-controller="Patient" asp-action="Billing" class="active">💳 Billing</a>
+    <a asp-controller="Patient" asp-action="Pharmacy">🏥 Pharmacy</a>
+    <a asp-controller="Patient" asp-action="Profile">👤 Profile</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: 0.65rem 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
+</div>
+
+<div class="billing-section">
+    <div class="billing-title">💳 My Bills & Payments</div>
+
+    @if (Model.Bills != null && Model.Bills.Any())
+    {
+        @foreach (var bill in Model.Bills)
+        {
+    <div class="bill-card">
+                <div class="bill-header">Bill #@bill.BillId</div>
+        <div class="bill-info">
+            <div class="bill-row">
+                <label>Bill ID</label>
+                        <div>BILL-@bill.BillId.ToString("D6")</div>
+                    </div>
+                    <div class="bill-row">
+                        <label>Total Amount</label>
+                        <div>PKR @bill.TotalAmount.ToString("N2")</div>
+                    </div>
+                    <div class="bill-row">
+                        <label>Amount Paid</label>
+                        <div>PKR @bill.AmountPaid.ToString("N2")</div>
+            </div>
+            <div class="bill-row">
+                        <label>Balance</label>
+                        <div>PKR @bill.Balance.ToString("N2")</div>
+            </div>
+            <div class="bill-row">
+                <label>Date Issued</label>
+                        <div>@bill.CreatedAt.ToString("MMM dd, yyyy")</div>
+            </div>
+            <div class="bill-row">
+                <label>Status</label>
+                        <div>
+                            @if (bill.Status == "Paid")
+                            {
+                                <span class="status paid">Paid</span>
+                            }
+                            else if (bill.Status == "Partial")
+                            {
+                                <span class="status partial">Partial</span>
+                            }
+                            else
+                            {
+                                <span class="status pending">@bill.Status</span>
+                            }
+            </div>
+        </div>
+    </div>
+
+                @if (bill.Balance > 0)
+                {
+                    <label style="margin-top: 1rem; display: block; color: #c9cbe8; font-weight: 600;">Choose Payment Method</label>
+                    <select id="paymentMethod_@bill.BillId" onchange="redirectPayment(@bill.BillId)" style="width: 220px; padding: .6rem; border-radius: 10px; margin-top: 0.5rem; background: rgba(255,255,255,0.08); color: white; border: 1px solid rgba(255,255,255,0.2);">
+                        <option value="">Select a method</option>
+                        <option value="cash">Cash</option>
+                        <option value="card">Credit / Debit Card</option>
+                        <option value="jazzcash">JazzCash</option>
+                        <option value="easypaisa">Easypaisa</option>
+                    </select>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">💳</div>
+            <h3 style="color: #d4d6e8; margin-bottom: 0.5rem;">No Bills Found</h3>
+            <p>You don't have any bills yet. Bills will appear here once services are provided.</p>
+        </div>
+    }
+</div>
+
+<script>
+    function redirectPayment(billId) {
+        const method = document.getElementById("paymentMethod_" + billId).value;
+        if (!method) return;
+
+        const base = "/Billing/";
+
+        if (method === "cash") window.location.href = base + "CashPayment?billId=" + billId;
+        if (method === "card") window.location.href = base + "CardPayment?billId=" + billId;
+        if (method === "jazzcash") window.location.href = base + "JazzCashPayment?billId=" + billId;
+        if (method === "easypaisa") window.location.href = base + "EasypaisaPayment?billId=" + billId;
+    }
+</script>

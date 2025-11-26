@@ -1,0 +1,314 @@
+﻿@model WebManagementSystem.Models.ViewModels.LabOrderListViewModel
+@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --gold-light: #ffce70;
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        overflow-x: hidden;
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.95);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        left: 0;
+        top: 0;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 2.4rem;
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .sidebar a {
+        text-decoration: none;
+        color: #c9cbe8;
+        padding: 0.65rem 0.8rem;
+        border-radius: 10px;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-size: 0.95rem;
+    }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+        }
+
+    .page-wrapper {
+        margin-left: 260px;
+        padding: 2rem 2.4rem;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .search-bar {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.8rem;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        background: rgba(4,7,20,0.9);
+        border: 1px solid rgba(255,255,255,0.25);
+        color: #fff;
+        font-size: 0.95rem;
+    }
+
+    .filter-select {
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        background: rgba(4,7,20,0.9);
+        color: #fff;
+        border: 1px solid rgba(255,255,255,0.25);
+        font-size: 0.95rem;
+    }
+
+    .glass-card {
+        background: rgba(255,255,255,0.05);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.14);
+        backdrop-filter: blur(16px);
+        padding: 1.6rem;
+        box-shadow: 0 18px 45px rgba(0,0,0,0.55);
+    }
+
+    table {
+        width: 100%;
+        color: white;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+    }
+
+    thead {
+        background: rgba(255,255,255,0.08);
+    }
+
+    th {
+        padding: 0.9rem;
+        text-align: left;
+        font-weight: 600;
+        color: var(--gold-light);
+    }
+
+    td {
+        padding: 0.8rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .pill {
+        padding: 0.32rem 0.7rem;
+        font-size: 0.78rem;
+        border-radius: 999px;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .pill-green {
+        background: #27ae60;
+        color: white;
+    }
+
+    .pill-orange {
+        background: #f39c12;
+        color: #050816;
+    }
+
+    .pill-red {
+        background: #c0392b;
+        color: white;
+    }
+
+    .btn-view {
+        background: linear-gradient(110deg, #ffb84d, #ff9d3f);
+        padding: 0.45rem 1rem;
+        border-radius: 12px;
+        border: none;
+        color: #050816;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-view:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #8f93a7;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+    <a asp-controller="Doctor" asp-action="Dashboard">🏠 Dashboard</a>
+    <a asp-controller="Doctor" asp-action="Appointments">📅 Appointments</a>
+    <a asp-controller="Doctor" asp-action="Patients">👤 Patients</a>
+    <a asp-controller="Lab" asp-action="Create">🧪 Lab Requests</a>
+    <a class="active" asp-controller="Doctor" asp-action="LabReports">📄 Lab Reports</a>
+    <a asp-controller="Doctor" asp-action="Prescriptions">💊 Prescriptions</a>
+    <a asp-controller="Doctor" asp-action="Schedule">📅 Schedule</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: .7rem .8rem; border-radius: 10px; cursor: pointer; font-size: .95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
+</div>
+
+<div class="page-wrapper">
+    <h1 class="page-title">📄 Lab Reports</h1>
+
+    <div class="search-bar">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by patient name or test name..." />
+        <select id="statusFilter" class="filter-select">
+            <option value="All">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="InProgress">In Progress</option>
+            <option value="Completed">Completed</option>
+        </select>
+    </div>
+
+    <div class="glass-card">
+        @if (Model.Orders != null && Model.Orders.Any())
+        {
+        <table>
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Test</th>
+                    <th>Status</th>
+                        <th>Order Date</th>
+                        <th>Completed Date</th>
+                    <th>Report</th>
+                </tr>
+            </thead>
+            <tbody>
+                    @foreach (var order in Model.Orders)
+                    {
+                <tr>
+                            <td>@order.PatientName</td>
+                            <td>@order.TestName</td>
+                            <td>
+                                @if (order.Status == "Completed")
+                                {
+                                    <span class="pill pill-green">Completed</span>
+                                }
+                                else if (order.Status == "InProgress")
+                                {
+                                    <span class="pill pill-orange">In Progress</span>
+                                }
+                                else
+                                {
+                                    <span class="pill pill-orange">Pending</span>
+                                }
+                    </td>
+                            <td>@order.OrderTime.ToString("MMM dd, yyyy HH:mm")</td>
+                            <td>
+                                @if (order.CompletedTime.HasValue)
+                                {
+                                    @order.CompletedTime.Value.ToString("MMM dd, yyyy HH:mm")
+                                }
+                                else
+                                {
+                                    <span style="color: #8f93a7;">-</span>
+                                }
+                    </td>
+                            <td>
+                                @if (order.Status == "Completed")
+                                {
+                                    <a asp-controller="Lab" asp-action="Details" asp-route-id="@order.LabOrderId" class="btn-view">View</a>
+                                }
+                                else
+                                {
+                                    <span style="color: #8f93a7;">Pending</span>
+                                }
+                    </td>
+                </tr>
+                    }
+            </tbody>
+        </table>
+
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); color: #bebfe7; font-size: 0.9rem;">
+                Total Lab Orders: <strong style="color: white;">@Model.TotalCount</strong>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon">📄</div>
+                <h3 style="color: #d4d6e8; margin-bottom: 0.5rem;">No Lab Reports Found</h3>
+                <p>No lab orders have been created yet. Lab reports will appear here once orders are placed.</p>
+            </div>
+        }
+    </div>
+</div>
+
+    <script>
+        // SEARCH FILTER
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
+        const rows = document.querySelectorAll("tbody tr");
+
+    function filterTable() {
+        const searchValue = searchInput.value.toLowerCase();
+        const statusValue = statusFilter.value;
+
+            rows.forEach(row => {
+                const patientName = row.children[0].textContent.toLowerCase();
+            const testName = row.children[1].textContent.toLowerCase();
+            const statusText = row.querySelector(".pill")?.textContent.trim() || "";
+
+            const matchesSearch = patientName.includes(searchValue) || testName.includes(searchValue);
+            const matchesStatus = statusValue === "All" || 
+                                 (statusValue === "Pending" && statusText === "Pending") ||
+                                 (statusValue === "InProgress" && statusText === "In Progress") ||
+                                 (statusValue === "Completed" && statusText === "Completed");
+
+            row.style.display = (matchesSearch && matchesStatus) ? "" : "none";
+        });
+    }
+
+    searchInput.addEventListener("keyup", filterTable);
+    statusFilter.addEventListener("change", filterTable);
+    </script>

@@ -1,0 +1,336 @@
+﻿@model WebManagementSystem.Models.ViewModels.PatientDashboardViewModel
+@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.12);
+        --gradient-start: #8d79ff;
+        --gradient-mid: #c06bff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        overflow-x: hidden;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, #8d79ff, #ff9b61);
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .sidebar a {
+        text-decoration: none !important;
+        color: #c9cbe8;
+        padding: 0.65rem 0.8rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.2s ease;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-size: 0.95rem;
+    }
+        
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255,255,255,0.14);
+            color: #fff;
+        }
+
+    .topbar {
+        margin-left: 240px;
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .topbar h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+    .user-tag {
+        background: rgba(255,255,255,0.1);
+        padding: 0.55rem 1rem;
+        border-radius: 14px;
+        font-size: 0.95rem;
+    }
+
+    .profile-section {
+        margin-left: 260px;
+        padding: 2rem;
+    }
+   
+.profile-box {
+    width: 100%;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 18px;
+    overflow: hidden;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+.profile-box-header {
+    background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+    padding: 1rem 1.4rem;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    letter-spacing: 0.3px;
+}
+
+.profile-box-content {
+    padding: 1.8rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 1.4rem;
+    column-gap: 2.2rem;
+}
+
+.info-field label {
+    font-weight: 600;
+    color: var(--gold-light);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.info-field .value {
+    background: rgba(4,7,20,0.85);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    color: #efeff7;
+    font-size: 0.9rem;
+}
+
+    .dashboard-grid {
+        margin-left: 260px; 
+        padding: 1rem 2rem 3rem;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+
+    .card {
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 20px;
+        padding: 1.6rem;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        transition: 0.3s;
+    }
+
+    .card:hover {
+        transform: translateY(-4px);
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.7rem;
+        color: var(--gold-light);
+    }
+
+    .card-content {
+        font-size: 0.95rem;
+        color: #ddd;
+        line-height: 1.6;
+    }
+
+    .full-card {
+        grid-column: span 3;
+    }
+
+    .activity-item {
+        margin-bottom: 0.5rem;
+        color: #ddd;
+    }
+
+    .empty-state {
+        color: #8f93a7;
+        font-style: italic;
+        }
+</style>
+
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+    <a asp-controller="Patient" asp-action="Dashboard" class="active">🏠 Dashboard</a>
+    <a asp-controller="Patient" asp-action="Appointments">📅 My Appointments</a>
+    <a asp-controller="Appointment" asp-action="Create">➕ Book Appointment</a>
+    <a asp-controller="Patient" asp-action="LabReports">🧪 Lab Reports</a>
+    <a asp-controller="Patient" asp-action="Prescriptions">💊 Prescriptions</a>
+    <a asp-controller="Patient" asp-action="Billing">💳 Billing</a>
+    <a asp-controller="Patient" asp-action="Pharmacy">🏥 Pharmacy</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: 0.65rem 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
+</div>
+
+<div class="topbar">
+    <h2>Welcome, @Model.PatientName</h2>
+    <div class="user-tag">Patient ID: @Model.PatientId</div>
+</div>
+
+<div class="profile-section">
+    <div class="profile-box">
+        <div class="profile-box-header">
+            Patient Information
+        </div>
+        <div class="profile-box-content">
+            <div class="info-field">
+                <label>First Name</label>
+                <div class="value">@(Model.FirstName ?? "N/A")</div>
+            </div>
+
+            <div class="info-field">
+                <label>Last Name</label>
+                <div class="value">@(Model.LastName ?? "N/A")</div>
+            </div>
+
+            <div class="info-field">
+                <label>Gender</label>
+                <div class="value">@(Model.Gender ?? "N/A")</div>
+            </div>
+
+            <div class="info-field">
+                <label>Date of Birth</label>
+                <div class="value">@(Model.DateOfBirth?.ToString("dd / MM / yyyy") ?? "N/A")</div>
+            </div>
+
+            <div class="info-field">
+                <label>Phone Number</label>
+                <div class="value">@(Model.Phone ?? "N/A")</div>
+            </div>
+
+            <div class="info-field">
+                <label>CNIC</label>
+                <div class="value">@(Model.CNIC ?? "N/A")</div>
+            </div>
+
+            <div class="info-field">
+                <label>Emergency Contact</label>
+                <div class="value">@(Model.EmergencyContact ?? "N/A")</div>
+            </div>
+
+            <div class="info-field">
+                <label>Allergies (if any)</label>
+                <div class="value">@(string.IsNullOrEmpty(Model.Allergies) ? "None" : Model.Allergies)</div>
+            </div>
+
+            <div class="info-field">
+                <label>Chronic Diseases (if any)</label>
+                <div class="value">@(string.IsNullOrEmpty(Model.ChronicConditions) ? "None" : Model.ChronicConditions)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <div class="card">
+        <div class="card-title">Upcoming Appointment</div>
+        <div class="card-content">
+            @if (Model.Appointments != null && Model.Appointments.Any())
+            {
+                var nextAppt = Model.Appointments.First();
+                <text>@nextAppt.DoctorName<br>
+                📅 @nextAppt.ScheduledTime.ToString("dd MMM") · @nextAppt.ScheduledTime.ToString("hh:mm tt")</text>
+            }
+            else
+            {
+                <span class="empty-state">No upcoming appointments</span>
+                <br><br>
+                <a asp-controller="Appointment" asp-action="Create" style="background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end)); padding: 0.6rem 1.2rem; border-radius: 10px; color: white; text-decoration: none; font-weight: 600; font-size: 0.9rem; display: inline-block; margin-top: 0.5rem;">Book Now</a>
+            }
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Pending Lab Tests</div>
+        <div class="card-content">
+            @if (Model.PendingLabResults > 0)
+            {
+                <text>@Model.PendingLabResults test(s) awaiting results</text>
+            }
+            else
+            {
+                <span class="empty-state">No pending lab tests</span>
+            }
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Outstanding Bills</div>
+        <div class="card-content">
+            @if (Model.OutstandingBillAmount > 0)
+            {
+                <text>PKR @Model.OutstandingBillAmount.Value.ToString("N2")</text>
+            }
+            else
+            {
+                <span class="empty-state">No outstanding bills</span>
+            }
+        </div>
+    </div>
+
+    <div class="card full-card">
+        <div class="card-title">Recent Activity</div>
+        <div class="card-content">
+            @if (Model.RecentPrescriptions != null && Model.RecentPrescriptions.Any())
+            {
+                @foreach (var prescription in Model.RecentPrescriptions.Take(3))
+                {
+                    <div class="activity-item">
+                        • Prescription from @prescription.DoctorName (@prescription.ItemCount items) - @prescription.CreatedAt.ToString("MMM dd, yyyy")
+                    </div>
+                }
+            }
+            @if (Model.Appointments != null && Model.Appointments.Any())
+            {
+                @foreach (var appointment in Model.Appointments.Take(2))
+                {
+                    <div class="activity-item">
+                        • Appointment with @appointment.DoctorName - @appointment.ScheduledTime.ToString("MMM dd, yyyy")
+                    </div>
+                }
+            }
+            @if ((Model.RecentPrescriptions == null || !Model.RecentPrescriptions.Any()) && 
+                 (Model.Appointments == null || !Model.Appointments.Any()))
+            {
+                <span class="empty-state">No recent activity</span>
+            }
+        </div>
+    </div>
+</div>
