@@ -1,4 +1,5 @@
-﻿@{
+﻿@model WebManagementSystem.Models.ViewModels.AppointmentListViewModel
+@{
     Layout = "_Layout";
 }
 
@@ -148,7 +149,9 @@
     <a asp-controller="Patient" asp-action="Appointments" class="menu-item active">
         🏢 My Appointments
     </a>
-
+    <a asp-controller="Appointment" asp-action="Create" class="menu-item">
+        ➕ Book Appointment
+    </a>
     <a asp-controller="Patient" asp-action="LabReports" class="menu-item">
         🧪 Lab Reports
     </a>
@@ -166,93 +169,61 @@
     </a>
 
 
-    <a asp-controller="Home" asp-action="Index" class="menu-item">
-        🚪 Logout
-    </a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" class="menu-item" style="background: none; border: none; color: #c9cbe8; padding: 0.65rem 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
 </div>
 
 
 
 <div class="appointments-wrapper">
 
-    <h2 class="page-title">📅 My Appointments</h2><!--apointments need to be looped-->
-
-    <!-- ================== APPOINTMENT 1 ================== -->
-    <div class="appointment-card">
-        <div class="appt-header">
-            Dr. Ayesha — Cardiologist
-            <!-- appt.Doctor.FullName - appt.Doctor.Specialization -->
-        </div>
-
-        <div class="appt-info">
-            📅 Date: <strong>24 Nov 2025</strong>
-            <!-- appt.Date.ToString("dd MMM yyyy") -->
-
-            <br>
-
-            ⏰ Time: <strong>3:30 PM</strong>
-            <!-- appt.Time -->
-
-            <br>
-
-            🏥 Room: <strong>OPD – 12A</strong>
-            <!-- appt.Room -->
-        </div>
-
-        <span class="badge badge-upcoming">Upcoming</span>
-        <!-- appt.Status -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 class="page-title" style="margin: 0;">📅 My Appointments</h2>
+        <a asp-controller="Appointment" asp-action="Create" style="background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end)); padding: 0.75rem 1.5rem; border-radius: 12px; color: white; text-decoration: none; font-weight: 700; font-size: 1rem; transition: transform 0.2s; display: inline-block;">
+            ➕ Book New Appointment
+        </a>
     </div>
 
-    <!-- ================== APPOINTMENT 2 ================== -->
-    <div class="appointment-card">
-        <div class="appt-header">
-            Dr. Ali — General Physician
-            <!-- appt.Doctor.FullName -->
+    @if (Model.Appointments != null && Model.Appointments.Any())
+    {
+        @foreach (var appointment in Model.Appointments)
+        {
+            <div class="appointment-card">
+                <div class="appt-header">
+                    @appointment.DoctorName
+                </div>
+
+                <div class="appt-info">
+                    📅 Date: <strong>@(appointment.ScheduledTime?.ToString("dd MMM yyyy") ?? "N/A")</strong>
+
+                    <br>
+
+                    ⏰ Time: <strong>@(appointment.ScheduledTime?.ToString("hh:mm tt") ?? "N/A")</strong>
+
+                    <br>
+
+                    📝 Reason: <strong>@(appointment.Reason ?? "General Checkup")</strong>
+                </div>
+
+                @{
+                    var statusClass = appointment.Status?.ToLower() switch
+                    {
+                        "scheduled" or "upcoming" => "badge-upcoming",
+                        "completed" => "badge-completed",
+                        "cancelled" => "badge-cancelled",
+                        _ => "badge-upcoming"
+                    };
+                }
+                <span class="badge @statusClass">@(appointment.Status ?? "Scheduled")</span>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="appointment-card" style="text-align: center; padding: 3rem;">
+            <p style="color: #8f93a7; font-size: 1.1rem;">No appointments found</p>
         </div>
-
-        <div class="appt-info">
-            📅 Date: <strong>10 Oct 2025</strong>
-            <!-- appt.Date -->
-
-            <br>
-
-            ⏰ Time: <strong>11:00 AM</strong>
-            <!-- appt.Time -->
-
-            <br>
-
-            🏥 Room: <strong>Consultation Room 3</strong>
-            <!-- appt.Room -->
-        </div>
-
-        <span class="badge badge-completed">Completed</span>
-        <!-- appt.Status -->
-    </div>
-
-    <!-- ================== APPOINTMENT 3 ================== -->
-    <div class="appointment-card">
-        <div class="appt-header">
-            Dr. Sarah — Dermatologist
-            <!-- appt.Doctor.FullName -->
-        </div>
-
-        <div class="appt-info">
-            📅 Date: <strong>8 Aug 2025</strong>
-            <!-- appt.Date -->
-
-            <br>
-
-            ⏰ Time: <strong>4:00 PM</strong>
-            <!-- appt.Time -->
-
-            <br>
-
-            🏥 Room: <strong>Skin Clinic — 02</strong>
-            <!-- appt.Room -->
-        </div>
-
-        <span class="badge badge-cancelled">Cancelled</span>
-        <!-- appt.Status -->
-    </div>
+    }
 
 </div>

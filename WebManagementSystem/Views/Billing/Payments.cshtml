@@ -1,4 +1,5 @@
-﻿@{
+﻿@model WebManagementSystem.Models.ViewModels.PaymentListViewModel
+@{
     Layout = "_Layout";
 }
 
@@ -70,11 +71,13 @@
             padding: 0.8rem;
             font-weight: 600;
             text-align: left;
+            color: var(--gold-light);
         }
 
         table td {
             padding: 0.8rem;
             border-bottom: 1px solid rgba(255,255,255,0.12);
+            color: #e3e6ff;
         }
 
     select {
@@ -91,108 +94,95 @@
             background-color: #0d1128;
             color: white;
         }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #8f93a7;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
 </style>
 
 <div class="patient-section">
+    <div class="page-title">💳 Payments</div>
 
-    <div class="page-title">💳 My Bills & Payments</div>
-
-    <!-- BILL 1024 -->
-    <div class="bill-card">
-        <div class="bill-title">Bill #1024</div>
-
-        <div class="row"><span class="label">Consultation Fee:</span> Rs 1500</div>
-        <div class="row"><span class="label">Lab Charges:</span> Rs 2200</div>
-        <div class="row"><span class="label">Medication:</span> Rs 800</div>
-        <div class="row"><span class="label">Total:</span> Rs 4500</div>
-        <div class="row"><span class="label">Status:</span> Pending</div>
-
-        <label style="margin-top: 1rem;">Choose Payment Method</label>
-        <select id="paymentMethod_1024" onchange="redirectPayment(1024)">
-            <option value="">Select a method</option>
-            <option value="cash">Cash</option>
-            <option value="card">Credit / Debit Card</option>
-            <option value="jazzcash">JazzCash</option>
-            <option value="easypaisa">Easypaisa</option>
-        </select>
-
-        <br /><br />
-
-        <div class="bill-title">Payments for this Bill</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Payment ID</th>
-                    <th>Amount Paid</th>
-                    <th>Method</th>
-                    <th>Date & Time</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>501</td>
-                    <td>2000</td>
-                    <td>JazzCash</td>
-                    <td>10 Nov 2025 - 03:45 PM</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- BILL 1025 -->
-    <div class="bill-card">
-        <div class="bill-title">Bill #1025</div>
-
-        <div class="row"><span class="label">Consultation Fee:</span> Rs 1500</div>
-        <div class="row"><span class="label">Lab Charges:</span> Rs 0</div>
-        <div class="row"><span class="label">Medication:</span> Rs 600</div>
-        <div class="row"><span class="label">Total:</span> Rs 2100</div>
-        <div class="row"><span class="label">Status:</span> Paid</div>
-
-        <label style="margin-top: 1rem;">Choose Payment Method</label>
-        <select id="paymentMethod_1025" onchange="redirectPayment(1025)">
-            <option value="">Select a method</option>
-            <option value="cash">Cash</option>
-            <option value="card">Credit / Debit Card</option>
-            <option value="jazzcash">JazzCash</option>
-            <option value="easypaisa">Easypaisa</option>
-        </select>
-
-        <br /><br />
-
-        <div class="bill-title">Payments for this Bill</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Payment ID</th>
-                    <th>Amount Paid</th>
-                    <th>Method</th>
-                    <th>Date & Time</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>506</td>
-                    <td>2100</td>
-                    <td>Cash</td>
-                    <td>11 Nov 2025 - 01:10 PM</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-</div>
-
-<script>
-    function redirectPayment(billId) {
-        const method = document.getElementById("paymentMethod_" + billId).value;
-        if (!method) return;
-
-        const base = "/Billing/";
-
-        if (method === "cash") window.location.href = base + "CashPayment?billId=" + billId;
-        if (method === "card") window.location.href = base + "CardPayment?billId=" + billId;
-        if (method === "jazzcash") window.location.href = base + "JazzCashPayment?billId=" + billId;
-        if (method === "easypaisa") window.location.href = base + "EasypaisaPayment?billId=" + billId;
+    @if (Model.Payments != null && Model.Payments.Any())
+    {
+        @if (Model.BillId.HasValue)
+        {
+            <div class="bill-card">
+                <div class="bill-title">Payments for Bill #@Model.BillId</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Payment ID</th>
+                            <th>Amount Paid</th>
+                            <th>Method</th>
+                            <th>Date & Time</th>
+                            <th>Reference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var payment in Model.Payments)
+                        {
+                            <tr>
+                                <td>#@payment.PaymentId</td>
+                                <td>Rs. @payment.AmountPaid.ToString("N2")</td>
+                                <td>@payment.PaymentMethod</td>
+                                <td>@payment.PaymentTime.ToString("MMM dd, yyyy HH:mm")</td>
+                                <td>@payment.ReferenceNumber</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            @foreach (var paymentGroup in Model.Payments.GroupBy(p => p.BillId))
+            {
+                <div class="bill-card">
+                    <div class="bill-title">Bill #@paymentGroup.Key - @paymentGroup.First().BillNumber</div>
+                    <div class="row">
+                        <span class="label">Patient:</span> @paymentGroup.First().PatientName
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Payment ID</th>
+                                <th>Amount Paid</th>
+                                <th>Method</th>
+                                <th>Date & Time</th>
+                                <th>Reference</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var payment in paymentGroup)
+                            {
+                                <tr>
+                                    <td>#@payment.PaymentId</td>
+                                    <td>Rs. @payment.AmountPaid.ToString("N2")</td>
+                                    <td>@payment.PaymentMethod</td>
+                                    <td>@payment.PaymentTime.ToString("MMM dd, yyyy HH:mm")</td>
+                                    <td>@payment.ReferenceNumber</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
     }
-</script>
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">💳</div>
+            <h3 style="color: #d4d6e8; margin-bottom: 0.5rem;">No Payments Found</h3>
+            <p>No payment records found.</p>
+        </div>
+    }
+</div>

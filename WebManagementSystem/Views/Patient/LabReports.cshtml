@@ -1,0 +1,259 @@
+@model WebManagementSystem.Models.ViewModels.LabOrderListViewModel
+@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --gold-light: #ffce70;
+        --gradient-start: #8d79ff;
+        --gradient-mid: #c06bff;
+        --gradient-end: #ff9b61;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .lab-reports-wrapper {
+        margin-left: 240px;
+        padding: 2rem 2rem 3rem;
+    }
+
+    /* ================= SIDEBAR ================= */
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 2.4rem;
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, #8d79ff, #ff9b61);
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .sidebar a {
+        text-decoration: none !important;
+        color: #c9cbe8;
+        padding: .65rem .8rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: .2s ease;
+        font-weight: 500;
+        display: flex;
+        gap: .7rem;
+        font-size: .95rem;
+        align-items: center;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+        background: rgba(255,255,255,0.14);
+        color: white;
+    }
+
+    /* ================= MAIN CONTENT ================= */
+    .page-header {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .table-container {
+        background: rgba(255,255,255,0.06);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.15);
+        backdrop-filter: blur(15px);
+        padding: 2rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        color: white;
+    }
+
+    th {
+        padding: 1rem;
+        background: rgba(255,255,255,0.12);
+        text-align: left;
+        font-weight: 600;
+        color: var(--gold-light);
+    }
+
+    td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.12);
+        color: #e3e6ff;
+    }
+
+    tr:hover {
+        background: rgba(255,255,255,0.05);
+    }
+
+    .badge {
+        padding: .4rem .8rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .badge-pending {
+        background: rgba(255,193,7,0.2);
+        color: #ffc107;
+    }
+
+    .badge-inprogress {
+        background: rgba(0,123,255,0.2);
+        color: #007bff;
+    }
+
+    .badge-completed {
+        background: rgba(40,167,69,0.2);
+        color: #28a745;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #8f93a7;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .btn-view {
+        padding: .5rem 1rem;
+        border-radius: 8px;
+        background: rgba(40,167,69,0.2);
+        color: #28a745;
+        border: 1px solid rgba(40,167,69,0.4);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: .2s;
+    }
+
+    .btn-view:hover {
+        background: rgba(40,167,69,0.3);
+        transform: translateY(-2px);
+    }
+</style>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+    <a asp-action="Dashboard">🏠 Dashboard</a>
+    <a asp-action="Appointments">📅 Appointments</a>
+    <a asp-action="LabReports" class="active">🧪 Lab Reports</a>
+    <a asp-action="Prescriptions">💊 Prescriptions</a>
+    <a asp-action="Billing">💰 Billing</a>
+    <a asp-action="Profile">👤 Profile</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: 0.7rem 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="lab-reports-wrapper">
+    <div class="page-header">🧪 Lab Reports</div>
+
+    <div class="table-container">
+        @if (Model.Orders != null && Model.Orders.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Test Name</th>
+                        <th>Doctor</th>
+                        <th>Order Date</th>
+                        <th>Status</th>
+                        <th>Completed Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.Orders)
+                    {
+                        <tr>
+                            <td>#@order.LabOrderId</td>
+                            <td><strong>@order.TestName</strong></td>
+                            <td>@order.DoctorName</td>
+                            <td>@order.OrderTime.ToString("MMM dd, yyyy HH:mm")</td>
+                            <td>
+                                @if (order.Status == "Completed")
+                                {
+                                    <span class="badge badge-completed">✓ Completed</span>
+                                }
+                                else if (order.Status == "InProgress")
+                                {
+                                    <span class="badge badge-inprogress">⏳ In Progress</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-pending">⏱ Pending</span>
+                                }
+                            </td>
+                            <td>
+                                @if (order.CompletedTime.HasValue)
+                                {
+                                    @order.CompletedTime.Value.ToString("MMM dd, yyyy HH:mm")
+                                }
+                                else
+                                {
+                                    <span style="color: #8f93a7;">-</span>
+                                }
+                            </td>
+                            <td>
+                                @if (order.Status == "Completed")
+                                {
+                                    <a asp-controller="Lab" asp-action="Details" asp-route-id="@order.LabOrderId" class="btn-view">View Results</a>
+                                }
+                                else
+                                {
+                                    <span style="color: #8f93a7;">Pending</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); color: #bebfe7; font-size: 0.9rem;">
+                Total Lab Orders: <strong style="color: white;">@Model.TotalCount</strong>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon">🧪</div>
+                <h3 style="color: #d4d6e8; margin-bottom: 0.5rem;">No Lab Reports Found</h3>
+                <p>You don't have any lab orders yet. Lab reports will appear here once your doctor orders tests.</p>
+            </div>
+        }
+    </div>
+</div>
+

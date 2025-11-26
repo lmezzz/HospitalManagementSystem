@@ -1,4 +1,5 @@
-﻿@{
+﻿@model WebManagementSystem.Models.ViewModels.LabDashboardViewModel
+@{
     Layout = "_Layout";
 }
 
@@ -110,7 +111,9 @@
     <a asp-action="Dashboard" class="active">🧪 Lab Dashboard</a>
     <a asp-action="Orders">📄 Lab Orders</a>
     <a asp-action="Results">📤 Upload Results</a>
-    <a asp-controller="Account" asp-action="Login">🚪 Logout</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: .7rem .8rem; border-radius: 10px; cursor: pointer; font-size: .95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
 </div>
 
 <div class="lab-section">
@@ -120,20 +123,57 @@
     <div class="grid">
 
         <div class="card">
-            <div class="card-title">Urgent Orders</div>
-            <div class="card-num">4</div>
+            <div class="card-title">Pending Orders</div>
+            <div class="card-num">@Model.PendingOrders</div>
         </div>
 
         <div class="card">
-            <div class="card-title">Pending Orders</div>
-            <div class="card-num">12</div>
+            <div class="card-title">In Progress</div>
+            <div class="card-num">@Model.InProgress</div>
         </div>
 
         <div class="card">
             <div class="card-title">Completed Today</div>
-            <div class="card-num">8</div>
+            <div class="card-num">@Model.CompletedToday</div>
         </div>
 
     </div>
+
+    @if (Model.PendingLabOrders != null && Model.PendingLabOrders.Any())
+    {
+        <div style="margin-top: 2rem; width: 90%;">
+            <h3 style="margin-bottom: 1rem; font-size: 1.3rem;">Pending Lab Orders</h3>
+            <div style="background: rgba(255,255,255,0.06); border-radius: 18px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.12);">
+                <table style="width: 100%; border-collapse: collapse; color: white;">
+                    <thead>
+                        <tr style="background: rgba(255,255,255,0.12);">
+                            <th style="padding: 0.8rem; text-align: left;">Patient</th>
+                            <th style="padding: 0.8rem; text-align: left;">Test</th>
+                            <th style="padding: 0.8rem; text-align: left;">Priority</th>
+                            <th style="padding: 0.8rem; text-align: left;">Order Time</th>
+                            <th style="padding: 0.8rem; text-align: left;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.PendingLabOrders.Take(10))
+                        {
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <td style="padding: 0.8rem;">@order.PatientName</td>
+                                <td style="padding: 0.8rem;">@order.TestName</td>
+                                <td style="padding: 0.8rem; color: @(order.Priority == "Urgent" || order.Priority == "Stat" ? "#ff6b6b" : "#ffd36e"); font-weight: 600;">@order.Priority</td>
+                                <td style="padding: 0.8rem;">@order.OrderTime.ToString("MMM dd, yyyy HH:mm")</td>
+                                <td style="padding: 0.8rem;">
+                                    <span style="padding: .3rem .6rem; border-radius: 6px; font-size: 0.85rem; 
+                                        background: rgba(255,200,74,0.2); color: #ffd36e;">
+                                        @order.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 
 </div>

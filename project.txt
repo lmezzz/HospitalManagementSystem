@@ -1,0 +1,194 @@
+Hospital Management System — SRS (Software
+Requirements Specification) & FSR (Feasibility
+Study Report)
+Document purpose
+This document contains two parts for the proposed Hospital Management System (HMS) project:
+1.
+2.
+SRS (Software Requirements Specification) — formal description of system requirements
+(functional and non-functional), use cases, stakeholders, constraints, and acceptance criteria.
+FSR (Feasibility Study Report) — evaluation of technical, operational, economic feasibility, schedule
+estimate, risk analysis, and final recommendation.
+This document is intended for project supervisors, developers, and stakeholders.
+Part A — SRS (Software Requirements
+Specification)
+1. Introduction
+1.1 Purpose of the system The Hospital Management System (HMS) will automate key hospital operations:
+patient registration, appointment scheduling, clinical records, prescriptions, pharmacy inventory, billing,
+lab/radiology orders, and administrative reporting. The system will be a web-based ASP.NET MVC
+application using PostgreSQL as the backend.
+1.2 Scope The HMS will support the following modules: - User management & role-based access - Patient
+management - Appointment scheduling & calendar - Visit/encounter documentation - Prescription writing
+and pharmacy integration - Billing & payments - Laboratory & radiology order/result management -
+Inpatient admissions and bed/ward management - Reports & analytics (dashboards)
+1.3 Definitions, acronyms & abbreviations - HMS — Hospital Management System - SRS — Software
+Requirements Specification - FSR — Feasibility Study Report - ASP.NET MVC — web framework used for the
+front-end/back-end - PG / PostgreSQL — chosen RDBMS
+1
+2. Overall description
+2.1 Product perspective HMS is a standalone web application designed to replace manual record-keeping.
+It exposes role-based web UI and RESTful endpoints for internal modules. It will integrate minimally with
+third-party systems (optional): insurance provider APIs, SMS/email gateways for notifications.
+2.2 User classes and characteristics - Admin — full access, config and reporting tasks. - Receptionist —
+patient registration, appointment booking, check-in. - Doctor — view schedule, access patient history,
+create visit notes, prescribe meds, order labs/imaging. - Nurse — view assigned patients, update vitals,
+assist admissions. - Pharmacist — process prescriptions, manage stock. - Lab Technician — enter/approve
+test results. - Accountant / Billing Staff — create/adjust bills, record payments, manage claims. - Patient
+(Portal) — view own appointments, bills, prescriptions (optional requirement).
+2.3 Operating environment - Server: Linux or Windows server hosting ASP.NET (Kestrel/IIS) and
+PostgreSQL. - Client: modern web browsers (Chrome, Firefox, Edge) — responsive UI for desktops/tablets.
+2.4 Design & implementation constraints - Use ASP.NET MVC (.NET 6 or later recommended). - Use
+PostgreSQL as RDBMS. - Role-based access control required. - Data privacy — personal health data will be
+stored securely (encryption at rest is recommended for sensitive fields).
+2.5 Assumptions & dependencies - The hospital will provide domain knowledge and sample datasets for
+testing. - Optional third-party services (SMS/email) may require API keys and extra configuration.
+3. Functional requirements (high level)
+Each requirement is given an ID for traceability.
+FR-1: User Authentication & Authorization - FR-1.1: Users must authenticate via username/password. -
+FR-1.2: Role-based permissions determine accessible UI and actions.
+FR-2: Patient Management - FR-2.1: Create/update/delete patient profiles. - FR-2.2: Store demographics,
+contact, emergency contacts, allergies, chronic conditions. - FR-2.3: View patient visit history and
+documents.
+FR-3: Appointments & Scheduling - FR-3.1: Book appointments for patients with chosen doctor/time slot. -
+FR-3.2: Edit / cancel / reschedule appointments. - FR-3.3: Prevent double-booking; show availability calendar.
+FR-4: Visits & Clinical Notes - FR-4.1: Convert an appointment to a visit/encounter and record vitals,
+symptoms, diagnosis, procedures. - FR-4.2: Attach files (lab reports, images) to a visit.
+FR-5: Prescriptions & Pharmacy - FR-5.1: Doctors create prescriptions with multiple items and dosage
+instructions. - FR-5.2: Pharmacist views prescription queue and marks items dispensed. - FR-5.3: Medication
+dispensing reduces inventory; low-stock alerts trigger when below threshold.
+FR-6: Billing & Payments - FR-6.1: Generate bill for visit/services/medications. - FR-6.2: Record payments
+(cash, card, insurance) against bills. - FR-6.3: Maintain unpaid/overdue status and printable invoices.
+2
+FR-7: Laboratory & Radiology Orders - FR-7.1: Doctors can place lab/radiology orders linked to a visit. -
+FR-7.2: Lab technicians upload results; results become part of patient record.
+FR-8: Admissions & Bed Management - FR-8.1: Admit and discharge patients, assign beds/wards. - FR-8.2:
+Track bed occupancy and availability.
+FR-9: Reporting & Dashboard - FR-9.1: Admin sees key metrics: daily appointments, revenue, stock alerts. -
+FR-9.2: Generate reports: revenue by period, appointment trends, doctor workload.
+FR-10: Notifications - FR-10.1: Send appointment reminders via SMS/email (configurable).
+FR-11: Audit & Security - FR-11.1: Log critical actions (user, timestamp, action, target entity). - FR-11.2: Role-
+based access enforced on server and UI.
+4. Non-functional requirements
+NFR-1: Performance - The system should respond to standard CRUD pages within 2 seconds under normal
+load (<= 100 concurrent users).
+NFR-2: Security - All authentication must use secure password storage (bcrypt/Argon2 or ASP.NET Identity).
+- All sensitive data in transit must use TLS/HTTPS.
+NFR-3: Availability - System uptime target: 99% during working hours (configurable for a semester
+project). Backups daily.
+NFR-4: Scalability - Application must be layered to allow scaling (separate app server and database server if
+needed).
+NFR-5: Maintainability - Code must follow MVC separation of concerns and be decently documented for
+grading.
+NFR-6: Usability - UI should be responsive and usable by non-technical staff. Provide simple forms and
+validation.
+NFR-7: Data Retention & Privacy - Patient medical records must be retained per institutional policy;
+implement soft-delete for recoverability.
+5. External interfaces
+5.1 UI - Web UI for all roles (desktop-first design). Optional patient portal.
+5.2 APIs - Internal REST endpoints for modules; optional external integration with SMS/email or insurance
+APIs.
+5.3 Database - PostgreSQL database server.
+3
+6. Use cases (brief)
+•
+•
+•
+•
+•
+UC-1: Receptionist registers a new patient and books appointment.
+UC-2: Doctor views next patient, creates visit notes, prescribes medications, orders lab tests.
+UC-3: Pharmacist dispenses medications and updates inventory.
+UC-4: Billing staff finalizes the bill and records payment.
+UC-5: Admin views monthly revenue report.
+7. Acceptance criteria
+•
+•
+•
+All critical workflows (registration → appointment → visit → prescription → billing) must be
+demonstrably functional.
+Role-based access must prevent unauthorized actions (e.g., receptionist cannot modify
+prescriptions).
+The application must persist data in PostgreSQL and demonstrate at least three advanced DB
+features: one view, one stored procedure, and one trigger (or equivalent advanced SQL operation).
+Part B — FSR (Feasibility Study Report)
+1. Executive summary
+This FSR evaluates building the HMS as an ASP.NET MVC + PostgreSQL semester project. Conclusion: the
+project is feasible technically and operationally within a semester if scope is controlled and development
+follows an incremental roadmap.
+2. Objectives
+•
+•
+Build a functioning web-based HMS demonstrating database complexity, secure authentication, role-
+based access, and real-world workflows.
+Deliver usable UI, reporting, and evidence of database features (stored procedures/triggers/views).
+3. Technical feasibility
+Technology stack (recommended): - Backend & Web: ASP.NET MVC (.NET 6+), C# - Database: PostgreSQL -
+Frontend: Bootstrap/Tailwind, jQuery or minimal JS frameworks - Optional: Charting library for reports
+(client-side)
+Skills required: knowledge of C#, ASP.NET MVC patterns, SQL/Postgres basics, HTML/CSS/JS, and Git for
+version control.
+Feasibility assessment: - The stack is well-supported and suitable for a semester project. - Hosting locally
+or on a student cloud (e.g., Heroku/Render/Azure student credits) is possible.
+4
+4. Operational feasibility
+End users: hospital staff and patients. For the semester project, demonstration can be done with synthetic
+data and role-based demos.
+Training & documentation: provide a short user manual and in-app help for major workflows. The project
+should include brief admin instructions for seeding demo data.
+Support: minimal — project will be maintained by the student team for the course.
+5. Economic feasibility (cost estimate)
+Costs (approx): - Development: student labor (time) - Hosting (optional for demo): small VM or free-tier
+PaaS — estimated $0–$20/month using student credits/free tiers. - Domain/SSL: optional; SSL can be
+provided by hosting platform.
+Benefits: - Academic credit, demonstrable portfolio project, practical experience with web+DB.
+Summary: low financial cost; high academic value.
+6. Schedule & milestones (suggested 12-week semester plan)
+•
+•
+•
+•
+•
+•
+•
+•
+Week 1–2: Requirements finalization, wireframes, ERD, tech setup.
+Week 3–4: Authentication, user & role management, basic patient CRUD.
+Week 5–6: Appointment scheduling, doctor schedules, calendar UI.
+Week 7–8: Visit/encounter, prescriptions, pharmacy inventory (core clinical flow).
+Week 9: Billing & payments integration, simple reports.
+Week 10: Lab/Radiology orders and results; admissions/ward management (optional).
+Week 11: Testing, bug fixes, polishing UI.
+Week 12: Final demo, documentation, report submission.
+7. Risk analysis & mitigation
+•
+Risk: Scope creep — team attempts too many modules.
+Mitigation: Prioritize core workflows (registration→visit→prescription→billing) and mark extras as
+stretch goals.
+•
+Risk: Lack of familiarity with ASP.NET MVC or Postgres.
+Mitigation: Early learning week, use templates, sample tutorials, and scaffold features.
+•
+Risk: Data privacy concerns in demo.
+Mitigation: Use synthetic data and avoid real patient data.
+•
+Risk: Integration with external SMS/insurance fails or is unavailable.
+Mitigation: Implement these as optional features or mock services.
+5
+8. Recommendation
+Proceed with the project. Keep an incremental plan, deliver the core clinical workflow first, and implement
+additional modules (lab, admissions, insurance) as time permits.
+Appendix: deliverables for submission
+•
+•
+•
+•
+•
+•
+Executable web application (deployed or runnable locally)
+Source code repository with commit history
+ERD and brief database documentation
+SRS and FSR documents (this document)
+Short user manual and demonstration script
+Sample dataset for demo
+End of document.
+6

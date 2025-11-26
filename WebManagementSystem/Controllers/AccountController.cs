@@ -31,12 +31,21 @@ public class AccountController : Controller
             return View(model);
         }
 
-        var user = await _context.AppUsers.FirstOrDefaultAsync(u => u.Username == model.Username);
+        var user = await _context.AppUsers
+            .Include(u => u.Role)
+            .FirstOrDefaultAsync(u => u.Username == model.Username);
 
         if(user == null)
         {
             ModelState.AddModelError(string.Empty, "Invalid username or password.");
             Console.WriteLine("User not found");
+            return View(model);
+        }
+
+        // Check if user is active
+        if(user.IsActive != true)
+        {
+            ModelState.AddModelError(string.Empty, "Your account has been deactivated. Please contact an administrator.");
             return View(model);
         }
 
@@ -65,7 +74,19 @@ public class AccountController : Controller
 
         await HttpContext.SignInAsync("LoginAuthCookie", principal);
 
-        return RedirectToAction("Index", "Home");
+        // Redirect based on role
+        var roleName = user.Role?.RoleName ?? "User";
+        return roleName switch
+        {
+            "Admin" => RedirectToAction("Dashboard", "Admin"),
+            "Doctor" => RedirectToAction("Dashboard", "Doctor"),
+            "Patient" => RedirectToAction("Dashboard", "Patient"),
+            "Pharmacist" => RedirectToAction("Index", "Pharmacy"),
+            "LabTechnician" => RedirectToAction("Dashboard", "Lab"),
+            "Receptionist" => RedirectToAction("Index", "Appointment"),
+            "Billing" => RedirectToAction("Index", "Billing"),
+            _ => RedirectToAction("Index", "Home")
+        };
     }
 
     public async Task<IActionResult> Logout()
@@ -100,7 +121,7 @@ public class AccountController : Controller
             FullName = model.FirstName+model.LastName,
             IsActive = true,
         };
-            var now = DateTime.UtcNow;
+            var now = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified);
             var createdAt = DateTime.SpecifyKind(now, DateTimeKind.Unspecified);
             user.CreatedAt = createdAt;
 

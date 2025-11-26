@@ -1,4 +1,5 @@
-﻿@{
+﻿@model WebManagementSystem.Models.ViewModels.MedicationListViewModel
+@{
     Layout = "_Layout";
 }
 
@@ -17,6 +18,46 @@
         color: white;
         font-family: 'Segoe UI', sans-serif;
         overflow-x: hidden;
+    }
+
+    /* Toast Notification Styles */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
+    .toast {
+        min-width: 300px;
+        background: rgba(255,255,255,0.95);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        backdrop-filter: blur(10px);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .toast.success {
+        border-left: 4px solid #28a745;
+        color: #155724;
+    }
+
+    .toast.error {
+        border-left: 4px solid #dc3545;
+        color: #721c24;
+    }
+
+    @@keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
 
     /* ---------------- SIDEBAR ---------------- */
@@ -54,6 +95,7 @@
         display: flex;
         gap: .7rem;
         font-size: .95rem;
+        align-items: center;
     }
 
         .sidebar a:hover,
@@ -75,6 +117,81 @@
         background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
         -webkit-background-clip: text;
         color: transparent;
+    }
+
+    /* ---------------- RESTOCK FORM ---------------- */
+    .restock-card {
+        background: rgba(255,255,255,0.06);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.15);
+        backdrop-filter: blur(15px);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        width: 85%;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--gold-light);
+        margin-bottom: 1.5rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        align-items: end;
+    }
+
+    label {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #dce0ff;
+        margin-bottom: .5rem;
+        display: block;
+    }
+
+    select, input[type="number"] {
+        width: 100%;
+        padding: .8rem;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+        backdrop-filter: blur(12px);
+    }
+
+    select option {
+        background: #0d1128;
+        color: white;
+    }
+
+    select {
+        color-scheme: dark;
+    }
+
+    .btn {
+        padding: .8rem 1.6rem;
+        border-radius: 12px;
+        border: none;
+        font-weight: 700;
+        cursor: pointer;
+        transition: .2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+    }
+
+    .btn-primary:hover {
+        opacity: .85;
+        transform: translateY(-2px);
     }
 
     /* ---------------- TABLE WRAPPER ---------------- */
@@ -121,71 +238,178 @@
         color: #55ff9b;
         font-weight: 600;
     }
+
+    .badge {
+        padding: .3rem .6rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .badge-success {
+        background: rgba(40,167,69,0.2);
+        color: #28a745;
+    }
+
+    .badge-warning {
+        background: rgba(255,193,7,0.2);
+        color: #ffc107;
+    }
+
+    .badge-danger {
+        background: rgba(220,53,69,0.2);
+        color: #dc3545;
+    }
+
+    .action-btn {
+        padding: .5rem 1rem;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.9rem;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-restock {
+        background: rgba(40,167,69,0.2);
+        color: #28a745;
+        border: 1px solid rgba(40,167,69,0.4);
+    }
+
+    .btn-restock:hover {
+        background: rgba(40,167,69,0.3);
+    }
 </style>
 
+<!-- Toast Notifications -->
+<div class="toast-container">
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="toast success" id="successToast">
+            <strong>✓ Success:</strong> @successMessage
+        </div>
+    }
+    @if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <div class="toast error" id="errorToast">
+            <strong>✗ Error:</strong> @errorMessage
+        </div>
+    }
+</div>
 
 <!-- ============ SIDEBAR ============ -->
 <div class="sidebar">
     <div class="brand">MedicaLux</div>
 
     <a asp-controller="Pharmacy" asp-action="Index">🧪 Dashboard</a>
-    <a asp-controller="Pharmacy" asp-action="IssueMedicine" >💊 Issue Medicine</a>
+    <a asp-controller="Pharmacy" asp-action="IssueMedicine">💊 Issue Medicine</a>
     <a asp-controller="Pharmacy" asp-action="Stock" class="active">📦 Stock Inventory</a>
 
-    <a asp-controller="Account" asp-action="Login">🚪 Logout</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: 0.7rem 1rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
 </div>
 
 <!-- ============ MAIN CONTENT ============ -->
 <div class="pharmacy-section">
 
-    <div class="page-title">📦 Medicine Stock</div>
+    <div class="page-title">📦 Medicine Stock Inventory</div>
 
+    <!-- Restock Form -->
+    <div class="restock-card">
+        <div class="section-title">➕ Restock Medication</div>
+        <form asp-controller="Pharmacy" asp-action="UpdateStock" method="get" class="form-row">
+            <div>
+                <label>Select Medication</label>
+                <select name="id" required>
+                    <option value="">-- Select Medication --</option>
+                    @if (Model.Medications != null)
+                    {
+                        @foreach (var med in Model.Medications)
+                        {
+                            <option value="@med.MedicationId">@med.Name (@med.StockQuantity in stock)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div>
+                <label>&nbsp;</label>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Restock</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Stock Table -->
     <div class="table-wrap">
         <table>
             <thead>
                 <tr>
                     <th>Medicine</th>
+                    <th>Description</th>
                     <th>Current Stock</th>
-                    <th>Unit</th>
+                    <th>Low Stock Threshold</th>
+                    <th>Unit Price</th>
                     <th>Status</th>
-                    <th>Last Updated</th>
+                    <th>Action</th>
                 </tr>
             </thead>
 
             <tbody>
+                @if (Model.Medications != null && Model.Medications.Any())
+                {
+                    @foreach (var medication in Model.Medications)
+                    {
                 <tr>
-                    <td>Panadol 500mg</td>
-                    <td>120</td>
-                    <td>Tablets</td>
-                    <td class="stock-green">In Stock</td>
-                    <td>21 Nov 2025</td>
+                            <td><strong>@medication.Name</strong></td>
+                            <td>@(medication.Description ?? "N/A")</td>
+                            <td>@medication.StockQuantity</td>
+                            <td>@medication.LowStockThreshold</td>
+                            <td>Rs. @medication.UnitPrice.ToString("N2")</td>
+                            <td>
+                                @if (medication.IsLowStock)
+                                {
+                                    <span class="badge badge-danger">Low Stock</span>
+                                }
+                                else if (medication.StockQuantity > medication.LowStockThreshold * 2)
+                                {
+                                    <span class="badge badge-success">In Stock</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-warning">Adequate</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-controller="Pharmacy" asp-action="UpdateStock" asp-route-id="@medication.MedicationId" class="action-btn btn-restock">➕ Restock</a>
+                            </td>
                 </tr>
-
+                    }
+                }
+                else
+                {
                 <tr>
-                    <td>Augmentin 625mg</td>
-                    <td>30</td>
-                    <td>Tablets</td>
-                    <td class="stock-ok">Low</td>
-                    <td>20 Nov 2025</td>
+                        <td colspan="7" style="text-align: center; padding: 3rem; color: #8f93a7;">
+                            No medications found in inventory
+                        </td>
                 </tr>
-
-                <tr>
-                    <td>Zyrtec Syrup</td>
-                    <td>5</td>
-                    <td>Bottles</td>
-                    <td class="low-stock">Critical</td>
-                    <td>18 Nov 2025</td>
-                </tr>
-
-                <tr>
-                    <td>Vitamin D 2000IU</td>
-                    <td>200</td>
-                    <td>Capsules</td>
-                    <td class="stock-green">In Stock</td>
-                    <td>21 Nov 2025</td>
-                </tr>
+                }
             </tbody>
         </table>
     </div>
 
 </div>
+
+<script>
+    // Auto-hide toast notifications after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const toasts = document.querySelectorAll('.toast');
+        toasts.forEach(toast => {
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        });
+    });
+</script>

@@ -1,4 +1,5 @@
-﻿@{
+﻿@model WebManagementSystem.Models.ViewModels.LabOrderListViewModel
+@{
     Layout = "_Layout";
 }
 
@@ -102,7 +103,9 @@
     <a asp-action="Dashboard" >🧪 Lab Dashboard</a>
     <a asp-action="Orders" class="active">📄 Lab Orders</a>
     <a asp-action="Results">📤 Upload Results</a>
-    <a asp-controller="Account" asp-action="Login">🚪 Logout</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: .7rem .8rem; border-radius: 10px; cursor: pointer; font-size: .95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
 </div>
 
 <div class="lab-section">
@@ -122,21 +125,31 @@
             </thead>
 
             <tbody>
-                <tr>
-                    <td>Sarah Khan</td>
-                    <td>Blood Test - CBC</td>
-                    <td style="color: #ff6b6b; font-weight:700;">URGENT</td>
-                    <td>Weakness, fatigue</td>
-                    <td><button class="done-btn">Mark as Done</button></td>
-                </tr>
-
-                <tr>
-                    <td>Ahmed Ali</td>
-                    <td>Liver Function Test</td>
-                    <td style="color: #ffd36e; font-weight:700;">Normal</td>
-                    <td>Chronic liver issue</td>
-                    <td><button class="done-btn">Mark as Done</button></td>
-                </tr>
+                @if (Model.Orders != null && Model.Orders.Any())
+                {
+                    @foreach (var order in Model.Orders)
+                    {
+                        <tr>
+                            <td>@order.PatientName</td>
+                            <td>@order.TestName</td>
+                            <td style="color: @(order.Priority == "Urgent" || order.Priority == "Stat" ? "#ff6b6b" : order.Priority == "Normal" ? "#ffd36e" : "#c9cbe8"); font-weight:700;">@order.Priority</td>
+                            <td>@order.DoctorName</td>
+                            <td>
+                                <span style="padding: .3rem .6rem; border-radius: 6px; font-size: 0.85rem; 
+                                    background: @(order.Status == "Completed" ? "rgba(74,255,150,0.2)" : order.Status == "InProgress" ? "rgba(255,200,74,0.2)" : "rgba(255,100,100,0.2)");
+                                    color: @(order.Status == "Completed" ? "#74ffbe" : order.Status == "InProgress" ? "#ffd36e" : "#ff8a8a");">
+                                    @order.Status
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 2rem; color: #8f93a7;">No lab orders found</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>

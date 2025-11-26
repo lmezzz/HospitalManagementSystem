@@ -1,0 +1,200 @@
+@model WebManagementSystem.Models.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">Hospital Overview</h2>
+            <small class="text-muted">Real-time snapshot of key metrics</small>
+        </div>
+        <div class="btn-group">
+            <a asp-action="Users" class="btn btn-primary">
+                <i class="bi bi-people me-1"></i> Manage Users
+            </a>
+            <a asp-action="SystemReport" class="btn btn-outline-secondary">
+                <i class="bi bi-bar-chart me-1"></i> Detailed Reports
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <p class="text-muted text-uppercase small mb-1">Total Patients</p>
+                    <h3 class="mb-0">@Model.TotalPatients</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <p class="text-muted text-uppercase small mb-1">Total Doctors</p>
+                    <h3 class="mb-0">@Model.TotalDoctors</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <p class="text-muted text-uppercase small mb-1">Appointments Today</p>
+                    <h3 class="mb-0">@Model.TotalAppointmentsToday</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <p class="text-muted text-uppercase small mb-1">Revenue Today</p>
+                    <h3 class="mb-0">@Model.TotalRevenueToday.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-1">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <p class="text-muted text-uppercase small mb-1">Pending Bills</p>
+                    <h4 class="mb-0">@Model.TotalPendingBills</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <p class="text-muted text-uppercase small mb-1">Pending Lab Orders</p>
+                    <h4 class="mb-0">@Model.TotalPendingLabOrders</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <p class="text-muted text-uppercase small mb-1">Low Stock Medications</p>
+                    <h4 class="mb-0">@Model.LowStockMedicationsCount</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <p class="text-muted text-uppercase small mb-1">Revenue (Month)</p>
+                    <h4 class="mb-0">@Model.TotalRevenueMonth.ToString("C")</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-semibold">Recent Appointments</span>
+                        <a asp-controller="Appointment" asp-action="Index" class="btn btn-sm btn-outline-secondary">View all</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentAppointments.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle">
+                                <thead class="text-muted small">
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Doctor</th>
+                                        <th>Scheduled</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appointment in Model.RecentAppointments)
+                                    {
+                                        <tr>
+                                            <td>@appointment.PatientName</td>
+                                            <td>@appointment.DoctorName</td>
+                                            <td>@appointment.ScheduledTime.ToString("dd MMM yyyy HH:mm")</td>
+                                            <td>
+                                                <span class="badge bg-light text-dark border">@appointment.Status</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No recent appointments recorded.</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-0">
+                    <span class="fw-semibold">Top Doctors (by patient volume)</span>
+                </div>
+                <div class="card-body">
+                    @if (Model.TopDoctors.Any())
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var doctor in Model.TopDoctors)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>@doctor.DoctorName</span>
+                                    <span class="badge bg-primary">
+                                        @doctor.PatientCount patients
+                                    </span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Doctor performance data will appear here once visits are recorded.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-header bg-white border-0">
+            <span class="fw-semibold">Revenue (Last 7 days)</span>
+        </div>
+        <div class="card-body">
+            @if (Model.RevenueChartData.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead class="text-muted small">
+                            <tr>
+                                <th>Date</th>
+                                <th>Collected Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var entry in Model.RevenueChartData)
+                            {
+                                <tr>
+                                    <td>@entry.Date</td>
+                                    <td>@entry.Amount.ToString("C")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-0">Revenue data will appear once payments are recorded.</p>
+            }
+        </div>
+    </div>
+</div>
+

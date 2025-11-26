@@ -1,8 +1,9 @@
-﻿@{
+﻿@model dynamic
+@{
     Layout = "_Layout";
-
-    // Replace this with your actual logged-in pharmacist
-    var pharmacistName = "Ayesha";
+    var isDispenseView = Model is WebManagementSystem.Models.ViewModels.DispensePrescriptionViewModel;
+    var pendingList = Model as List<WebManagementSystem.Models.ViewModels.PendingPrescriptionDto>;
+    var dispenseModel = Model as WebManagementSystem.Models.ViewModels.DispensePrescriptionViewModel;
 }
 
 <style>
@@ -19,6 +20,46 @@
         color: white;
         font-family: 'Segoe UI', sans-serif;
         overflow-x: hidden;
+    }
+
+    /* Toast Notification Styles */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
+    .toast {
+        min-width: 300px;
+        background: rgba(255,255,255,0.95);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        backdrop-filter: blur(10px);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .toast.success {
+        border-left: 4px solid #28a745;
+        color: #155724;
+    }
+
+    .toast.error {
+        border-left: 4px solid #dc3545;
+        color: #721c24;
+    }
+
+    @@keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
 
     /* ---------------- SIDEBAR ---------------- */
@@ -107,44 +148,31 @@
         display: block;
     }
 
-    select, input {
-        width: 100%;
-        padding: .8rem;
-        border-radius: 12px;
+    .info-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .info-field {
+        flex: 1;
+        padding: 0.8rem;
         background: rgba(255,255,255,0.08);
-        border: 1px solid rgba(255,255,255,0.2);
-        color: white;
-        margin-bottom: 1.2rem;
-        backdrop-filter: blur(12px);
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.15);
     }
 
-        select option {
-            background: #0d1128;
-            color: white;
-        }
-
-    select {
-        color-scheme: dark;
-    }
-
-    input::placeholder {
+    .info-label {
+        font-size: 0.85rem;
         color: #bebfe7;
+        margin-bottom: 0.3rem;
     }
 
-    .submit-btn {
-        padding: .9rem 1.6rem;
-        border-radius: 12px;
-        border: none;
-        font-weight: 700;
-        cursor: pointer;
-        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+    .info-value {
+        font-size: 1rem;
+        font-weight: 600;
         color: white;
-        transition: .2s;
     }
-
-        .submit-btn:hover {
-            opacity: .85;
-        }
 
     /* ---------------- TABLE ---------------- */
     .table-wrap {
@@ -176,17 +204,75 @@
         color: #e3e6ff;
     }
 
-    /* Logged-in display */
-    .logged-in-box {
-        background: rgba(255,255,255,0.12);
-        padding: .8rem 1rem;
-        border-radius: 12px;
+    .btn {
+        padding: .7rem 1.4rem;
+        border-radius: 10px;
+        border: none;
         font-weight: 600;
-        color: var(--gold-light);
-        margin-bottom: 1.2rem;
-        border: 1px solid rgba(255,255,255,0.18);
+        cursor: pointer;
+        transition: .2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+    }
+
+    .btn-primary:hover {
+        opacity: .85;
+        transform: translateY(-2px);
+    }
+
+    .btn-success {
+        background: linear-gradient(90deg, #28a745, #20c997);
+        color: white;
+    }
+
+    .btn-danger {
+        background: linear-gradient(90deg, #dc3545, #c82333);
+        color: white;
+    }
+
+    .badge {
+        padding: .3rem .6rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .badge-success {
+        background: rgba(40,167,69,0.2);
+        color: #28a745;
+    }
+
+    .badge-danger {
+        background: rgba(220,53,69,0.2);
+        color: #dc3545;
+    }
+
+    .badge-warning {
+        background: rgba(255,193,7,0.2);
+        color: #ffc107;
     }
 </style>
+
+<!-- Toast Notifications -->
+<div class="toast-container">
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="toast success" id="successToast">
+            <strong>✓ Success:</strong> @successMessage
+        </div>
+    }
+    @if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <div class="toast error" id="errorToast">
+            <strong>✗ Error:</strong> @errorMessage
+        </div>
+    }
+</div>
 
 <!-- SIDEBAR -->
 <div class="sidebar">
@@ -196,75 +282,177 @@
     <a asp-controller="Pharmacy" asp-action="IssueMedicine" class="active">💊 Issue Medicine</a>
     <a asp-controller="Pharmacy" asp-action="Stock">📦 Stock Inventory</a>
 
-    <a asp-controller="Account" asp-action="Login">🚪 Logout</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: 0.7rem 1rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
 </div>
 
 <!-- MAIN CONTENT -->
 <div class="pharmacy-section">
+    <div class="page-title">💊 Issue Medicine</div>
 
-    <div class="page-title">💊 Issue Medicine to Inventory</div>
+    @if (isDispenseView && dispenseModel != null)
+    {
+        <!-- Dispense Prescription View -->
+        <div class="glass-card">
+            <div class="section-title">Prescription Details</div>
 
-    <!-- FORM -->
-    <div class="glass-card">
-        <div class="section-title">Create Issue Order</div>
+            <div class="info-row">
+                <div class="info-field">
+                    <div class="info-label">Patient Name</div>
+                    <div class="info-value">@dispenseModel.PatientName</div>
+                </div>
+                <div class="info-field">
+                    <div class="info-label">Doctor Name</div>
+                    <div class="info-value">@dispenseModel.DoctorName</div>
+                </div>
+                <div class="info-field">
+                    <div class="info-label">Prescription Date</div>
+                    <div class="info-value">@dispenseModel.CreatedAt.ToString("MMM dd, yyyy")</div>
+                </div>
+            </div>
 
-        <label>Pharmacist</label>
-        <div class="logged-in-box">
-            Logged in as: <strong>@pharmacistName</strong>
+            <div class="table-wrap" style="margin-top: 1.5rem; width: 100%;">
+                <div class="section-title">Medications</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Medication</th>
+                            <th>Dosage</th>
+                            <th>Frequency</th>
+                            <th>Quantity</th>
+                            <th>Available Stock</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in dispenseModel.Items)
+                        {
+                            <tr>
+                                <td>@item.MedicationName</td>
+                                <td>@item.Dosage</td>
+                                <td>@item.Frequency</td>
+                                <td>@item.Quantity</td>
+                                <td>@item.AvailableStock</td>
+                                <td>Rs. @item.UnitPrice.ToString("N2")</td>
+                                <td>Rs. @item.TotalPrice.ToString("N2")</td>
+                                <td>
+                                    @if (item.CanDispense)
+                                    {
+                                        <span class="badge badge-success">Available</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-danger">Low Stock</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr style="background: rgba(255,255,255,0.1); font-weight: 700;">
+                            <td colspan="6" style="text-align: right;">Total Amount:</td>
+                            <td colspan="2">Rs. @dispenseModel.TotalAmount.ToString("N2")</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div style="background: rgba(40,167,69,0.15); border: 1px solid rgba(40,167,69,0.3); border-radius: 12px; padding: 1rem; margin-top: 1.5rem; margin-bottom: 1.5rem;">
+                <strong style="color: #28a745;">ℹ️ Dispensing Process:</strong>
+                <p style="margin: 0.5rem 0 0 0; color: #d4edda; font-size: 0.9rem;">
+                    When you dispense this prescription, a bill/invoice will be created. Stock will be deducted from inventory only after payment is received.
+                </p>
+            </div>
+
+            <form asp-controller="Pharmacy" asp-action="DispenseMedication" method="post" style="margin-top: 2rem;">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="prescriptionId" value="@dispenseModel.PrescriptionId" />
+                @if (dispenseModel.Items.All(i => i.CanDispense))
+                {
+                    <button type="submit" class="btn btn-success">✓ Create Bill & Dispense</button>
+                }
+                else
+                {
+                    <button type="submit" class="btn btn-danger" disabled>✗ Cannot Dispense - Insufficient Stock</button>
+                }
+                <a asp-action="IssueMedicine" class="btn" style="background: rgba(255,255,255,0.1); margin-left: 1rem;">← Back to List</a>
+            </form>
         </div>
+    }
+    else if (pendingList != null)
+    {
+        <!-- Pending Prescriptions List -->
+        <div class="table-wrap">
+            <div class="section-title">Pending Prescriptions (Not Yet Dispensed)</div>
+            <p style="color: #bebfe7; font-size: 0.9rem; margin-bottom: 1rem;">
+                These prescriptions are waiting to be dispensed. Click "View & Dispense" to create a bill/invoice.
+            </p>
 
-        <label>Medicine</label>
-        <select>
-            <option>Panadol 500mg</option>
-            <option>Augmentin 625mg</option>
-            <option>Zyrtec</option>
-            <option>Vitamin D 2000IU</option>
-        </select>
-
-        <label>Quantity</label>
-        <input type="number" placeholder="Enter quantity e.g., 50" />
-
-        <button class="submit-btn">Submit Order</button>
-    </div>
-
-    <!-- TABLE -->
-    <div class="table-wrap">
-        <div class="section-title">Recent Medicine Issues</div>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Pharmacist</th>
-                    <th>Medicine</th>
-                    <th>Quantity</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr>
-                    <td>Ayesha</td>
-                    <td>Panadol 500mg</td>
-                    <td>120</td>
-                    <td>21 Nov 2025</td>
-                </tr>
-
-                <tr>
-                    <td>Umar</td>
-                    <td>Augmentin 625mg</td>
-                    <td>60</td>
-                    <td>20 Nov 2025</td>
-                </tr>
-
-                <tr>
-                    <td>Hassan</td>
-                    <td>Zyrtec</td>
-                    <td>30</td>
-                    <td>19 Nov 2025</td>
-                </tr>
-            </tbody>
-
-        </table>
-    </div>
-
+            @if (pendingList != null && pendingList.Any())
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Prescription ID</th>
+                            <th>Patient Name</th>
+                            <th>Doctor Name</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var prescription in pendingList)
+                        {
+                            <tr>
+                                <td>#@prescription.PrescriptionId</td>
+                                <td>@prescription.PatientName</td>
+                                <td>@prescription.DoctorName</td>
+                                <td>@prescription.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                <td>@prescription.ItemCount items</td>
+                                <td>Rs. @prescription.TotalAmount.ToString("N2")</td>
+                                <td>
+                                    @if (prescription.CanDispense)
+                                    {
+                                        <span class="badge badge-success">Ready</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-warning">@(prescription.IssueReason ?? "Pending")</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="IssueMedicine" asp-route-prescriptionId="@prescription.PrescriptionId" class="btn btn-primary">View & Dispense</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div style="text-align: center; padding: 3rem; color: #8f93a7;">
+                    <p style="font-size: 1.2rem;">No pending prescriptions found</p>
+                </div>
+            }
+        </div>
+    }
 </div>
+
+<script>
+    // Auto-hide toast notifications after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const toasts = document.querySelectorAll('.toast');
+        toasts.forEach(toast => {
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        });
+    });
+</script>

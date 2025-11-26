@@ -1,4 +1,5 @@
-﻿@{
+﻿@model WebManagementSystem.Models.ViewModels.DoctorDashboardViewModel
+@{
     Layout = "_Layout";
 }
 
@@ -181,12 +182,13 @@
     <div class="brand">MedicaLux</div>
 
     <a asp-action="Dashboard" class="active">🏥 Dashboard</a>
-    <a asp-action="CurrentSession">👤 Current Session</a>
-    <a asp-action="LabRequest">🧪 Lab Request</a>
+    <a asp-action="CurrentSessionLatest">👤 Current Session</a>
+    <a asp-action="Appointments">📅 Appointments</a>
     <a asp-action="Prescriptions">💊 Prescriptions</a>
     <a asp-action="LabReports">📄 Lab Reports</a>
-    <a asp-action="Appointments">📅 Appointments</a>
-    <a asp-controller="Account" asp-action="Login" class="menu-item">🚪 Logout </a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" class="menu-item" style="background: none; border: none; color: #c9cbe8; padding: 0.65rem 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
 </div>
 
 
@@ -200,27 +202,36 @@
 
         <div class="doctor-card">
             <div class="card-title">Today's Appointments</div>
-            <div class="stat-number">12</div>
+            <div class="stat-number">@Model.TodaysAppointments</div>
         </div>
 
         <div class="doctor-card">
-            <div class="card-title">Pending Lab Results</div>
-            <div class="stat-number">4</div>
+            <div class="card-title">Completed Today</div>
+            <div class="stat-number">@Model.CompletedToday</div>
         </div>
 
         <div class="doctor-card">
-            <div class="card-title">Unread Messages</div>
-            <div class="stat-number">3</div>
+            <div class="card-title">Pending Today</div>
+            <div class="stat-number">@Model.PendingToday</div>
         </div>
 
     </div>
 
     <!-- ========== CURRENT SESSION BOX ========== -->
+    @if (Model.TodaysSchedule != null && Model.TodaysSchedule.Any(a => a.Status == "InProgress" || a.Status == "In Session"))
+    {
+        var currentSession = Model.TodaysSchedule.FirstOrDefault(a => a.Status == "InProgress" || a.Status == "In Session");
+        if (currentSession != null)
+        {
     <div class="session-box">
         <div class="session-title">Currently in Session</div>
-        <div>Sarah Khan · Fever, Nausea</div>
+                <div>@currentSession.PatientName · @currentSession.Reason</div>
+                <a asp-action="CurrentSession" asp-route-appointmentId="@currentSession.AppointmentId" style="text-decoration: none;">
         <button>Continue Session</button>
+                </a>
     </div>
+        }
+    }
 
     <!-- ========== APPOINTMENTS TABLE ========== -->
     <div class="table-wrap">
@@ -237,26 +248,30 @@
             </thead>
 
             <tbody>
+                @if (Model.TodaysSchedule != null && Model.TodaysSchedule.Any())
+                {
+                    @foreach (var appointment in Model.TodaysSchedule)
+                    {
                 <tr>
-                    <td>Sarah Khan</td>
-                    <td>11:00 AM</td>
-                    <td>Fever</td>
-                    <td>In Session</td>
+                            <td>@appointment.PatientName</td>
+                            <td>@appointment.ScheduledTime.ToString("hh:mm tt")</td>
+                            <td>@appointment.Reason</td>
+                            <td>
+                                <span style="padding: .3rem .6rem; border-radius: 6px; font-size: 0.85rem; 
+                                    background: @(appointment.Status == "Completed" ? "rgba(74,255,150,0.2)" : appointment.Status == "InProgress" || appointment.Status == "In Session" ? "rgba(255,200,74,0.2)" : "rgba(100,150,255,0.2)");
+                                    color: @(appointment.Status == "Completed" ? "#74ffbe" : appointment.Status == "InProgress" || appointment.Status == "In Session" ? "#ffd36e" : "#9bb5ff");">
+                                    @appointment.Status
+                                </span>
+                            </td>
                 </tr>
-
+                    }
+                }
+                else
+                {
                 <tr>
-                    <td>Ahsan Ali</td>
-                    <td>11:30 AM</td>
-                    <td>Back Pain</td>
-                    <td>Upcoming</td>
+                        <td colspan="4" style="text-align: center; padding: 2rem; color: #8f93a7;">No appointments scheduled for today</td>
                 </tr>
-
-                <tr>
-                    <td>Maria Hussain</td>
-                    <td>12:00 PM</td>
-                    <td>Migraine</td>
-                    <td>Upcoming</td>
-                </tr>
+                }
             </tbody>
         </table>
     </div>

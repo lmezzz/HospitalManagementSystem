@@ -1,0 +1,147 @@
+@using WebManagementSystem
+@model WebManagementSystem.Models.ViewModels.UserListViewModel
+@{
+    ViewData["Title"] = "User Management";
+    var roles = ViewBag.Roles as IEnumerable<Role> ?? Enumerable.Empty<Role>();
+    var roleOptions = roles.OrderBy(r => r.RoleName).ToList();
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">User Management</h2>
+            <small class="text-muted">Create, update, or deactivate system users</small>
+        </div>
+        <a asp-action="CreateUser" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> New User
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @successMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    else if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @errorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <form method="get" asp-action="Users" class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Role</label>
+                    <select name="roleFilter" class="form-select">
+                        <option value="">All roles</option>
+                        @foreach (var role in roleOptions)
+                        {
+                            <option value="@role.RoleId" selected="@(Model.RoleFilter == role.RoleId)">
+                                @role.RoleName
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select name="activeFilter" class="form-select">
+                        <option value="">Any status</option>
+                        <option value="true" selected="@(Model.ActiveFilter == true)">Active</option>
+                        <option value="false" selected="@(Model.ActiveFilter == false)">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Page size</label>
+                    <select name="pageSize" class="form-select">
+                        @{
+                            var options = new[] { 10, 20, 50 };
+                        }
+                        @foreach (var size in options)
+                        {
+                            <option value="@size" selected="@(Model.PageSize == size)">@size</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-outline-secondary flex-grow-1">
+                        <i class="bi bi-funnel me-1"></i> Filter
+                    </button>
+                    <a asp-action="Users" class="btn btn-light">
+                        Reset
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="text-muted small">
+                        <tr>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Users.Any())
+                        {
+                            @foreach (var user in Model.Users)
+                            {
+                                <tr>
+                                    <td>@user.FullName</td>
+                                    <td>@user.Username</td>
+                                    <td>@user.Email</td>
+                                    <td>@user.RoleName</td>
+                                    <td>
+                                        <span class="badge @(user.IsActive ? "bg-success" : "bg-secondary")">
+                                            @(user.IsActive ? "Active" : "Inactive")
+                                        </span>
+                                    </td>
+                                    <td>@user.CreatedAt.ToString("dd MMM yyyy")</td>
+                                    <td class="text-end">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a asp-action="UserDetails" asp-route-id="@user.UserId" class="btn btn-outline-secondary">
+                                                Details
+                                            </a>
+                                            <a asp-action="EditUser" asp-route-id="@user.UserId" class="btn btn-outline-primary">
+                                                Edit
+                                            </a>
+                                            <form asp-action="DeleteUser" method="post" class="d-inline" onsubmit="return confirm('Deactivate this user?');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@user.UserId" />
+                                                <button type="submit" class="btn btn-outline-danger">
+                                                    Deactivate
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    No users match the selected filters.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

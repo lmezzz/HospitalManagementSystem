@@ -1,0 +1,165 @@
+@* Shared Toast Notification Component *@
+@{
+    var successMessage = TempData["SuccessMessage"] as string;
+    var errorMessage = TempData["ErrorMessage"] as string;
+    var infoMessage = TempData["InfoMessage"] as string;
+}
+
+<style>
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        max-width: 400px;
+    }
+
+    .toast {
+        min-width: 300px;
+        background: rgba(255,255,255,0.95);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        backdrop-filter: blur(10px);
+        animation: slideIn 0.3s ease-out;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .toast.success {
+        border-left: 4px solid #28a745;
+        color: #155724;
+    }
+
+    .toast.error {
+        border-left: 4px solid #dc3545;
+        color: #721c24;
+    }
+
+    .toast.info {
+        border-left: 4px solid #17a2b8;
+        color: #0c5460;
+    }
+
+    .toast.warning {
+        border-left: 4px solid #ffc107;
+        color: #856404;
+    }
+
+    .toast-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .toast-content {
+        flex: 1;
+    }
+
+    .toast strong {
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    @@keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .toast-close {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: inherit;
+        opacity: 0.6;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .toast-close:hover {
+        opacity: 1;
+    }
+</style>
+
+@if (!string.IsNullOrEmpty(successMessage) || !string.IsNullOrEmpty(errorMessage) || !string.IsNullOrEmpty(infoMessage))
+{
+    <div class="toast-container">
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="toast success" data-toast="success">
+                <span class="toast-icon">✓</span>
+                <div class="toast-content">
+                    <strong>Success</strong>
+                    <span>@successMessage</span>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="toast error" data-toast="error">
+                <span class="toast-icon">✗</span>
+                <div class="toast-content">
+                    <strong>Error</strong>
+                    <span>@errorMessage</span>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(infoMessage))
+        {
+            <div class="toast info" data-toast="info">
+                <span class="toast-icon">ℹ</span>
+                <div class="toast-content">
+                    <strong>Info</strong>
+                    <span>@infoMessage</span>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            </div>
+        }
+    </div>
+
+    <script>
+        // Auto-hide toast notifications after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const toasts = document.querySelectorAll('.toast');
+            toasts.forEach(toast => {
+                setTimeout(() => {
+                    toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            });
+        });
+    </script>
+}
+
+@* Validation Errors Toast *@
+@if (ViewData.ModelState.ErrorCount > 0)
+{
+    <div class="toast-container">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <div class="toast error" data-toast="validation-error">
+                <span class="toast-icon">⚠</span>
+                <div class="toast-content">
+                    <strong>Validation Error</strong>
+                    <span>@error.ErrorMessage</span>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            </div>
+        }
+    </div>
+}
+

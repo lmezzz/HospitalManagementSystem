@@ -1,0 +1,217 @@
+@{
+    Layout = "_Layout";
+    var prescriptions = ViewBag.Prescriptions as List<WebManagementSystem.Prescription> ?? new List<WebManagementSystem.Prescription>();
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --gold-light: #ffce70;
+        --gradient-start: #8d79ff;
+        --gradient-mid: #c06bff;
+        --gradient-end: #ff9b61;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .pharmacy-wrapper {
+        margin-left: 240px;
+        padding: 2rem 2rem 3rem;
+    }
+
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 2.4rem;
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, #8d79ff, #ff9b61);
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .sidebar a {
+        text-decoration: none !important;
+        color: #c9cbe8;
+        padding: .65rem .8rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: .2s ease;
+        font-weight: 500;
+        display: flex;
+        gap: .7rem;
+        font-size: .95rem;
+        align-items: center;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+        background: rgba(255,255,255,0.14);
+        color: white;
+    }
+
+    .page-header {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .card-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .prescription-card {
+        background: rgba(255,255,255,0.06);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.15);
+        backdrop-filter: blur(15px);
+        padding: 1.5rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+        transition: .2s;
+    }
+
+    .prescription-card:hover {
+        transform: translateY(-4px);
+        background: rgba(255,255,255,0.08);
+    }
+
+    .card-header {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--gold-light);
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .card-info {
+        font-size: 0.9rem;
+        color: #e3e6ff;
+        line-height: 1.6;
+        margin-bottom: 0.5rem;
+    }
+
+    .medication-list {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .medication-item {
+        padding: 0.5rem;
+        background: rgba(255,255,255,0.05);
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #8f93a7;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+    <a asp-action="Dashboard">🏠 Dashboard</a>
+    <a asp-action="Appointments">📅 Appointments</a>
+    <a asp-action="LabReports">🧪 Lab Reports</a>
+    <a asp-action="Prescriptions">💊 Prescriptions</a>
+    <a asp-action="Billing">💰 Billing</a>
+    <a asp-action="Pharmacy" class="active">🏥 Pharmacy</a>
+    <a asp-action="Profile">👤 Profile</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: 0.7rem 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="pharmacy-wrapper">
+    <div class="page-header">🏥 Pharmacy</div>
+    <p style="color: #bebfe7; font-size: 0.95rem; margin-bottom: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px; border-left: 3px solid var(--gold-light);">
+        📝 <strong>Instructions:</strong> Below are your prescriptions. You can view the details and take them to the pharmacist at the pharmacy counter to get your medications dispensed. The pharmacist will process your prescription and create a bill for payment.
+    </p>
+
+    <div class="card-container">
+        @if (prescriptions != null && prescriptions.Any())
+        {
+            @foreach (var prescription in prescriptions)
+            {
+                <div class="prescription-card">
+                    <div class="card-header">
+                        <span>Prescription #@prescription.PrescriptionId</span>
+                    </div>
+                    <div class="card-info">
+                        <strong>Doctor:</strong> @(prescription.Doctor?.FullName ?? "N/A")
+                    </div>
+                    <div class="card-info">
+                        <strong>Date:</strong> @(prescription.CreatedAt?.ToString("MMM dd, yyyy") ?? "N/A")
+                    </div>
+                    @if (prescription.PrescriptionItems != null && prescription.PrescriptionItems.Any())
+                    {
+                        <div class="medication-list">
+                            <strong style="color: var(--gold-light);">Medications:</strong>
+                            @foreach (var item in prescription.PrescriptionItems)
+                            {
+                                <div class="medication-item">
+                                    @(item.Medication?.Name ?? "Unknown") - 
+                                    Qty: @(item.Quantity ?? 0) | 
+                                    @(item.Dosage ?? "N/A") | 
+                                    @(item.Frequency ?? "N/A")
+                                </div>
+                            }
+                        </div>
+                    }
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <a asp-controller="Prescription" asp-action="Details" asp-route-id="@prescription.PrescriptionId" 
+                           style="display: inline-block; padding: 0.5rem 1rem; background: rgba(40,167,69,0.2); color: #28a745; border: 1px solid rgba(40,167,69,0.4); border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: .2s;">
+                            📋 View Full Details
+                        </a>
+                        <p style="margin-top: 0.5rem; font-size: 0.85rem; color: #bebfe7;">
+                            💡 Take this prescription to the pharmacist to get your medications dispensed.
+                        </p>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <div class="empty-state-icon">🏥</div>
+                <h3 style="color: #d4d6e8; margin-bottom: 0.5rem;">No Prescriptions Available</h3>
+                <p>Your prescriptions will appear here once your doctor prescribes medications.</p>
+            </div>
+        }
+    </div>
+</div>
+

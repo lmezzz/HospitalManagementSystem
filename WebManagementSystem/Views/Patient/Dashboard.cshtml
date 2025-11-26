@@ -1,4 +1,5 @@
-﻿@{
+﻿@model WebManagementSystem.Models.ViewModels.PatientDashboardViewModel
+@{
     Layout = "_Layout";
 }
 
@@ -19,7 +20,6 @@
         font-family: 'Segoe UI', sans-serif;
     }
 
-    /* ================= SIDEBAR ================= */
     .sidebar {
         width: 240px;
         height: 100vh;
@@ -32,7 +32,7 @@
         border-right: 1px solid rgba(255,255,255,0.1);
         display: flex;
         flex-direction: column;
-        gap: 2.4rem;
+        gap: 2.5rem;
     }
 
     .brand {
@@ -43,7 +43,6 @@
         color: transparent;
     }
 
-    /* All links inside sidebar */
     .sidebar a {
         text-decoration: none !important;
         color: #c9cbe8;
@@ -57,7 +56,6 @@
         gap: 0.7rem;
         font-size: 0.95rem;
     }
-
         
         .sidebar a:hover,
         .sidebar a.active {
@@ -65,16 +63,6 @@
             color: #fff;
         }
 
-       
-        .sidebar a i,
-        .sidebar a img {
-            width: 18px;
-            height: 18px;
-            margin-right: 6px;
-        }
-
-
-    /* ================= TOP BAR ================= */
     .topbar {
         margin-left: 240px;
         padding: 1.5rem 2rem;
@@ -95,131 +83,9 @@
         font-size: 0.95rem;
     }
 
-    /* ================= DASHBOARD GRID ================= */
-    .dashboard-grid {
-        margin-left: 240px;
-        padding: 1rem 2rem 3rem;
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1.5rem;
-    }
-
-    .card {
-        background: rgba(255,255,255,0.08);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255,255,255,0.18);
-        border-radius: 20px;
-        padding: 1.6rem;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        transition: 0.3s;
-    }
-
-        .card:hover {
-            transform: translateY(-4px);
-        }
-
-    .card-title {
-        font-size: 1.1rem;
-        font-weight: 700;
-        margin-bottom: 0.7rem;
-        color: var(--gold-light);
-    }
-
-    .card-content {
-        font-size: 0.95rem;
-        color: #ddd;
-    }
-
-    .profile-wrapper {
-        margin-left: 240px; 
-        padding: 2rem 0;
-        display: flex;
-        justify-content: center;
-    }
-
-
-    /* ================= FULL WIDTH CARD ================= */
-    .full-card {
-        grid-column: span 3;
-    }
-
-   
-    @@media (max-width: 992px) {
-        .dashboard-grid {
-            grid-template-columns: 1fr;
-            margin-left: 0;
-        }
-
-        .topbar {
-            margin-left: 0;
-        }
-
-        .sidebar {
-            position: absolute;
-            left: -260px;
-        }
-    }
-
-    .register-card input[readonly],
-    .register-card textarea[readonly] {
-        background: rgba(4,7,20,0.65);
-        color: #dcdff5;
-        border-color: rgba(255,255,255,0.18);
-        cursor: default;
-    }
-
-        .register-card input[readonly]:focus,
-        .register-card textarea[readonly]:focus {
-            box-shadow: none !important;
-            border-color: rgba(255,255,255,0.18) !important;
-        }
-
-   
-
- 
-    }
-    /* ================= FORM GRID  ================= */
-    .form-row {
-        display: flex;
-        gap: 1.5rem;
-        margin-bottom: 1.2rem;
-    }
-
-    .form-col {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-        .form-col label {
-            color: var(--gold-light);
-            font-weight: 600;
-            margin-bottom: 0.35rem;
-        }
-
-        .form-col input,
-        .form-col textarea {
-            width: 100%;
-            padding: 0.75rem 0.85rem;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.28);
-            background: rgba(4, 7, 20, 0.85);
-            color: #fff;
-            font-size: 0.93rem;
-            outline: none;
-        }
-
-            .form-col input[readonly],
-            .form-col textarea[readonly] {
-                background: rgba(4,7,20,0.65);
-                border: 1px solid rgba(255,255,255,0.18);
-            }
-
-    .register-card {
-        width: 900px;
-        padding: 2.5rem;
-        border-radius: 22px;
-        margin-bottom: 2rem;
+    .profile-section {
+        margin-left: 260px;
+        padding: 2rem;
     }
    
 .profile-box {
@@ -232,7 +98,6 @@
     margin-top: 1rem;
     margin-bottom: 2rem;
 }
-
 
 .profile-box-header {
     background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
@@ -269,171 +134,203 @@
     color: #efeff7;
     font-size: 0.9rem;
 }
-    .profile-section {
+
+    .dashboard-grid {
         margin-left: 260px; 
-        padding: 2rem;
-    }
-    .sidebar {
-        width: 240px;
-        height: 100vh;
-        background: rgba(8,11,30,0.8);
-        backdrop-filter: blur(18px);
-        position: fixed;
-        top: 0;
-        left: 0;
-        padding: 2rem 1.5rem;
-        border-right: 1px solid rgba(255,255,255,0.1);
-        display: flex;
-        flex-direction: column;
-        gap: 2.5rem;
+        padding: 1rem 2rem 3rem;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
     }
 
-    .brand {
-        font-size: 1.5rem;
+    .card {
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 20px;
+        padding: 1.6rem;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        transition: 0.3s;
+    }
+
+    .card:hover {
+        transform: translateY(-4px);
+    }
+
+    .card-title {
+        font-size: 1.1rem;
         font-weight: 700;
-        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
-        -webkit-background-clip: text;
-        color: transparent;
+        margin-bottom: 0.7rem;
+        color: var(--gold-light);
     }
 
-    .menu-item {
-        color: #c9cbe8;
-        padding: 0.65rem 0.8rem;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: 0.2s;
-        font-weight: 500;
+    .card-content {
+        font-size: 0.95rem;
+        color: #ddd;
+        line-height: 1.6;
     }
 
-        .menu-item:hover,
-        .menu-item.active {
-            background: rgba(255,255,255,0.12);
-            color: white;
+    .full-card {
+        grid-column: span 3;
+    }
+
+    .activity-item {
+        margin-bottom: 0.5rem;
+        color: #ddd;
+    }
+
+    .empty-state {
+        color: #8f93a7;
+        font-style: italic;
         }
 </style>
 
-
-<!-- ================= SIDEBAR ================= -->
 <div class="sidebar">
     <div class="brand">MedicaLux</div>
-
-    <a asp-controller="Patient" asp-action="Dashboard" class="menu-item active">🏠 Dashboard</a>
-
-    <a asp-controller="Patient" asp-action="Appointments" class="menu-item">📅 My Appointments</a>
-
-    <a asp-controller="Patient" asp-action="LabReports" class="menu-item">🧪 Lab Reports</a>
-
-    <a asp-controller="Patient" asp-action="Prescriptions" class="menu-item">💊 Prescriptions</a>
-
-    <a asp-controller="Patient" asp-action="Billing" class="menu-item">💳 Billing</a>
-
-    <a asp-controller="Patient" asp-action="Pharmacy" class="menu-item">🏥 Pharmacy</a>
-
-    <a asp-controller="Home" asp-action="Index" class="menu-item">🚪 Logout</a>
+    <a asp-controller="Patient" asp-action="Dashboard" class="active">🏠 Dashboard</a>
+    <a asp-controller="Patient" asp-action="Appointments">📅 My Appointments</a>
+    <a asp-controller="Appointment" asp-action="Create">➕ Book Appointment</a>
+    <a asp-controller="Patient" asp-action="LabReports">🧪 Lab Reports</a>
+    <a asp-controller="Patient" asp-action="Prescriptions">💊 Prescriptions</a>
+    <a asp-controller="Patient" asp-action="Billing">💳 Billing</a>
+    <a asp-controller="Patient" asp-action="Pharmacy">🏥 Pharmacy</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: 0.65rem 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
 </div>
 
-<!-- ================= TOP BAR ================= -->
 <div class="topbar">
-    <h2>Welcome, Patient</h2>
-    <div class="user-tag">Patient ID: 0595</div>
+    <h2>Welcome, @Model.PatientName</h2>
+    <div class="user-tag">Patient ID: @Model.PatientId</div>
 </div>
+
 <div class="profile-section">
-
     <div class="profile-box">
-
         <div class="profile-box-header">
             Patient Information
         </div>
-
         <div class="profile-box-content">
-
             <div class="info-field">
                 <label>First Name</label>
-                <div class="value">Wishmah</div>
-                @* @Model.FullName?.Split(" ")[0] *@
+                <div class="value">@(Model.FirstName ?? "N/A")</div>
             </div>
 
             <div class="info-field">
                 <label>Last Name</label>
-                <div class="value">Akhtar</div>
-                @* @Model.FullName?.Split(" ")[1] *@
+                <div class="value">@(Model.LastName ?? "N/A")</div>
             </div>
 
             <div class="info-field">
                 <label>Gender</label>
-                <div class="value">Female</div>
-                @* @Model.Gender *@
+                <div class="value">@(Model.Gender ?? "N/A")</div>
             </div>
 
             <div class="info-field">
                 <label>Date of Birth</label>
-                <div class="value">12 / 08 / 2004</div>
-                @* @Model.DateOfBirth?.ToString("dd / MM / yyyy") *@
+                <div class="value">@(Model.DateOfBirth?.ToString("dd / MM / yyyy") ?? "N/A")</div>
             </div>
 
             <div class="info-field">
                 <label>Phone Number</label>
-                <div class="value">03XX-XXXXXXX</div>
-                @* @Model.Phone *@
+                <div class="value">@(Model.Phone ?? "N/A")</div>
             </div>
 
             <div class="info-field">
                 <label>CNIC</label>
-                <div class="value">XXXXX-XXXXXXX-X</div>
-                @* @Model.Cnic *@
+                <div class="value">@(Model.CNIC ?? "N/A")</div>
             </div>
 
             <div class="info-field">
                 <label>Emergency Contact</label>
-                <div class="value">03XX-XXXXXXX</div>
-                @* @Model.EmergencyContact *@
+                <div class="value">@(Model.EmergencyContact ?? "N/A")</div>
             </div>
 
             <div class="info-field">
                 <label>Allergies (if any)</label>
-                <div class="value">None</div>
-                @* @Model.Allergies *@
+                <div class="value">@(string.IsNullOrEmpty(Model.Allergies) ? "None" : Model.Allergies)</div>
             </div>
 
             <div class="info-field">
                 <label>Chronic Diseases (if any)</label>
-                <div class="value">None</div>
-                @* @Model.ChronicConditions *@
+                <div class="value">@(string.IsNullOrEmpty(Model.ChronicConditions) ? "None" : Model.ChronicConditions)</div>
             </div>
-
         </div>
     </div>
-
 </div>
 
-
-<!-- ================= DASHBOARD CARDS ================= -->
 <div class="dashboard-grid">
-
     <div class="card">
         <div class="card-title">Upcoming Appointment</div>
         <div class="card-content">
-            Dr. Ayesha · Cardiology <br>
-            📅 24 Nov · 3:30 PM
+            @if (Model.Appointments != null && Model.Appointments.Any())
+            {
+                var nextAppt = Model.Appointments.First();
+                <text>@nextAppt.DoctorName<br>
+                📅 @nextAppt.ScheduledTime.ToString("dd MMM") · @nextAppt.ScheduledTime.ToString("hh:mm tt")</text>
+            }
+            else
+            {
+                <span class="empty-state">No upcoming appointments</span>
+                <br><br>
+                <a asp-controller="Appointment" asp-action="Create" style="background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end)); padding: 0.6rem 1.2rem; border-radius: 10px; color: white; text-decoration: none; font-weight: 600; font-size: 0.9rem; display: inline-block; margin-top: 0.5rem;">Book Now</a>
+            }
         </div>
     </div>
 
     <div class="card">
         <div class="card-title">Pending Lab Tests</div>
-        <div class="card-content">2 tests awaiting results</div>
+        <div class="card-content">
+            @if (Model.PendingLabResults > 0)
+            {
+                <text>@Model.PendingLabResults test(s) awaiting results</text>
+            }
+            else
+            {
+                <span class="empty-state">No pending lab tests</span>
+            }
+        </div>
     </div>
 
     <div class="card">
         <div class="card-title">Outstanding Bills</div>
-        <div class="card-content">PKR 2,500</div>
+        <div class="card-content">
+            @if (Model.OutstandingBillAmount > 0)
+            {
+                <text>PKR @Model.OutstandingBillAmount.Value.ToString("N2")</text>
+            }
+            else
+            {
+                <span class="empty-state">No outstanding bills</span>
+            }
+        </div>
     </div>
 
     <div class="card full-card">
         <div class="card-title">Recent Activity</div>
         <div class="card-content">
-            • Lab blood test submitted <br>
-            • Appointment confirmed with Dr. Ali <br>
-            • Prescription updated <br>
+            @if (Model.RecentPrescriptions != null && Model.RecentPrescriptions.Any())
+            {
+                @foreach (var prescription in Model.RecentPrescriptions.Take(3))
+                {
+                    <div class="activity-item">
+                        • Prescription from @prescription.DoctorName (@prescription.ItemCount items) - @prescription.CreatedAt.ToString("MMM dd, yyyy")
+                    </div>
+                }
+            }
+            @if (Model.Appointments != null && Model.Appointments.Any())
+            {
+                @foreach (var appointment in Model.Appointments.Take(2))
+                {
+                    <div class="activity-item">
+                        • Appointment with @appointment.DoctorName - @appointment.ScheduledTime.ToString("MMM dd, yyyy")
+                    </div>
+                }
+            }
+            @if ((Model.RecentPrescriptions == null || !Model.RecentPrescriptions.Any()) && 
+                 (Model.Appointments == null || !Model.Appointments.Any()))
+            {
+                <span class="empty-state">No recent activity</span>
+            }
         </div>
     </div>
 </div>
