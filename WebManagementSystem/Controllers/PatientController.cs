@@ -25,9 +25,24 @@ public class PatientController : Controller
         if (patient == null)
             return RedirectToAction("Login", "Account");
 
+        // Split full name
+        var nameParts = (patient.FullName ?? "").Split(' ', 2);
+        var firstName = nameParts.Length > 0 ? nameParts[0] : "";
+        var lastName = nameParts.Length > 1 ? nameParts[1] : "";
+
         var viewModel = new PatientDashboardViewModel
         {
+            PatientId = patient.PatientId,
             PatientName = patient.FullName ?? "",
+            FirstName = firstName,
+            LastName = lastName,
+            Gender = patient.Gender,
+            DateOfBirth = patient.DateOfBirth,
+            Phone = patient.Phone,
+            CNIC = patient.Cnic,
+            EmergencyContact = patient.EmergencyContact,
+            Allergies = patient.Allergies,
+            ChronicConditions = patient.ChronicConditions,
             UpcomingAppointments = await _context.Appointments
                 .CountAsync(a => a.PatientId == patient.PatientId &&
                                a.ScheduledTime.HasValue &&
@@ -394,9 +409,17 @@ public class PatientController : Controller
         patient.ChronicConditions = model.ChronicConditions;
         patient.EmergencyContact = model.EmergencyContact;
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Profile updated successfully! Database updated.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error updating profile in database: {ex.Message}";
+            return View(model);
+        }
 
-        TempData["SuccessMessage"] = "Profile updated successfully.";
         return RedirectToAction(nameof(Profile));
     }
 }

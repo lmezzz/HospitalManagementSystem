@@ -81,7 +81,97 @@ public class BillingController : Controller
             Filter = filter
         };
 
-        return View(viewModel);
+        return View("Bills", viewModel);
+    }
+
+    // Alias for Bills view
+    [HttpGet]
+    public async Task<IActionResult> Bills(int page = 1, int pageSize = 20, string filter = "All")
+    {
+        return await Index(page, pageSize, filter);
+    }
+
+    // Payments page
+    [HttpGet]
+    public async Task<IActionResult> Payments(int? billId)
+    {
+        var query = _context.Payments
+            .Include(p => p.Bill)
+            .ThenInclude(b => b!.Patient)
+            .AsQueryable();
+
+        if (billId.HasValue)
+        {
+            query = query.Where(p => p.BillId == billId.Value);
+        }
+
+        // Role-based filtering
+        var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+        if (userRole == "Patient")
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+            var patientId = await _context.Patients
+                .Where(p => p.UserId == userId)
+                .Select(p => p.PatientId)
+                .FirstOrDefaultAsync();
+            query = query.Where(p => p.Bill!.PatientId == patientId);
+        }
+
+        var payments = await query
+            .OrderByDescending(p => p.PaymentTime)
+            .Select(p => new PaymentDto
+            {
+                PaymentId = p.PaymentId,
+                BillId = p.BillId ?? 0,
+                BillNumber = $"BILL-{p.BillId ?? 0:D6}",
+                PatientName = p.Bill!.Patient!.FullName ?? "",
+                AmountPaid = p.AmountPaid ?? 0,
+                PaymentMethod = p.PaymentMethod ?? "",
+                PaymentTime = p.PaymentTime ?? DateTime.MinValue,
+                ReferenceNumber = $"REF-{p.PaymentId:D6}"
+            })
+            .ToListAsync();
+
+        var viewModel = new PaymentListViewModel
+        {
+            Payments = payments,
+            BillId = billId
+        };
+
+        return View("Payments", viewModel);
+    }
+
+    // Bill Items page
+    [HttpGet]
+    public async Task<IActionResult> BillItems(int billId)
+    {
+        var bill = await _context.Bills
+            .Include(b => b.Patient)
+            .Include(b => b.BillItems)
+            .FirstOrDefaultAsync(b => b.BillId == billId);
+
+        if (bill == null)
+            return NotFound();
+
+        var viewModel = new BillItemsViewModel
+        {
+            BillId = bill.BillId,
+            BillNumber = $"BILL-{bill.BillId:D6}",
+            PatientName = bill.Patient?.FullName ?? "",
+            TotalAmount = bill.TotalAmount ?? 0,
+            Status = bill.Status ?? "",
+            Items = bill.BillItems.Select(i => new BillItemDto
+            {
+                BillItemId = i.BillItemId,
+                ItemType = i.ItemType ?? "",
+                Description = $"{i.ItemType} - Ref: {i.ReferenceId}",
+                Quantity = i.Quantity ?? 0,
+                UnitPrice = (i.Quantity ?? 0) > 0 ? (i.Amount ?? 0) / (i.Quantity ?? 1) : 0,
+                Amount = i.Amount ?? 0
+            }).ToList()
+        };
+
+        return View("BillItems", viewModel);
     }
 
     // Create bill
@@ -167,7 +257,16 @@ public class BillingController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return Json(new { success = false, message = "Invalid data" });
+            var errors = string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+            TempData["ErrorMessage"] = $"Validation failed: {errors}";
+            // Reload view data
+            if (model.PatientId > 0)
+            {
+                var patient = await _context.Patients.FindAsync(model.PatientId);
+                if (patient != null)
+                    model.PatientName = patient.FullName ?? "";
+            }
+            return View(model);
         }
 
         var bill = new Bill
@@ -175,10 +274,13 @@ public class BillingController : Controller
             PatientId = model.PatientId,
             TotalAmount = model.TotalAmount,
             Status = "Unpaid",
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified)
         };
 
         _context.Bills.Add(bill);
+        
+        try
+        {
         await _context.SaveChangesAsync();
 
         // Add bill items
@@ -196,8 +298,15 @@ public class BillingController : Controller
         }
 
         await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Bill #{bill.BillId} created successfully! Total: Rs. {model.TotalAmount:N2}. {model.Items.Count} item(s) added. Database updated.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error saving bill to database: {ex.Message}";
+            return View(model);
+        }
 
-        return Json(new { success = true, message = "Bill created successfully", billId = bill.BillId });
+        return RedirectToAction("Details", new { id = bill.BillId });
     }
 
     // Bill details
@@ -284,7 +393,9 @@ public class BillingController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return Json(new { success = false, message = "Invalid data" });
+            var errors = string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+            TempData["ErrorMessage"] = $"Validation failed: {errors}";
+            return View(model);
         }
 
         var bill = await _context.Bills
@@ -292,14 +403,17 @@ public class BillingController : Controller
             .FirstOrDefaultAsync(b => b.BillId == model.BillId);
 
         if (bill == null)
-            return Json(new { success = false, message = "Bill not found" });
+        {
+            TempData["ErrorMessage"] = "Bill not found";
+            return RedirectToAction("Bills");
+        }
 
         var payment = new Payment
         {
             BillId = model.BillId,
             AmountPaid = model.AmountPaid,
             PaymentMethod = model.PaymentMethod,
-            PaymentTime = DateTime.UtcNow
+            PaymentTime = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified)
         };
 
         _context.Payments.Add(payment);
@@ -315,9 +429,27 @@ public class BillingController : Controller
         else
             bill.Status = "Unpaid";
 
-        await _context.SaveChangesAsync();
+        // If bill is fully paid and contains prescription items, deduct stock
+        if (bill.Status == "Paid")
+        {
+            await DeductPrescriptionStock(bill.BillId);
+        }
 
-        return Json(new { success = true, message = "Payment processed successfully", paymentId = payment.PaymentId });
+        try
+        {
+        await _context.SaveChangesAsync();
+            var message = bill.Status == "Paid" 
+                ? $"Payment of Rs. {model.AmountPaid:N2} processed successfully! Bill #{model.BillId} is now Paid. Stock deducted from inventory. Database updated."
+                : $"Payment of Rs. {model.AmountPaid:N2} processed successfully! Bill #{model.BillId} status: {bill.Status}. Database updated.";
+            TempData["SuccessMessage"] = message;
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error processing payment in database: {ex.Message}";
+            return View(model);
+        }
+
+        return RedirectToAction("Details", new { id = bill.BillId });
     }
 
     // Print invoice
@@ -503,5 +635,156 @@ public class BillingController : Controller
         };
 
         return View(viewModel);
+    }
+
+    // Payment method specific actions - redirect to ProcessPayment with method pre-filled
+    [HttpGet]
+    [Authorize(Roles = "Admin,Receptionist,Billing,Patient")]
+    public async Task<IActionResult> CashPayment(int billId)
+    {
+        return await RedirectToPaymentMethod(billId, "Cash");
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Admin,Receptionist,Billing,Patient")]
+    public async Task<IActionResult> CardPayment(int billId)
+    {
+        return await RedirectToPaymentMethod(billId, "Card");
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Admin,Receptionist,Billing,Patient")]
+    public async Task<IActionResult> JazzCashPayment(int billId)
+    {
+        return await RedirectToPaymentMethod(billId, "JazzCash");
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Admin,Receptionist,Billing,Patient")]
+    public async Task<IActionResult> EasypaisaPayment(int billId)
+    {
+        return await RedirectToPaymentMethod(billId, "Easypaisa");
+    }
+
+    private async Task<IActionResult> RedirectToPaymentMethod(int billId, string paymentMethod)
+    {
+        var bill = await _context.Bills
+            .Include(b => b.Patient)
+            .Include(b => b.Payments)
+            .FirstOrDefaultAsync(b => b.BillId == billId);
+
+        if (bill == null)
+        {
+            TempData["ErrorMessage"] = "Bill not found.";
+            return RedirectToAction("Index");
+        }
+
+        var totalPaid = bill.Payments.Sum(p => p.AmountPaid ?? 0);
+        var balance = (bill.TotalAmount ?? 0) - totalPaid;
+
+        if (balance <= 0)
+        {
+            TempData["InfoMessage"] = "This bill is already fully paid.";
+            return RedirectToAction("Details", new { id = billId });
+        }
+
+        // For patients, allow direct payment processing
+        var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+        if (userRole == "Patient")
+        {
+            // Create payment directly for patients
+            var payment = new Payment
+            {
+                BillId = billId,
+                AmountPaid = balance,
+                PaymentMethod = paymentMethod,
+                PaymentTime = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified)
+            };
+
+            _context.Payments.Add(payment);
+
+            // Update bill status
+            var newTotalPaid = totalPaid + balance;
+            if (newTotalPaid >= (bill.TotalAmount ?? 0))
+            {
+                bill.Status = "Paid";
+            }
+            else
+            {
+                bill.Status = "Partial";
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+
+                // If bill is for prescription, deduct stock
+                if (bill.Status == "Paid")
+                {
+                    await DeductPrescriptionStock(billId);
+                }
+
+                TempData["SuccessMessage"] = $"Payment of Rs. {balance:N2} processed successfully via {paymentMethod}!";
+                return RedirectToAction("Details", new { id = billId });
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error processing payment: {ex.Message}";
+                return RedirectToAction("Details", new { id = billId });
+            }
+        }
+        else
+        {
+            // For staff, redirect to ProcessPayment form
+            var viewModel = new CreatePaymentViewModel
+            {
+                BillId = billId,
+                PatientName = bill.Patient?.FullName ?? "",
+                TotalAmount = bill.TotalAmount ?? 0,
+                PreviouslyPaid = totalPaid,
+                Balance = balance,
+                AmountPaid = balance,
+                PaymentMethod = paymentMethod
+            };
+
+            return View("ProcessPayment", viewModel);
+        }
+    }
+
+    private async Task DeductPrescriptionStock(int billId)
+    {
+        var billItems = await _context.BillItems
+            .Where(bi => bi.BillId == billId && bi.ItemType == "Prescription")
+            .ToListAsync();
+
+        foreach (var billItem in billItems)
+        {
+            if (billItem.ReferenceId.HasValue)
+            {
+                var prescription = await _context.Prescriptions
+                    .Include(p => p.PrescriptionItems)
+                    .ThenInclude(pi => pi.Medication)
+                    .FirstOrDefaultAsync(p => p.PrescriptionId == billItem.ReferenceId.Value);
+
+                if (prescription != null)
+                {
+                    foreach (var item in prescription.PrescriptionItems)
+                    {
+                        if (item.Medication != null && item.Quantity.HasValue)
+                        {
+                            var medication = item.Medication;
+                            var quantityToDeduct = item.Quantity.Value;
+
+                            if (medication.StockQuantity.HasValue && medication.StockQuantity.Value >= quantityToDeduct)
+                            {
+                                medication.StockQuantity = medication.StockQuantity.Value - quantityToDeduct;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        await _context.SaveChangesAsync();
     }
 }

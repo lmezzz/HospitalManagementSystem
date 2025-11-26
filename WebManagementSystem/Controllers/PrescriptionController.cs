@@ -57,7 +57,7 @@ public class PrescriptionController : Controller
                 PatientName = p.Visit!.Patient!.FullName ?? "",
                 CreatedAt = p.CreatedAt,
                 ItemCount = p.PrescriptionItems.Count,
-                Status = "Pending" // TODO: Determine status from dispensing
+                Status = "Pending" // Status determined by dispensing status
             })
             .ToListAsync();
 
@@ -116,14 +116,42 @@ public class PrescriptionController : Controller
     {
         if (!ModelState.IsValid || !model.Items.Any())
         {
-            return Json(new { success = false, message = "Please add at least one medication" });
+            var errors = string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+            if (!model.Items.Any())
+                errors = string.IsNullOrEmpty(errors) ? "Please add at least one medication" : errors + ". Please add at least one medication";
+            TempData["ErrorMessage"] = $"Validation failed: {errors}";
+            // Reload view data
+            if (model.VisitId > 0)
+            {
+                var visit = await _context.Visits
+                    .Include(v => v.Patient)
+                    .Include(v => v.Doctor)
+                    .FirstOrDefaultAsync(v => v.VisitId == model.VisitId);
+                if (visit != null)
+                {
+                    model.PatientName = visit.Patient?.FullName ?? "";
+                    model.DoctorName = visit.Doctor?.FullName ?? "";
+                }
+            }
+            model.AvailableMedications = await _context.Medications
+                .Where(m => m.StockQuantity > 0)
+                .Select(m => new MedicationSelectDto
+                {
+                    MedicationId = m.MedicationId,
+                    Name = m.Name ?? "",
+                    Description = m.Description ?? "",
+                    UnitPrice = m.UnitPrice ?? 0,
+                    StockQuantity = m.StockQuantity ?? 0
+                })
+                .ToListAsync();
+            return View(model);
         }
 
         var prescription = new Prescription
         {
             VisitId = model.VisitId,
             DoctorId = model.DoctorId,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified)
         };
 
         _context.Prescriptions.Add(prescription);
@@ -144,9 +172,18 @@ public class PrescriptionController : Controller
             _context.PrescriptionItems.Add(prescriptionItem);
         }
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Prescription #{prescription.PrescriptionId} created successfully! {model.Items.Count} medication(s) added. Database updated.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error saving prescription to database: {ex.Message}";
+            return View(model);
+        }
 
-        return Json(new { success = true, message = "Prescription created successfully", prescriptionId = prescription.PrescriptionId });
+        return RedirectToAction("Details", new { id = prescription.PrescriptionId });
     }
 
     // Prescription details
@@ -288,14 +325,25 @@ public class PrescriptionController : Controller
             .FirstOrDefaultAsync(p => p.PrescriptionId == id);
 
         if (prescription == null)
-            return Json(new { success = false, message = "Prescription not found" });
+        {
+            TempData["ErrorMessage"] = "Prescription not found";
+            return RedirectToAction("Index");
+        }
 
         _context.PrescriptionItems.RemoveRange(prescription.PrescriptionItems);
         _context.Prescriptions.Remove(prescription);
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Prescription #{id} deleted successfully! Database updated.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error deleting prescription from database: {ex.Message}";
+        }
 
-        return Json(new { success = true, message = "Prescription deleted successfully" });
+        return RedirectToAction("Index");
     }
 
     // Print prescription

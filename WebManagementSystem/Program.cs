@@ -17,8 +17,11 @@ builder.Services.AddAuthentication("LoginAuthCookie")
         options.AccessDeniedPath = "/Account/Login"; // Redirect here if access is denied need to make a denied page and change the path to "Account/Denied"
         options.LoginPath = "/Account/Login";
         options.Cookie.Name = "LoginAuthCookie";
-        options.ExpireTimeSpan = TimeSpan.FromHours(1);
+        options.ExpireTimeSpan = TimeSpan.FromHours(8); // 8 hours session
         options.SlidingExpiration = true; //sliding expiration means that if the user is active the cookie expiration time will be extended
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
+        options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
     });
 
 builder.Services.AddAuthorization();  //enabhles us to use [Authorize] attribute in controllers

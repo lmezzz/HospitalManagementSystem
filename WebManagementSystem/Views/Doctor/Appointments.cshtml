@@ -1,4 +1,5 @@
-﻿@{
+﻿@model WebManagementSystem.Models.ViewModels.AppointmentListViewModel
+@{
     Layout = "_Layout";
 }
 
@@ -161,7 +162,9 @@
     <a asp-controller="Doctor" asp-action="LabRequests">🧪 Lab Requests</a>
     <a asp-controller="Doctor" asp-action="LabReports">📄 Lab Reports</a>
     <a asp-controller="Doctor" asp-action="Prescriptions">💊 Prescriptions</a>
-    <a asp-controller="Account" asp-action="Login">🚪 Logout</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: .7rem .8rem; border-radius: 10px; cursor: pointer; font-size: .95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
 </div>
 
 <!-- PAGE CONTENT -->
@@ -196,30 +199,50 @@
             </thead>
 
             <tbody>
-                <tr>
-                    <td>Sarah Khan</td>
-                    <td>Fever & Flu</td>
-                    <td>25 Nov 2025 — 2:00 PM</td>
-                    <td><span class="pill pill-upcoming">Upcoming</span></td>
-                    <td><a class="btn-view">View</a> @* asp-route-id="@appointment.Id" *@</td>
-                </tr>
-
-                <tr>
-                    <td>Ahmed Ali</td>
-                    <td>Chest Pain</td>
-                    <td>22 Nov 2025 — 12:00 PM</td>
-                    <td><span class="pill pill-completed">Completed</span></td>
-                    <td><a class="btn-view">View</a></td>
-                </tr>
-
-                <tr>
-                    <td>Maria Hussain</td>
-                    <td>Migraine</td>
-                    <td>20 Nov 2025 — 5:30 PM</td>
-                    <td><span class="pill pill-cancelled">Cancelled</span></td>
-                    <td><a class="btn-view">View</a></td>
-                </tr>
-
+                @if (Model.Appointments != null && Model.Appointments.Any())
+                {
+                    @foreach (var appointment in Model.Appointments)
+                    {
+                        <tr>
+                            <td>@appointment.PatientName</td>
+                            <td>@(string.IsNullOrEmpty(appointment.Reason) ? "General Checkup" : appointment.Reason)</td>
+                            <td>
+                                @if (appointment.ScheduledTime.HasValue)
+                                {
+                                    @appointment.ScheduledTime.Value.ToString("dd MMM yyyy — hh:mm tt")
+                                }
+                                else
+                                {
+                                    <span style="color: #8f93a7;">N/A</span>
+                                }
+                            </td>
+                            <td>
+                                @{
+                                    var statusText = appointment.Status ?? "Scheduled";
+                                    var pillClass = statusText.ToLower() switch
+                                    {
+                                        "scheduled" or "upcoming" => "pill-upcoming",
+                                        "completed" => "pill-completed",
+                                        "cancelled" => "pill-cancelled",
+                                        _ => "pill-upcoming"
+                                    };
+                                }
+                                <span class="pill @pillClass">@statusText</span>
+                            </td>
+                            <td>
+                                <a asp-action="CurrentSession" asp-route-appointmentId="@appointment.AppointmentId" class="btn-view">View</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 2rem; color: #8f93a7;">
+                            No appointments found.
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>

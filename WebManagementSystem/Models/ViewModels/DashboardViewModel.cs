@@ -30,7 +30,20 @@ public class DoctorDashboardViewModel
 
 public class PatientDashboardViewModel
 {
+    // Patient Information
+    public int PatientId { get; set; }
     public string PatientName { get; set; } = string.Empty;
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public string? Gender { get; set; }
+    public DateOnly? DateOfBirth { get; set; }
+    public string? Phone { get; set; }
+    public string? CNIC { get; set; }
+    public string? EmergencyContact { get; set; }
+    public string? Allergies { get; set; }
+    public string? ChronicConditions { get; set; }
+    
+    // Dashboard Metrics
     public int? UpcomingAppointments { get; set; }
     public int? PendingLabResults { get; set; }
     public decimal? OutstandingBillAmount { get; set; }
@@ -162,4 +175,22 @@ public class RecentLabResultDto
     public string PatientName { get; set; } = string.Empty;
     public string TestName { get; set; } = string.Empty;
     public DateTime UploadedAt { get; set; }
+}
+
+public class CurrentSessionViewModel
+{
+    public int AppointmentId { get; set; }
+    public int? VisitId { get; set; }
+    public int? PatientId { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public int? PatientAge { get; set; }
+    public string? PatientGender { get; set; }
+    public string? PatientPhone { get; set; }
+    public string? Reason { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public DateTime? ScheduledTime { get; set; }
+    public string? Symptoms { get; set; }
+    public string? Diagnosis { get; set; }
+    public string? Notes { get; set; }
+    public bool CanRequestLab => VisitId.HasValue && VisitId > 0;
 }

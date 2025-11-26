@@ -1,4 +1,5 @@
-﻿@{
+﻿@model WebManagementSystem.Models.ViewModels.PharmacyDashboardViewModel
+@{
     Layout = "_Layout";
 }
 
@@ -15,6 +16,46 @@
         background: radial-gradient(circle at top left, #20254a, #050816 60%);
         color: white;
         font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Toast Notification Styles */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
+    .toast {
+        min-width: 300px;
+        background: rgba(255,255,255,0.95);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        backdrop-filter: blur(10px);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .toast.success {
+        border-left: 4px solid #28a745;
+        color: #155724;
+    }
+
+    .toast.error {
+        border-left: 4px solid #dc3545;
+        color: #721c24;
+    }
+
+    @@keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
 
     /* SIDEBAR */
@@ -164,13 +205,30 @@
     <a asp-controller="Pharmacy" asp-action="IssueMedicine">💊 Issue Medicine</a>
     <a asp-controller="Pharmacy" asp-action="Stock">📦 Stock Inventory</a>
     
-    <a asp-controller="Account" asp-action="Login">🚪 Logout</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: 0.7rem 1rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
 </div>
 
 <!-- TOP BAR -->
 <div class="topbar">
     <h2>Welcome, Pharmacy Staff</h2>
-    <div class="user-tag">Pharmacy ID: 0093</div>
+</div>
+
+<!-- Toast Notifications -->
+<div class="toast-container">
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="toast success" id="successToast">
+            <strong>✓ Success:</strong> @successMessage
+        </div>
+    }
+    @if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <div class="toast error" id="errorToast">
+            <strong>✗ Error:</strong> @errorMessage
+        </div>
+    }
 </div>
 
 <!-- MAIN -->
@@ -182,47 +240,53 @@
     <div class="metric-grid">
 
         <div class="metric-card">
-            <div class="metric-title">Total Stock</div>
-            <div class="metric-value">312</div>
-            @* @Model.TotalStock *@
+            <div class="metric-title">Pending Prescriptions</div>
+            <div class="metric-value">@Model.PendingPrescriptions</div>
         </div>
 
         <div class="metric-card">
             <div class="metric-title">Low Stock Items</div>
-            <div class="metric-value">7</div>
-            @* @Model.LowStockCount *@
+            <div class="metric-value">@Model.LowStockItems</div>
         </div>
 
         <div class="metric-card">
-            <div class="metric-title">Out of Stock</div>
-            <div class="metric-value">3</div>
-            @* @Model.OutOfStockCount *@
+            <div class="metric-title">Dispensed Today</div>
+            <div class="metric-value">@Model.DispensedToday</div>
         </div>
 
         <div class="metric-card">
-            <div class="metric-title">Issued Today</div>
-            <div class="metric-value">18</div>
-            @* @Model.TodayIssued *@
+            <div class="metric-title">Queue Items</div>
+            <div class="metric-value">@(Model.PendingQueue?.Count ?? 0)</div>
         </div>
 
     </div>
 
     <!-- URGENT STOCK ALERT -->
+    @if (Model.LowStockMedications != null && Model.LowStockMedications.Any())
+    {
     <div class="urgent-box">
         <div class="urgent-title">⚠️ Urgent: Medicines Running Out</div>
 
+            @foreach (var med in Model.LowStockMedications.Take(10))
+            {
         <div class="urgent-item">
-            <strong>Panadol 500mg</strong> — Only <strong>2</strong> left
-            @* @med.Name, @med.Quantity *@
+                    <strong>@med.Name</strong> — Only <strong>@med.StockQuantity</strong> left (Threshold: @med.LowStockThreshold)
         </div>
-
-        <div class="urgent-item">
-            <strong>Amoxicillin 250mg</strong> — Only <strong>1</strong> left
+            }
         </div>
-
-        <div class="urgent-item">
-            <strong>ORS Sachets</strong> — Only <strong>0</strong> left
-        </div>
-    </div>
+    }
 
 </div>
+
+<script>
+    // Auto-hide toast notifications after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const toasts = document.querySelectorAll('.toast');
+        toasts.forEach(toast => {
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        });
+    });
+</script>

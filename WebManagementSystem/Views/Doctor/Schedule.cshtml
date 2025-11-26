@@ -162,7 +162,9 @@
     <a asp-controller="Doctor" asp-action="LabReports">📄 Lab Reports</a>
     <a asp-controller="Doctor" asp-action="Prescriptions">💊 Prescriptions</a>
     <a asp-controller="Doctor" asp-action="Billing">💳 Billing</a>
-    <a asp-controller="Account" asp-action="Login">🚪 Logout</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: .7rem .8rem; border-radius: 10px; cursor: pointer; font-size: .95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
 </div>
 
 <!-- PAGE CONTENT -->

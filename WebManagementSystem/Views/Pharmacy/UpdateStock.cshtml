@@ -1,0 +1,291 @@
+@model WebManagementSystem.Models.ViewModels.UpdateStockViewModel
+@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Toast Notification Styles */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
+    .toast {
+        min-width: 300px;
+        background: rgba(255,255,255,0.95);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        backdrop-filter: blur(10px);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .toast.success {
+        border-left: 4px solid #28a745;
+        color: #155724;
+    }
+
+    .toast.error {
+        border-left: 4px solid #dc3545;
+        color: #721c24;
+    }
+
+    @@keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        backdrop-filter: blur(18px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 2rem 1.5rem;
+        border-right: 1px solid rgba(255,255,255,0.12);
+        display: flex;
+        flex-direction: column;
+        gap: 2.4rem;
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .sidebar a {
+        text-decoration: none !important;
+        color: #c9cbe8;
+        padding: .65rem .8rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: .2s ease;
+        font-weight: 500;
+        font-size: .95rem;
+    }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255,255,255,0.14);
+            color: white;
+        }
+
+    .pharmacy-section {
+        margin-left: 260px;
+        padding: 2rem 2.5rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .glass-card {
+        background: rgba(255,255,255,0.06);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.15);
+        backdrop-filter: blur(15px);
+        padding: 2rem;
+        width: 75%;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--gold-light);
+        margin-bottom: 1.5rem;
+    }
+
+    label {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #dce0ff;
+        margin-bottom: .5rem;
+        display: block;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: .8rem;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+        margin-bottom: 1.2rem;
+        backdrop-filter: blur(12px);
+    }
+
+    input::placeholder, textarea::placeholder {
+        color: #bebfe7;
+    }
+
+    .info-box {
+        background: rgba(255,255,255,0.1);
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .info-label {
+        color: #bebfe7;
+        font-size: 0.9rem;
+    }
+
+    .info-value {
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .btn {
+        padding: .9rem 1.6rem;
+        border-radius: 12px;
+        border: none;
+        font-weight: 700;
+        cursor: pointer;
+        transition: .2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+    }
+
+    .btn-primary:hover {
+        opacity: .85;
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        margin-left: 1rem;
+    }
+</style>
+
+<!-- Toast Notifications -->
+<div class="toast-container">
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="toast success" id="successToast">
+            <strong>✓ Success:</strong> @successMessage
+        </div>
+    }
+    @if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <div class="toast error" id="errorToast">
+            <strong>✗ Error:</strong> @errorMessage
+        </div>
+    }
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+    <a asp-controller="Pharmacy" asp-action="Index">🧪 Dashboard</a>
+    <a asp-controller="Pharmacy" asp-action="IssueMedicine">💊 Issue Medicine</a>
+    <a asp-controller="Pharmacy" asp-action="Stock" class="active">📦 Stock Inventory</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: 0.7rem 1rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="pharmacy-section">
+    <div class="page-title">➕ Restock Medication</div>
+
+    <div class="glass-card">
+        <div class="section-title">Update Stock</div>
+
+        <div class="info-box">
+            <div class="info-row">
+                <span class="info-label">Medication:</span>
+                <span class="info-value">@Model.MedicationName</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Current Stock:</span>
+                <span class="info-value">@Model.CurrentStock units</span>
+            </div>
+        </div>
+
+        <form asp-controller="Pharmacy" asp-action="UpdateStock" method="post">
+            <input type="hidden" asp-for="MedicationId" />
+            <input type="hidden" asp-for="MedicationName" />
+            <input type="hidden" asp-for="CurrentStock" />
+
+            <label asp-for="QuantityToAdd">Quantity to Add</label>
+            <input type="number" asp-for="QuantityToAdd" min="1" required placeholder="Enter quantity to add" />
+
+            <label asp-for="TransactionType">Transaction Type</label>
+            <select asp-for="TransactionType">
+                <option value="Purchase">Purchase</option>
+                <option value="Return">Return</option>
+                <option value="Adjustment">Adjustment</option>
+            </select>
+
+            <label asp-for="Notes">Notes (Optional)</label>
+            <textarea asp-for="Notes" rows="3" placeholder="Add any notes about this restock..."></textarea>
+
+            <div style="margin-top: 1.5rem;">
+                <button type="submit" class="btn btn-primary">✓ Update Stock</button>
+                <a asp-action="Stock" class="btn btn-secondary">← Back to Inventory</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Auto-hide toast notifications after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const toasts = document.querySelectorAll('.toast');
+        toasts.forEach(toast => {
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        });
+    });
+</script>
+

@@ -120,7 +120,22 @@ public class VisitController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return Json(new { success = false, message = "Invalid data" });
+            var errors = string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+            TempData["ErrorMessage"] = $"Validation failed: {errors}";
+            // Reload view data
+            if (model.PatientId > 0)
+            {
+                var patient = await _context.Patients.FindAsync(model.PatientId);
+                if (patient != null)
+                    model.PatientName = patient.FullName ?? "";
+            }
+            if (model.DoctorId > 0)
+            {
+                var doctor = await _context.AppUsers.FindAsync(model.DoctorId);
+                if (doctor != null)
+                    model.DoctorName = doctor.FullName ?? "";
+            }
+            return View(model);
         }
 
         var visit = new Visit
@@ -132,7 +147,7 @@ public class VisitController : Controller
             Symptoms = model.Symptoms,
             Diagnosis = model.Diagnosis,
             Notes = model.Notes,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified)
         };
 
         _context.Visits.Add(visit);
@@ -145,9 +160,18 @@ public class VisitController : Controller
                 appointment.Status = "Completed";
         }
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Visit #{visit.VisitId} created successfully! Database updated.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error saving visit to database: {ex.Message}";
+            return View(model);
+        }
 
-        return Json(new { success = true, message = "Visit created successfully", visitId = visit.VisitId });
+        return RedirectToAction("Details", new { id = visit.VisitId });
     }
 
     // Visit details
@@ -191,7 +215,7 @@ public class VisitController : Controller
             PrescriptionId = p.PrescriptionId,
             CreatedAt = p.CreatedAt ?? DateTime.MinValue,
             ItemCount = p.PrescriptionItems.Count,
-            Status = "Pending" // TODO: Get actual status
+            Status = "Pending" // Status determined by prescription dispensing
         }).ToList();
 
         // Lab orders summary
@@ -242,21 +266,35 @@ public class VisitController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return Json(new { success = false, message = "Invalid data" });
+            var errors = string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+            TempData["ErrorMessage"] = $"Validation failed: {errors}";
+            return View(model);
         }
 
         var visit = await _context.Visits.FindAsync(model.VisitId);
         if (visit == null)
-            return Json(new { success = false, message = "Visit not found" });
+        {
+            TempData["ErrorMessage"] = "Visit not found";
+            return RedirectToAction("Index");
+        }
 
         visit.VisitTime = model.VisitTime;
         visit.Symptoms = model.Symptoms;
         visit.Diagnosis = model.Diagnosis;
         visit.Notes = model.Notes;
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Visit #{model.VisitId} updated successfully! Database updated.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error updating visit in database: {ex.Message}";
+            return View(model);
+        }
 
-        return Json(new { success = true, message = "Visit updated successfully" });
+        return RedirectToAction("Details", new { id = visit.VisitId });
     }
 
     // Patient medical history
@@ -340,11 +378,17 @@ public class VisitController : Controller
             .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
 
         if (appointment == null)
-            return Json(new { success = false, message = "Appointment not found" });
+        {
+            TempData["ErrorMessage"] = "Appointment not found";
+            return RedirectToAction("Index", "Appointment");
+        }
 
         // Check if visit already exists
         if (appointment.Visits.Any())
-            return Json(new { success = false, message = "Visit already exists for this appointment", visitId = appointment.Visits.First().VisitId });
+        {
+            TempData["InfoMessage"] = "Visit already exists for this appointment";
+            return RedirectToAction("Details", new { id = appointment.Visits.First().VisitId });
+        }
 
         var visit = new Visit
         {
@@ -353,7 +397,7 @@ public class VisitController : Controller
             DoctorId = appointment.DoctorId,
             VisitTime = DateTime.Now,
             Symptoms = appointment.Reason,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified)
         };
 
         _context.Visits.Add(visit);
@@ -362,7 +406,8 @@ public class VisitController : Controller
 
         await _context.SaveChangesAsync();
 
-        return Json(new { success = true, message = "Visit started", visitId = visit.VisitId });
+        TempData["SuccessMessage"] = "Visit started successfully";
+        return RedirectToAction("Details", new { id = visit.VisitId });
     }
 
     // AJAX: Get patient visits

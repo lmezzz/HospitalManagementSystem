@@ -175,34 +175,40 @@ public class DoctorController : Controller
 
     public async Task<IActionResult> Reports()
     {
-        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
-
-        var startDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
-        var endDate = DateTime.Today;
-
-        var viewModel = new DoctorDashboardViewModel
-        {
-            DoctorName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value ?? "",
-            TodaysAppointments = await _context.Appointments
-                .CountAsync(a => a.DoctorId == userId &&
-                               a.ScheduledTime >= startDate &&
-                               a.ScheduledTime <= endDate),
-            TotalPatientsThisMonth = await _context.Visits
-                .Where(v => v.DoctorId == userId &&
-                           v.VisitTime >= startDate &&
-                           v.VisitTime <= endDate)
-                .Select(v => v.PatientId)
-                .Distinct()
-                .CountAsync()
-        };
-
-        ViewBag.StartDate = startDate;
-        ViewBag.EndDate = endDate;
-
-        return View(viewModel);
+        // Redirect to LabReports for now, or create a Reports view
+        return RedirectToAction("LabReports");
     }
 
     // Additional actions for doctor workflow
+
+    /// <summary>
+    /// Entry point from sidebar: finds the latest in-progress session for this doctor
+    /// and redirects to the detailed CurrentSession view. If none exists, goes back
+    /// to the dashboard with an info message.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> CurrentSessionLatest()
+    {
+        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+
+        var appointment = await _context.Appointments
+            .Include(a => a.Patient)
+            .Include(a => a.Visits)
+            .Where(a => a.DoctorId == userId &&
+                        a.Status != null &&
+                        (a.Status == "InProgress" || a.Status == "In Session"))
+            .OrderByDescending(a => a.ScheduledTime)
+            .FirstOrDefaultAsync();
+
+        if (appointment == null)
+        {
+            TempData["InfoMessage"] = "No active session found. Start a session from today's appointments.";
+            return RedirectToAction("Dashboard");
+        }
+
+        return RedirectToAction(nameof(CurrentSession), new { appointmentId = appointment.AppointmentId });
+    }
+
     [HttpGet]
     public async Task<IActionResult> CurrentSession(int appointmentId)
     {
@@ -216,24 +222,96 @@ public class DoctorController : Controller
 
         var visit = appointment.Visits.FirstOrDefault();
 
-        ViewBag.Appointment = appointment;
-        ViewBag.Visit = visit;
-        ViewBag.Patient = appointment.Patient;
+        int? patientAge = null;
+        if (appointment.Patient?.DateOfBirth != null)
+        {
+            try
+            {
+                var dob = appointment.Patient.DateOfBirth!.Value.ToDateTime(TimeOnly.MinValue);
+                var today = DateTime.Today;
+                patientAge = today.Year - dob.Year;
+                if (dob.Date > today.AddYears(-patientAge.Value)) patientAge--;
+            }
+            catch
+            {
+                patientAge = null;
+            }
+        }
 
-        return View();
+        var viewModel = new CurrentSessionViewModel
+        {
+            AppointmentId = appointment.AppointmentId,
+            VisitId = visit?.VisitId,
+            PatientId = appointment.PatientId,
+            PatientName = appointment.Patient?.FullName ?? "",
+            PatientAge = patientAge,
+            PatientGender = appointment.Patient?.Gender,
+            PatientPhone = appointment.Patient?.Phone,
+            Reason = appointment.Reason ?? "",
+            Status = appointment.Status ?? "",
+            ScheduledTime = appointment.ScheduledTime,
+            Symptoms = visit?.Symptoms,
+            Diagnosis = visit?.Diagnosis,
+            Notes = visit?.Notes
+        };
+
+        return View(viewModel);
     }
 
     [HttpGet]
-    public async Task<IActionResult> LabRequest(int visitId)
+    public async Task<IActionResult> LabRequest(int? visitId)
     {
+        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+        var viewModel = new DoctorLabRequestViewModel();
+
+        if (!visitId.HasValue || visitId.Value <= 0)
+        {
+            viewModel.RecentVisits = await _context.Visits
+                .Include(v => v.Patient)
+                .Where(v => v.DoctorId == userId)
+                .OrderByDescending(v => v.VisitTime ?? v.CreatedAt)
+                .Take(10)
+                .Select(v => new VisitDto
+                {
+                    VisitId = v.VisitId,
+                    AppointmentId = v.AppointmentId,
+                    PatientId = v.PatientId,
+                    PatientName = v.Patient!.FullName ?? "",
+                    DoctorId = v.DoctorId,
+                    DoctorName = v.Doctor!.FullName ?? "",
+                    VisitTime = v.VisitTime,
+                    Symptoms = v.Symptoms,
+                    Diagnosis = v.Diagnosis,
+                    CreatedAt = v.CreatedAt
+                })
+                .ToListAsync();
+
+            return View(viewModel);
+        }
+
         var visit = await _context.Visits
             .Include(v => v.Patient)
-            .FirstOrDefaultAsync(v => v.VisitId == visitId);
+            .Include(v => v.Doctor)
+            .FirstOrDefaultAsync(v => v.VisitId == visitId.Value && v.DoctorId == userId);
 
         if (visit == null)
-            return NotFound();
+        {
+            TempData["ErrorMessage"] = "Visit not found or you do not have access to it.";
+            return RedirectToAction(nameof(LabRequest));
+        }
 
-        var tests = await _context.LabTests
+        var form = new CreateLabOrderViewModel
+        {
+            VisitId = visit.VisitId,
+            PatientId = visit.PatientId ?? 0,
+            DoctorId = visit.DoctorId ?? 0,
+            PatientName = visit.Patient?.FullName ?? "",
+            DoctorName = visit.Doctor?.FullName ?? "",
+            ClinicalNotes = visit.Notes,
+            Priority = "Normal"
+        };
+
+        form.AvailableTests = await _context.LabTests
             .Select(t => new LabTestSelectDto
             {
                 LabTestId = t.LabTestId,
@@ -244,10 +322,9 @@ public class DoctorController : Controller
             })
             .ToListAsync();
 
-        ViewBag.Visit = visit;
-        ViewBag.AvailableTests = tests;
+        viewModel.Form = form;
 
-        return View();
+        return View(viewModel);
     }
 
     [HttpGet]

@@ -1,8 +1,8 @@
-﻿
-
+﻿@model WebManagementSystem.Models.ViewModels.BillListViewModel
 @{
     Layout = "_Layout";
 } 
+
 <style>
     :root {
         --navy: #050816;
@@ -18,7 +18,6 @@
         overflow-x: hidden;
         font-family: 'Segoe UI', sans-serif;
     }
-    /* ================= SIDEBAR ================= */
 
     .sidebar {
         width: 240px;
@@ -43,9 +42,8 @@
         color: transparent;
     }
 
-    /* All links inside sidebar */
     .sidebar a {
-        text-decoration: none !important; /* remove underline */
+        text-decoration: none !important;
         color: #c9cbe8;
         padding: 0.65rem 0.8rem;
         border-radius: 10px;
@@ -58,48 +56,26 @@
         font-size: 0.95rem;
     }
 
-        /* Hover & Active state */
         .sidebar a:hover,
         .sidebar a.active {
             background: rgba(255,255,255,0.14);
             color: #fff;
         }
 
-        /* Icons inside links auto-align */
-        .sidebar a i,
-        .sidebar a img {
-            width: 18px;
-            height: 18px;
-            margin-right: 6px;
-        }
-
-
-
-    /* PAGE CONTENT WRAPPER */
     .billing-section {
         margin-left: 260px;
         padding: 2rem 2.5rem;
     }
 
-    /* Page Title */
     .billing-title {
         font-size: 2rem;
         font-weight: 700;
         margin-bottom: 1.8rem;
-        display: flex;
-        align-items: center;
-        gap: 0.7rem;
-    }
-
-        .billing-title span.icon {
-            width: 22px;
-            height: 22px;
-            background: #8d79ff;
-            border-radius: 5px;
-            display: inline-block;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
         }
 
-    /* BILL CARD */
     .bill-card {
         background: rgba(255,255,255,0.06);
         border: 1px solid rgba(255,255,255,0.15);
@@ -140,7 +116,6 @@
         color: #efeff7;
     }
 
-    /* STATUS BADGES */
     .status {
         padding: 0.35rem 0.75rem;
         border-radius: 6px;
@@ -149,17 +124,25 @@
         display: inline-block;
     }
 
-    .paid {
+    .status.paid {
         background: #28b463;
+        color: white;
     }
 
-    .pending {
+    .status.pending,
+    .status.unpaid {
         background: #f1c40f;
         color: black;
     }
 
-    .overdue {
+    .status.partial {
+        background: #ff9800;
+        color: white;
+    }
+
+    .status.overdue {
         background: #e74c3c;
+        color: white;
     }
 
     .btn-pay {
@@ -180,127 +163,116 @@
             transform: translateY(-2px);
             filter: brightness(1.1);
         }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #8f93a7;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
 </style>
-<!-- ================= SIDEBAR ================= -->
+
 <div class="sidebar">
     <div class="brand">MedicaLux</div>
-
-    <a asp-controller="Patient" asp-action="Dashboard" class="menu-item">
-        🏠 Dashboard
-    </a>
-
-    <a asp-controller="Patient" asp-action="Appointments" class="menu-item">
-        🏢 My Appointments
-    </a>
-
-    <a asp-controller="Patient" asp-action="LabReports" class="menu-item">
-        🧪 Lab Reports
-    </a>
-
-    <a asp-controller="Patient" asp-action="Prescriptions" class="menu-item">
-        💊 Prescriptions
-    </a>
-
-    <a asp-controller="Patient" asp-action="Billing" class="menu-item active">
-        💳 Billing
-    </a>
-
-    <a asp-controller="Patient" asp-action="Pharmacy" class="menu-item">
-        🏥 Pharmacy
-    </a>
-
-
-    <a asp-controller="Home" asp-action="Index" class="menu-item">
-        🚪 Logout
-    </a>
+    <a asp-controller="Patient" asp-action="Dashboard">🏠 Dashboard</a>
+    <a asp-controller="Patient" asp-action="Appointments">🏢 My Appointments</a>
+    <a asp-controller="Patient" asp-action="LabReports">🧪 Lab Reports</a>
+    <a asp-controller="Patient" asp-action="Prescriptions">💊 Prescriptions</a>
+    <a asp-controller="Patient" asp-action="Billing" class="active">💳 Billing</a>
+    <a asp-controller="Patient" asp-action="Pharmacy">🏥 Pharmacy</a>
+    <a asp-controller="Patient" asp-action="Profile">👤 Profile</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: 0.65rem 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
 </div>
-<!-- ====================== BILLING PAGE ====================== -->
-
 
 <div class="billing-section">
+    <div class="billing-title">💳 My Bills & Payments</div>
 
+    @if (Model.Bills != null && Model.Bills.Any())
+    {
+        @foreach (var bill in Model.Bills)
+        {
     <div class="bill-card">
-        <div class="bill-header">Consultation Fee — Cardiology</div>
+                <div class="bill-header">Bill #@bill.BillId</div>
         <div class="bill-info">
             <div class="bill-row">
                 <label>Bill ID</label>
-                <div>BL-001122</div>  @* @bill.BillId *@
+                        <div>BILL-@bill.BillId.ToString("D6")</div>
+                    </div>
+                    <div class="bill-row">
+                        <label>Total Amount</label>
+                        <div>PKR @bill.TotalAmount.ToString("N2")</div>
+                    </div>
+                    <div class="bill-row">
+                        <label>Amount Paid</label>
+                        <div>PKR @bill.AmountPaid.ToString("N2")</div>
             </div>
             <div class="bill-row">
-                <label>Amount</label>
-                <div>PKR 2,500</div>  @* @bill.Amount *@
+                        <label>Balance</label>
+                        <div>PKR @bill.Balance.ToString("N2")</div>
             </div>
             <div class="bill-row">
                 <label>Date Issued</label>
-                <div>24 Nov 2025</div>  @* @bill.IssueDate *@
+                        <div>@bill.CreatedAt.ToString("MMM dd, yyyy")</div>
             </div>
             <div class="bill-row">
                 <label>Status</label>
-                <div class="status paid">Paid</div>  @* @bill.Status *@
+                        <div>
+                            @if (bill.Status == "Paid")
+                            {
+                                <span class="status paid">Paid</span>
+                            }
+                            else if (bill.Status == "Partial")
+                            {
+                                <span class="status partial">Partial</span>
+                            }
+                            else
+                            {
+                                <span class="status pending">@bill.Status</span>
+                            }
             </div>
         </div>
     </div>
 
-    <div class="bill-card">
-        <div class="bill-header">Lab Test — Blood Analysis</div>
-        <div class="bill-info">
-            <div class="bill-row">
-                <label>Bill ID</label>
-                <div>BL-001133</div>
+                @if (bill.Balance > 0)
+                {
+                    <label style="margin-top: 1rem; display: block; color: #c9cbe8; font-weight: 600;">Choose Payment Method</label>
+                    <select id="paymentMethod_@bill.BillId" onchange="redirectPayment(@bill.BillId)" style="width: 220px; padding: .6rem; border-radius: 10px; margin-top: 0.5rem; background: rgba(255,255,255,0.08); color: white; border: 1px solid rgba(255,255,255,0.2);">
+                        <option value="">Select a method</option>
+                        <option value="cash">Cash</option>
+                        <option value="card">Credit / Debit Card</option>
+                        <option value="jazzcash">JazzCash</option>
+                        <option value="easypaisa">Easypaisa</option>
+                    </select>
+                }
             </div>
-
-            <div class="bill-row">
-                <label>Amount</label>
-                <div>PKR 1,800</div>
-            </div>
-
-            <div class="bill-row">
-                <label>Date Issued</label>
-                <div>10 Nov 2025</div>
-            </div>
-
-            <div class="bill-row">
-                <label>Status</label>
-                <div class="status pending">Pending</div>
-            </div>
+        }
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">💳</div>
+            <h3 style="color: #d4d6e8; margin-bottom: 0.5rem;">No Bills Found</h3>
+            <p>You don't have any bills yet. Bills will appear here once services are provided.</p>
         </div>
-
-        <!-- 🔥 Show button because Pending -->
-        <a href="/Billing/Payments" class="btn-pay">Pay Now</a>
-    </div>
-
-    <div class="bill-card">
-        <div class="bill-header">X-Ray — Chest Scan</div>
-        <div class="bill-info">
-            <div class="bill-row">
-                <label>Bill ID</label>
-                <div>BL-001144</div>
-            </div>
-
-            <div class="bill-row">
-                <label>Amount</label>
-                <div>PKR 3,200</div>
-            </div>
-
-            <div class="bill-row">
-                <label>Date Issued</label>
-                <div>02 Nov 2025</div>
-            </div>
-
-            <div class="bill-row">
-                <label>Status</label>
-                <div class="status overdue">Overdue</div>
-            </div>
-        </div>
-
-        <a href="~/Billing/Payments" class="btn-pay">Pay Now</a>
-
-
-       
-    </div>
-
-
+    }
 </div>
 
+<script>
+    function redirectPayment(billId) {
+        const method = document.getElementById("paymentMethod_" + billId).value;
+        if (!method) return;
 
+        const base = "/Billing/";
 
+        if (method === "cash") window.location.href = base + "CashPayment?billId=" + billId;
+        if (method === "card") window.location.href = base + "CardPayment?billId=" + billId;
+        if (method === "jazzcash") window.location.href = base + "JazzCashPayment?billId=" + billId;
+        if (method === "easypaisa") window.location.href = base + "EasypaisaPayment?billId=" + billId;
+    }
+</script>

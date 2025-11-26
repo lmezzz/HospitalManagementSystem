@@ -128,50 +128,141 @@ public class AppointmentController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return Json(new { success = false, message = "Invalid data" });
+            var errors = string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+            TempData["ErrorMessage"] = $"Validation failed: {errors}";
+            
+            // Reload view data
+            var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+            if (userRole != "Patient")
+            {
+                model.AvailablePatients = await _context.Patients
+                    .Select(p => new PatientSelectDto
+                    {
+                        PatientId = p.PatientId,
+                        FullName = p.FullName ?? "",
+                        Phone = p.Phone ?? "",
+                        CNIC = p.Cnic ?? ""
+                    })
+                    .ToListAsync();
+            }
+            model.AvailableDoctors = await _context.AppUsers
+                .Where(u => u.RoleId == 3 && u.IsActive == true) // Doctor role
+                .Select(u => new DoctorSelectDto
+                {
+                    DoctorId = u.UserId,
+                    FullName = u.FullName ?? "",
+                    Email = u.Email ?? ""
+                })
+                .ToListAsync();
+            return View(model);
         }
 
-        // Combine date and time
-        var scheduledDateTime = model.ScheduledDate.Date.Add(model.ScheduledTime);
+        // Get the selected schedule slot
+        if (!model.ScheduleId.HasValue)
+        {
+            TempData["ErrorMessage"] = "Please select a time slot.";
+            
+            // Reload view data
+            var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+            if (userRole != "Patient")
+            {
+                model.AvailablePatients = await _context.Patients
+                    .Select(p => new PatientSelectDto
+                    {
+                        PatientId = p.PatientId,
+                        FullName = p.FullName ?? "",
+                        Phone = p.Phone ?? "",
+                        CNIC = p.Cnic ?? ""
+                    })
+                    .ToListAsync();
+            }
+            model.AvailableDoctors = await _context.AppUsers
+                .Where(u => u.RoleId == 3 && u.IsActive == true)
+                .Select(u => new DoctorSelectDto
+                {
+                    DoctorId = u.UserId,
+                    FullName = u.FullName ?? "",
+                    Email = u.Email ?? ""
+                })
+                .ToListAsync();
+            return View(model);
+        }
 
-        // Check for existing appointment at same time
+        var schedule = await _context.Schedules
+            .FirstOrDefaultAsync(s => s.ScheduleId == model.ScheduleId.Value &&
+                                     s.DoctorId == model.DoctorId &&
+                                     s.IsAvailable == true);
+
+        if (schedule == null)
+        {
+            TempData["ErrorMessage"] = "Selected time slot is no longer available. Please select another slot.";
+            
+            // Reload view data
+            var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+            if (userRole != "Patient")
+            {
+                model.AvailablePatients = await _context.Patients
+                    .Select(p => new PatientSelectDto
+                    {
+                        PatientId = p.PatientId,
+                        FullName = p.FullName ?? "",
+                        Phone = p.Phone ?? "",
+                        CNIC = p.Cnic ?? ""
+                    })
+                    .ToListAsync();
+            }
+            model.AvailableDoctors = await _context.AppUsers
+                .Where(u => u.RoleId == 3 && u.IsActive == true)
+                .Select(u => new DoctorSelectDto
+                {
+                    DoctorId = u.UserId,
+                    FullName = u.FullName ?? "",
+                    Email = u.Email ?? ""
+                })
+                .ToListAsync();
+            return View(model);
+        }
+
+        // Check if slot is already booked
         var existingAppointment = await _context.Appointments
-            .AnyAsync(a => a.DoctorId == model.DoctorId &&
-                          a.ScheduledTime.HasValue &&
-                          a.ScheduledTime.Value == scheduledDateTime &&
+            .AnyAsync(a => a.ScheduleId == model.ScheduleId.Value &&
                           a.Status != "Cancelled");
 
         if (existingAppointment)
         {
-            return Json(new { success = false, message = "Doctor already has an appointment at this time" });
-        }
-
-        // Find or create schedule slot
-        var scheduleDate = DateOnly.FromDateTime(model.ScheduledDate);
-        var scheduleTime = TimeOnly.FromTimeSpan(model.ScheduledTime);
-        
-        var schedule = await _context.Schedules
-            .FirstOrDefaultAsync(s => s.DoctorId == model.DoctorId &&
-                                     s.SlotDate == scheduleDate &&
-                                     s.StartTime == scheduleTime);
-
-        if (schedule == null)
-        {
-            schedule = new Schedule
+            TempData["ErrorMessage"] = "This time slot is already booked. Please select another slot.";
+            
+            // Reload view data
+            var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+            if (userRole != "Patient")
             {
-                DoctorId = model.DoctorId,
-                SlotDate = scheduleDate,
-                StartTime = scheduleTime,
-                EndTime = scheduleTime.Add(TimeSpan.FromMinutes(30)), // Default 30 min slots
-                IsAvailable = false
-            };
-            _context.Schedules.Add(schedule);
-            await _context.SaveChangesAsync();
+                model.AvailablePatients = await _context.Patients
+                    .Select(p => new PatientSelectDto
+                    {
+                        PatientId = p.PatientId,
+                        FullName = p.FullName ?? "",
+                        Phone = p.Phone ?? "",
+                        CNIC = p.Cnic ?? ""
+                    })
+                    .ToListAsync();
+            }
+            model.AvailableDoctors = await _context.AppUsers
+                .Where(u => u.RoleId == 3 && u.IsActive == true)
+                .Select(u => new DoctorSelectDto
+                {
+                    DoctorId = u.UserId,
+                    FullName = u.FullName ?? "",
+                    Email = u.Email ?? ""
+                })
+                .ToListAsync();
+            return View(model);
         }
-        else
-        {
-            schedule.IsAvailable = false;
-        }
+
+        // Combine date and time from schedule
+        var scheduledDateTime = schedule.SlotDate.ToDateTime(schedule.StartTime);
+
+        // Mark schedule as unavailable
+        schedule.IsAvailable = false;
 
         var appointment = new Appointment
         {
@@ -181,13 +272,23 @@ public class AppointmentController : Controller
             ScheduledTime = scheduledDateTime,
             Reason = model.Reason,
             Status = "Scheduled",
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified)
         };
 
         _context.Appointments.Add(appointment);
-        await _context.SaveChangesAsync();
-
-        return Json(new { success = true, message = "Appointment created successfully", appointmentId = appointment.AppointmentId });
+        
+        try
+        {
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Appointment created successfully! Appointment ID: {appointment.AppointmentId}. Database updated.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error saving appointment to database: {ex.Message}";
+            return RedirectToAction("Create");
+        }
+        
+        return RedirectToAction("Index");
     }
 
     // Get appointment details
@@ -256,12 +357,17 @@ public class AppointmentController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return Json(new { success = false, message = "Invalid data" });
+            var errors = string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+            TempData["ErrorMessage"] = $"Validation failed: {errors}";
+            return View(model);
         }
 
         var appointment = await _context.Appointments.FindAsync(model.AppointmentId);
         if (appointment == null)
-            return Json(new { success = false, message = "Appointment not found" });
+        {
+            TempData["ErrorMessage"] = "Appointment not found";
+            return RedirectToAction("Index");
+        }
 
         var scheduledDateTime = model.ScheduledDate.Date.Add(model.ScheduledTime);
 
@@ -274,16 +380,26 @@ public class AppointmentController : Controller
 
         if (conflict)
         {
-            return Json(new { success = false, message = "Time slot already booked" });
+            TempData["ErrorMessage"] = "Time slot already booked. Please select a different time.";
+            return View(model);
         }
 
         appointment.ScheduledTime = scheduledDateTime;
         appointment.Reason = model.Reason;
         appointment.Status = model.Status;
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Appointment #{model.AppointmentId} updated successfully! Database updated.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error updating appointment in database: {ex.Message}";
+            return View(model);
+        }
 
-        return Json(new { success = true, message = "Appointment updated successfully" });
+        return RedirectToAction("Index");
     }
 
     // Cancel appointment
@@ -292,7 +408,10 @@ public class AppointmentController : Controller
     {
         var appointment = await _context.Appointments.FindAsync(id);
         if (appointment == null)
-            return Json(new { success = false, message = "Appointment not found" });
+        {
+            TempData["ErrorMessage"] = "Appointment not found";
+            return RedirectToAction("Index");
+        }
 
         appointment.Status = "Cancelled";
 
@@ -304,9 +423,17 @@ public class AppointmentController : Controller
                 schedule.IsAvailable = true;
         }
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Appointment #{id} cancelled successfully! Database updated.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error cancelling appointment in database: {ex.Message}";
+        }
 
-        return Json(new { success = true, message = "Appointment cancelled successfully" });
+        return RedirectToAction("Index");
     }
 
     // Get available slots for a doctor on a date
@@ -315,10 +442,25 @@ public class AppointmentController : Controller
     {
         var scheduleDate = DateOnly.FromDateTime(date);
         
-        var schedules = await _context.Schedules
+        // Get all schedules for the doctor on this date
+        var allSchedules = await _context.Schedules
             .Where(s => s.DoctorId == doctorId &&
-                       s.SlotDate == scheduleDate &&
-                       s.IsAvailable == true)
+                       s.SlotDate == scheduleDate)
+            .ToListAsync();
+
+        // Get appointment IDs for booked slots
+        var bookedScheduleIds = await _context.Appointments
+            .Where(a => a.DoctorId == doctorId &&
+                       a.ScheduledTime.HasValue &&
+                       DateOnly.FromDateTime(a.ScheduledTime.Value) == scheduleDate &&
+                       a.Status != "Cancelled")
+            .Select(a => a.ScheduleId)
+            .ToListAsync();
+
+        // Filter available slots (IsAvailable = true AND not booked)
+        var availableSlots = allSchedules
+            .Where(s => s.IsAvailable == true && 
+                       !bookedScheduleIds.Contains(s.ScheduleId))
             .OrderBy(s => s.StartTime)
             .Select(s => new TimeSlotDto
             {
@@ -327,9 +469,9 @@ public class AppointmentController : Controller
                 EndTime = new TimeSpan(s.EndTime.Hour, s.EndTime.Minute, s.EndTime.Second),
                 DisplayTime = s.StartTime.ToString(@"HH\:mm") + " - " + s.EndTime.ToString(@"HH\:mm")
             })
-            .ToListAsync();
+            .ToList();
 
-        return Json(schedules);
+        return Json(availableSlots);
     }
 
     // Create schedule slots for a doctor
@@ -339,7 +481,9 @@ public class AppointmentController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return Json(new { success = false, message = "Invalid data" });
+            var errors = string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+            TempData["ErrorMessage"] = $"Validation failed: {errors}";
+            return RedirectToAction("Calendar");
         }
 
         // Check if schedule already exists
@@ -353,7 +497,8 @@ public class AppointmentController : Controller
 
         if (existing)
         {
-            return Json(new { success = false, message = "Schedule slot already exists" });
+            TempData["ErrorMessage"] = "Schedule slot already exists for this doctor at this time.";
+            return RedirectToAction("Calendar");
         }
 
         var schedule = new Schedule
@@ -366,9 +511,19 @@ public class AppointmentController : Controller
         };
 
         _context.Schedules.Add(schedule);
-        await _context.SaveChangesAsync();
+        
+        try
+        {
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Schedule slot created successfully! Schedule ID: {schedule.ScheduleId}. Database updated.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error creating schedule in database: {ex.Message}";
+            return RedirectToAction("Calendar");
+        }
 
-        return Json(new { success = true, message = "Schedule created successfully", scheduleId = schedule.ScheduleId });
+        return RedirectToAction("Calendar");
     }
 
     // Calendar view

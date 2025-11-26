@@ -1,4 +1,5 @@
-﻿@{
+﻿@model WebManagementSystem.Models.ViewModels.LabResultsListViewModel
+@{
     Layout = "_Layout";
 }
 
@@ -32,19 +33,28 @@
         backdrop-filter: blur(14px);
     }
 
-        .sidebar a {
-            text-decoration: none;
-            color: #c9cbe8;
-            padding: .7rem .9rem;
-            border-radius: 10px;
-            transition: .2s;
-        }
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
 
-            .sidebar a:hover,
-            .sidebar a.active {
-                background: rgba(255,255,255,0.14);
-                color: white;
-            }
+    .sidebar a {
+        text-decoration: none;
+        color: #c9cbe8;
+        padding: .7rem .9rem;
+        border-radius: 10px;
+        transition: .2s;
+        font-size: 0.95rem;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+        background: rgba(255,255,255,0.14);
+        color: white;
+    }
 
     .lab-section {
         margin-left: 260px;
@@ -60,84 +70,132 @@
         margin-bottom: 2rem;
     }
 
-    .glass-card {
-        width: 75%;
-        padding: 2rem;
+    .table-container {
+        background: rgba(255,255,255,0.06);
         border-radius: 20px;
-        background: rgba(255,255,255,0.08);
         border: 1px solid rgba(255,255,255,0.15);
-        backdrop-filter: blur(14px);
+        backdrop-filter: blur(15px);
+        padding: 2rem;
         box-shadow: 0 10px 25px rgba(0,0,0,0.45);
     }
 
-    label {
-        display: block;
-        color: #e0e3fa;
-        margin-bottom: .3rem;
-    }
-
-    select, input {
+    table {
         width: 100%;
-        padding: .8rem;
-        margin-bottom: 1.2rem;
-        border-radius: 12px;
-        background: rgba(255,255,255,0.08);
-        border: 1px solid rgba(255,255,255,0.2);
+        border-collapse: collapse;
         color: white;
     }
 
-    .submit-btn {
-        padding: .9rem 1.6rem;
-        border-radius: 12px;
-        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
-        border: none;
-        font-weight: 700;
-        cursor: pointer;
-        color: white;
+    th {
+        padding: 1rem;
+        background: rgba(255,255,255,0.12);
+        text-align: left;
+        font-weight: 600;
+        color: var(--gold-light);
     }
 
-    select option {
-        background-color: #0d1128 !important;
-        color: #ffffff !important;
+    td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.12);
+        color: #e3e6ff;
+    }
+
+    tr:hover {
+        background: rgba(255,255,255,0.05);
+    }
+
+    .btn-view {
+        padding: .5rem 1rem;
+        border-radius: 8px;
+        background: rgba(40,167,69,0.2);
+        color: #28a745;
+        border: 1px solid rgba(40,167,69,0.4);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: .2s;
+    }
+
+    .btn-view:hover {
+        background: rgba(40,167,69,0.3);
+        transform: translateY(-2px);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #8f93a7;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
     }
 </style>
-
 
 <div class="sidebar">
     <div class="brand">MedicaLux</div>
     <a asp-action="Dashboard">🧪 Lab Dashboard</a>
     <a asp-action="Orders">📄 Lab Orders</a>
-    <a asp-action="Results" class="active">📤 Upload Results</a>
-    <a asp-controller="Account" asp-action="Login">🚪 Logout</a>
+    <a asp-action="Results" class="active">📤 Lab Results</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: .7rem .8rem; border-radius: 10px; cursor: pointer; font-size: .95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
 </div>
 
 <div class="lab-section">
+    <div class="page-title">📤 Lab Results</div>
 
-    <div class="page-title">📤 Upload Lab Result (PDF)</div>
+    <div class="table-container">
+        @if (Model.Results != null && Model.Results.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Result ID</th>
+                        <th>Lab Order ID</th>
+                        <th>Result Text</th>
+                        <th>Uploaded By</th>
+                        <th>Uploaded At</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var result in Model.Results)
+                    {
+                        <tr>
+                            <td>#@result.LabResultId</td>
+                            <td>#@result.LabOrderId</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(result.ResultText))
+                                {
+                                    <span>@(result.ResultText.Length > 50 ? result.ResultText.Substring(0, 50) + "..." : result.ResultText)</span>
+                                }
+                                else
+                                {
+                                    <span style="color: #8f93a7;">No text result</span>
+                                }
+                            </td>
+                            <td>@result.UploadedByName</td>
+                            <td>@result.UploadedAt.ToString("MMM dd, yyyy HH:mm")</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@result.LabOrderId" class="btn-view">View Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
 
-    <div class="glass-card">
-
-        <label>Patient</label>
-        <select>
-            <option>Sarah Khan</option>
-            <option>Ahmed Ali</option>
-            <option>Maria Hussain</option>
-        </select>
-
-        <label>Test Type</label>
-        <select>
-            <option>Blood Test - CBC</option>
-            <option>Liver Function Test</option>
-            <option>Urine Test</option>
-            <option>X-Ray</option>
-            <option>MRI</option>
-        </select>
-
-        <label>Upload PDF Report</label>
-        <input type="file" accept="application/pdf" />
-
-        <button class="submit-btn">Upload Result</button>
-
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); color: #bebfe7; font-size: 0.9rem;">
+                Total Results: <strong style="color: white;">@Model.TotalCount</strong>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon">📤</div>
+                <h3 style="color: #d4d6e8; margin-bottom: 0.5rem;">No Lab Results Found</h3>
+                <p>No lab results have been uploaded yet. Results will appear here once they are uploaded.</p>
+            </div>
+        }
     </div>
-
 </div>

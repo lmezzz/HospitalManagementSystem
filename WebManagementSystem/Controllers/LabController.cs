@@ -66,7 +66,7 @@ public class LabController : Controller
 
     // List lab orders
     [HttpGet]
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 20, string statusFilter = "All")
+    public async Task<IActionResult> Orders(int page = 1, int pageSize = 20, string statusFilter = "All")
     {
         var query = _context.LabOrders
             .Include(l => l.Patient)
@@ -109,7 +109,14 @@ public class LabController : Controller
             StatusFilter = statusFilter
         };
 
-        return View(viewModel);
+        return View("Orders", viewModel);
+    }
+
+    // Alias for Orders (backward compatibility)
+    [HttpGet]
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 20, string statusFilter = "All")
+    {
+        return await Orders(page, pageSize, statusFilter);
     }
 
     // Create lab order
@@ -156,7 +163,21 @@ public class LabController : Controller
     {
         if (!ModelState.IsValid || !model.LabTestIds.Any())
         {
-            return Json(new { success = false, message = "Please select at least one test" });
+            var errors = string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+            if (!model.LabTestIds.Any())
+                errors = string.IsNullOrEmpty(errors) ? "Please select at least one test" : errors + ". Please select at least one test";
+            TempData["ErrorMessage"] = $"Validation failed: {errors}";
+            model.AvailableTests = await _context.LabTests
+                .Select(t => new LabTestSelectDto
+                {
+                    LabTestId = t.LabTestId,
+                    TestName = t.TestName ?? "",
+                    Category = t.Category ?? "",
+                    Cost = t.Cost ?? 0,
+                    Description = t.Description ?? ""
+                })
+                .ToListAsync();
+            return View(model);
         }
 
         var orderIds = new List<int>();
@@ -171,15 +192,25 @@ public class LabController : Controller
                 LabTestId = testId,
                 Priority = model.Priority,
                 Status = "Pending",
-                OrderTime = DateTime.UtcNow
+                OrderTime = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified)
             };
 
             _context.LabOrders.Add(order);
-            await _context.SaveChangesAsync();
             orderIds.Add(order.LabOrderId);
         }
 
-        return Json(new { success = true, message = "Lab orders created successfully", orderIds });
+        try
+        {
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Lab orders created successfully! {orderIds.Count} order(s) saved to database. Order IDs: {string.Join(", ", orderIds)}";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error saving lab orders to database: {ex.Message}";
+            return RedirectToAction("Create", new { visitId = model.VisitId });
+        }
+
+        return RedirectToAction("Orders");
     }
 
     // Lab order details
@@ -250,9 +281,9 @@ public class LabController : Controller
         order.Status = status;
 
         if (status == "InProgress" && !order.SampleTime.HasValue)
-            order.SampleTime = DateTime.UtcNow;
+            order.SampleTime = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified);
         else if (status == "Completed" && !order.CompletedTime.HasValue)
-            order.CompletedTime = DateTime.UtcNow;
+            order.CompletedTime = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified);
 
         await _context.SaveChangesAsync();
 
@@ -289,7 +320,23 @@ public class LabController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return Json(new { success = false, message = "Invalid data" });
+            var orderForView = await _context.LabOrders
+                .Include(l => l.Patient)
+                .Include(l => l.LabTest)
+                .FirstOrDefaultAsync(l => l.LabOrderId == model.LabOrderId);
+            
+            if (orderForView != null)
+            {
+                var viewModel = new UploadLabResultViewModel
+                {
+                    LabOrderId = orderForView.LabOrderId,
+                    PatientName = orderForView.Patient?.FullName ?? "",
+                    TestName = orderForView.LabTest?.TestName ?? "",
+                    OrderTime = orderForView.OrderTime ?? DateTime.MinValue
+                };
+                return View("UploadResult", viewModel);
+            }
+            return RedirectToAction("Orders");
         }
 
         var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
@@ -319,7 +366,7 @@ public class LabController : Controller
             ResultText = model.ResultText,
             FilePath = filePath,
             UploadedBy = userId,
-            UploadedAt = DateTime.UtcNow
+            UploadedAt = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified)
         };
 
         _context.LabResults.Add(result);
@@ -329,12 +376,62 @@ public class LabController : Controller
         if (order != null)
         {
             order.Status = "Completed";
-            order.CompletedTime = DateTime.UtcNow;
+            order.CompletedTime = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified);
         }
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Lab result uploaded successfully! Order #{model.LabOrderId} marked as completed. Database updated.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error uploading lab result to database: {ex.Message}";
+            return View(model);
+        }
 
-        return Json(new { success = true, message = "Result uploaded successfully", resultId = result.LabResultId });
+        return RedirectToAction("UploadResult", new { orderId = model.LabOrderId });
+    }
+
+    // Results page - list of results
+    [HttpGet]
+    public async Task<IActionResult> Results(int page = 1, int pageSize = 20)
+    {
+        var query = _context.LabResults
+            .Include(r => r.LabOrder)
+            .ThenInclude(o => o!.Patient)
+            .Include(r => r.LabOrder)
+            .ThenInclude(o => o!.LabTest)
+            .Include(r => r.UploadedByNavigation)
+            .AsQueryable();
+
+        var totalCount = await query.CountAsync();
+
+        var results = await query
+            .OrderByDescending(r => r.UploadedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(r => new LabResultDto
+            {
+                LabResultId = r.LabResultId,
+                LabOrderId = r.LabOrderId ?? 0,
+                ResultText = r.ResultText ?? "",
+                FilePath = r.FilePath,
+                UploadedBy = r.UploadedBy,
+                UploadedByName = r.UploadedByNavigation!.FullName ?? "",
+                UploadedAt = r.UploadedAt ?? DateTime.MinValue
+            })
+            .ToListAsync();
+
+        var viewModel = new LabResultsListViewModel
+        {
+            Results = results,
+            TotalCount = totalCount,
+            PageNumber = page,
+            PageSize = pageSize
+        };
+
+        return View("Results", viewModel);
     }
 
     // Lab tests management
@@ -368,7 +465,7 @@ public class LabController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return Json(new { success = false, message = "Invalid data" });
+            return View(model);
         }
 
         var test = new LabTest
@@ -380,9 +477,19 @@ public class LabController : Controller
         };
 
         _context.LabTests.Add(test);
-        await _context.SaveChangesAsync();
+        
+        try
+        {
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Lab test '{model.TestName}' created successfully! Test ID: {test.LabTestId}. Database updated.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error saving lab test to database: {ex.Message}";
+            return View(model);
+        }
 
-        return Json(new { success = true, message = "Test created successfully", testId = test.LabTestId });
+        return RedirectToAction("Tests");
     }
 
     // Patient lab history

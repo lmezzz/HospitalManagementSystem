@@ -1,0 +1,385 @@
+@model WebManagementSystem.Models.ViewModels.LabOrderDetailsViewModel
+@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: rgba(8,11,30,0.8);
+        padding: 2rem 1.5rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        border-right: 1px solid rgba(255,255,255,0.12);
+        backdrop-filter: blur(14px);
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .sidebar a {
+        text-decoration: none;
+        color: #c9cbe8;
+        padding: .7rem .9rem;
+        border-radius: 10px;
+        transition: .2s;
+        font-size: 0.95rem;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+        background: rgba(255,255,255,0.14);
+        color: white;
+    }
+
+    .lab-section {
+        margin-left: 260px;
+        padding: 2rem 2.5rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+        margin-bottom: 2rem;
+    }
+
+    .glass-card {
+        background: rgba(255,255,255,0.06);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.15);
+        backdrop-filter: blur(15px);
+        padding: 2rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+        margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--gold-light);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid rgba(255,255,255,0.15);
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-label {
+        font-size: 0.85rem;
+        color: #bebfe7;
+        margin-bottom: 0.4rem;
+        font-weight: 600;
+    }
+
+    .info-value {
+        font-size: 1rem;
+        color: white;
+        background: rgba(255,255,255,0.05);
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-pending {
+        background: rgba(255,200,74,0.2);
+        color: #ffd36e;
+    }
+
+    .status-inprogress {
+        background: rgba(255,165,0,0.2);
+        color: #ffa500;
+    }
+
+    .status-completed {
+        background: rgba(40,167,69,0.2);
+        color: #28a745;
+    }
+
+    .results-section {
+        margin-top: 2rem;
+    }
+
+    .result-item {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .result-text {
+        color: #e3e6ff;
+        line-height: 1.6;
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-download {
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        color: white;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-block;
+        transition: transform 0.2s;
+    }
+
+    .btn-download:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-back {
+        background: rgba(255,255,255,0.1);
+        padding: 0.7rem 1.5rem;
+        border-radius: 10px;
+        color: white;
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        transition: background 0.2s;
+    }
+
+    .btn-back:hover {
+        background: rgba(255,255,255,0.15);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #8f93a7;
+    }
+</style>
+
+<div class="sidebar">
+    <div class="brand">MedicaLux</div>
+    <a asp-action="Dashboard">🧪 Lab Dashboard</a>
+    <a asp-action="Orders">📄 Lab Orders</a>
+    <a asp-action="Results">📤 Lab Results</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: .7rem .8rem; border-radius: 10px; cursor: pointer; font-size: .95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
+</div>
+
+<div class="lab-section">
+    <a asp-action="Orders" class="btn-back">← Back to Orders</a>
+    
+    <div class="page-title">Lab Order Details #@Model.LabOrderId</div>
+
+    <!-- Order Information -->
+    <div class="glass-card">
+        <div class="card-title">Order Information</div>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Order ID</div>
+                <div class="info-value">#@Model.LabOrderId</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Status</div>
+                <div class="info-value">
+                    @if (Model.Status == "Completed")
+                    {
+                        <span class="status-badge status-completed">@Model.Status</span>
+                    }
+                    else if (Model.Status == "InProgress")
+                    {
+                        <span class="status-badge status-inprogress">@Model.Status</span>
+                    }
+                    else
+                    {
+                        <span class="status-badge status-pending">@Model.Status</span>
+                    }
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Test Name</div>
+                <div class="info-value">@Model.TestName</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Test Category</div>
+                <div class="info-value">@Model.TestCategory</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Priority</div>
+                <div class="info-value">@Model.Priority</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Test Cost</div>
+                <div class="info-value">PKR @Model.TestCost.ToString("N2")</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Order Time</div>
+                <div class="info-value">@Model.OrderTime.ToString("MMM dd, yyyy HH:mm")</div>
+            </div>
+            @if (Model.SampleTime.HasValue)
+            {
+                <div class="info-item">
+                    <div class="info-label">Sample Time</div>
+                    <div class="info-value">@Model.SampleTime.Value.ToString("MMM dd, yyyy HH:mm")</div>
+                </div>
+            }
+            @if (Model.CompletedTime.HasValue)
+            {
+                <div class="info-item">
+                    <div class="info-label">Completed Time</div>
+                    <div class="info-value">@Model.CompletedTime.Value.ToString("MMM dd, yyyy HH:mm")</div>
+                </div>
+            }
+        </div>
+        @if (!string.IsNullOrEmpty(Model.TestDescription))
+        {
+            <div class="info-item" style="margin-top: 1rem;">
+                <div class="info-label">Test Description</div>
+                <div class="info-value">@Model.TestDescription</div>
+            </div>
+        }
+    </div>
+
+    <!-- Patient Information -->
+    <div class="glass-card">
+        <div class="card-title">Patient Information</div>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Patient Name</div>
+                <div class="info-value">@Model.PatientName</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Patient ID</div>
+                <div class="info-value">#@Model.PatientId</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Gender</div>
+                <div class="info-value">@(string.IsNullOrEmpty(Model.PatientGender) ? "N/A" : Model.PatientGender)</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Age</div>
+                <div class="info-value">@(Model.PatientAge?.ToString() ?? "N/A")</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Phone</div>
+                <div class="info-value">@(string.IsNullOrEmpty(Model.PatientPhone) ? "N/A" : Model.PatientPhone)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctor Information -->
+    <div class="glass-card">
+        <div class="card-title">Doctor Information</div>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Doctor Name</div>
+                <div class="info-value">@Model.DoctorName</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Doctor ID</div>
+                <div class="info-value">#@Model.DoctorId</div>
+            </div>
+        </div>
+        @if (!string.IsNullOrEmpty(Model.Diagnosis))
+        {
+            <div class="info-item" style="margin-top: 1rem;">
+                <div class="info-label">Diagnosis</div>
+                <div class="info-value">@Model.Diagnosis</div>
+            </div>
+        }
+    </div>
+
+    <!-- Lab Results -->
+    <div class="glass-card results-section">
+        <div class="card-title">Lab Results</div>
+        @if (Model.Results != null && Model.Results.Any())
+        {
+            @foreach (var result in Model.Results)
+            {
+                <div class="result-item">
+                    <div class="result-header">
+                        <div>
+                            <strong style="color: var(--gold-light);">Result #@result.LabResultId</strong>
+                            <div style="font-size: 0.85rem; color: #bebfe7; margin-top: 0.25rem;">
+                                Uploaded by @result.UploadedByName on @result.UploadedAt.ToString("MMM dd, yyyy HH:mm")
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(result.FilePath))
+                        {
+                            <a href="@result.FilePath" target="_blank" class="btn-download">📄 Download PDF</a>
+                        }
+                    </div>
+                    @if (!string.IsNullOrEmpty(result.ResultText))
+                    {
+                        <div class="result-text">@result.ResultText</div>
+                    }
+                    else
+                    {
+                        <div class="result-text" style="color: #8f93a7; font-style: italic;">No text result provided</div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-state">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+                <p>No results uploaded yet for this order.</p>
+                @if (Model.Status != "Completed")
+                {
+                    <a asp-action="UploadResult" asp-route-orderId="@Model.LabOrderId" class="btn-download" style="margin-top: 1rem;">Upload Result</a>
+                }
+            </div>
+        }
+    </div>
+</div>
+

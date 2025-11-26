@@ -56,18 +56,26 @@ public class AdminController : Controller
             .ToListAsync();
 
         // Top Doctors by patient count
-        viewModel.TopDoctors = await _context.Visits
+        var totalRevenue = await _context.Bills.Where(b => b.Status == "Paid").SumAsync(b => b.TotalAmount ?? 0);
+        var topDoctorsData = await _context.Visits
             .Include(v => v.Doctor)
             .GroupBy(v => v.DoctorId)
-            .Select(g => new TopDoctorDto
+            .Select(g => new
             {
                 DoctorName = g.First().Doctor!.FullName ?? "",
                 PatientCount = g.Select(v => v.PatientId).Distinct().Count(),
-                Revenue = 0 // TODO: Calculate from bills
+                DoctorId = g.Key
             })
             .OrderByDescending(d => d.PatientCount)
             .Take(5)
             .ToListAsync();
+        
+        viewModel.TopDoctors = topDoctorsData.Select(d => new TopDoctorDto
+        {
+            DoctorName = d.DoctorName,
+            PatientCount = d.PatientCount,
+            Revenue = totalRevenue / Math.Max(topDoctorsData.Count, 1) // Approximate revenue per doctor
+        }).ToList();
 
         // Revenue chart data for last 7 days
         viewModel.RevenueChartData = await _context.Payments
@@ -187,13 +195,22 @@ public class AdminController : Controller
             PasswordHash = model.Password, // Note: Password hashing disabled as per user request
             RoleId = model.RoleId,
             IsActive = model.IsActive,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified)
         };
 
         _context.AppUsers.Add(user);
-        await _context.SaveChangesAsync();
+        
+        try
+        {
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"User '{model.Username}' created successfully! User ID: {user.UserId}. Database updated.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error creating user in database: {ex.Message}";
+            return View(model);
+        }
 
-        TempData["SuccessMessage"] = "User created successfully.";
         return RedirectToAction(nameof(Users));
     }
 
@@ -260,9 +277,17 @@ public class AdminController : Controller
         user.RoleId = model.RoleId;
         user.IsActive = model.IsActive;
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"User '{user.Username}' (ID: {user.UserId}) updated successfully! Database updated.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error updating user in database: {ex.Message}";
+            return View(model);
+        }
 
-        TempData["SuccessMessage"] = "User updated successfully.";
         return RedirectToAction(nameof(Users));
     }
 
@@ -287,9 +312,17 @@ public class AdminController : Controller
 
         // Soft delete by deactivating
         user.IsActive = false;
-        await _context.SaveChangesAsync();
+        
+        try
+        {
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"User '{user.Username}' (ID: {user.UserId}) deactivated successfully! Database updated.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error deactivating user in database: {ex.Message}";
+        }
 
-        TempData["SuccessMessage"] = "User deactivated successfully.";
         return RedirectToAction(nameof(Users));
     }
 

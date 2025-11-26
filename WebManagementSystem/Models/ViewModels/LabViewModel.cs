@@ -144,6 +144,13 @@ public class LabTestDto
     public string Description { get; set; } = string.Empty;
 }
 
+public class DoctorLabRequestViewModel
+{
+    public CreateLabOrderViewModel? Form { get; set; }
+    public List<VisitDto> RecentVisits { get; set; } = new();
+    public bool HasVisit => Form != null;
+}
+
 public class CreateLabTestViewModel
 {
     public string TestName { get; set; } = string.Empty;
@@ -184,4 +191,12 @@ public class TestCategoryStatsDto
     public string Category { get; set; } = string.Empty;
     public int OrderCount { get; set; }
     public decimal Revenue { get; set; }
+}
+
+public class LabResultsListViewModel
+{
+    public List<LabResultDto> Results { get; set; } = new();
+    public int TotalCount { get; set; }
+    public int PageNumber { get; set; }
+    public int PageSize { get; set; }
 }

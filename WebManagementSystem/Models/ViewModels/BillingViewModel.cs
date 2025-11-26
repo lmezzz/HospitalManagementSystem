@@ -191,3 +191,41 @@ public class BillSummaryReportViewModel
     public decimal TotalOutstanding { get; set; }
     public List<BillDto> Bills { get; set; } = new();
 }
+
+public class PaymentListViewModel
+{
+    public List<PaymentDto> Payments { get; set; } = new();
+    public int? BillId { get; set; }
+}
+
+public class PaymentDto
+{
+    public int PaymentId { get; set; }
+    public int BillId { get; set; }
+    public string BillNumber { get; set; } = string.Empty;
+    public string PatientName { get; set; } = string.Empty;
+    public decimal AmountPaid { get; set; }
+    public string PaymentMethod { get; set; } = string.Empty;
+    public DateTime PaymentTime { get; set; }
+    public string ReferenceNumber { get; set; } = string.Empty;
+}
+
+public class BillItemsViewModel
+{
+    public int BillId { get; set; }
+    public string BillNumber { get; set; } = string.Empty;
+    public string PatientName { get; set; } = string.Empty;
+    public decimal TotalAmount { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public List<BillItemDto> Items { get; set; } = new();
+}
+
+public class BillItemDto
+{
+    public int BillItemId { get; set; }
+    public string ItemType { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public int Quantity { get; set; }
+    public decimal UnitPrice { get; set; }
+    public decimal Amount { get; set; }
+}

@@ -27,6 +27,7 @@ public class CreateAppointmentViewModel
     public int DoctorId { get; set; }
     public DateTime ScheduledDate { get; set; }
     public TimeSpan ScheduledTime { get; set; }
+    public int? ScheduleId { get; set; } // Selected schedule slot ID
     public string Reason { get; set; } = string.Empty;
 
     // Helper properties for UI

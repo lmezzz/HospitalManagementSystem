@@ -1,4 +1,5 @@
-﻿@{
+﻿@model WebManagementSystem.Models.ViewModels.LabOrderListViewModel
+@{
     Layout = "_Layout";
 }
 
@@ -17,7 +18,6 @@
         font-family: 'Segoe UI', sans-serif;
     }
 
-    /* ================= SIDEBAR ================= */
     .sidebar {
         width: 240px;
         height: 100vh;
@@ -59,7 +59,6 @@
             color: #fff;
         }
 
-    /* ================= PAGE ================= */
     .page-wrapper {
         margin-left: 260px;
         padding: 2rem 2.4rem;
@@ -69,9 +68,11 @@
         font-size: 1.8rem;
         font-weight: 700;
         margin-bottom: 2rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
     }
 
-    /* ================= SEARCH + FILTER BAR ================= */
     .search-bar {
         display: flex;
         gap: 1rem;
@@ -97,7 +98,6 @@
         font-size: 0.95rem;
     }
 
-    /* ================= TABLE ================= */
     .glass-card {
         background: rgba(255,255,255,0.05);
         border-radius: 20px;
@@ -122,6 +122,7 @@
         padding: 0.9rem;
         text-align: left;
         font-weight: 600;
+        color: var(--gold-light);
     }
 
     td {
@@ -134,10 +135,12 @@
         font-size: 0.78rem;
         border-radius: 999px;
         font-weight: 600;
+        display: inline-block;
     }
 
     .pill-green {
         background: #27ae60;
+        color: white;
     }
 
     .pill-orange {
@@ -147,6 +150,7 @@
 
     .pill-red {
         background: #c0392b;
+        color: white;
     }
 
     .btn-view {
@@ -158,145 +162,153 @@
         font-weight: 700;
         font-size: 0.85rem;
         text-decoration: none;
+        display: inline-block;
     }
 
         .btn-view:hover {
             transform: translateY(-2px);
             filter: brightness(1.05);
         }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #8f93a7;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
 </style>
 
-<!-- ================= SIDEBAR ================= -->
 <div class="sidebar">
     <div class="brand">MedicaLux</div>
-
     <a asp-controller="Doctor" asp-action="Dashboard">🏠 Dashboard</a>
     <a asp-controller="Doctor" asp-action="Appointments">📅 Appointments</a>
     <a asp-controller="Doctor" asp-action="Patients">👤 Patients</a>
-    <a asp-controller="Doctor" asp-action="LabRequests">🧪 Lab Requests</a>
+    <a asp-controller="Lab" asp-action="Create">🧪 Lab Requests</a>
     <a class="active" asp-controller="Doctor" asp-action="LabReports">📄 Lab Reports</a>
     <a asp-controller="Doctor" asp-action="Prescriptions">💊 Prescriptions</a>
-    <a asp-controller="Account" asp-action="Login">🚪 Logout</a>
+    <a asp-controller="Doctor" asp-action="Schedule">📅 Schedule</a>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: .7rem .8rem; border-radius: 10px; cursor: pointer; font-size: .95rem; width: 100%; text-align: left;">🚪 Logout</button>
+    </form>
 </div>
 
-<!-- ================= PAGE CONTENT ================= -->
 <div class="page-wrapper">
-
     <h1 class="page-title">📄 Lab Reports</h1>
 
-    <!-- SEARCH + FILTER -->
     <div class="search-bar">
-        <input type="text"
-               class="search-input"
-               placeholder="Search by patient name..." />
-        @* placeholder="Search by @Model.Patient.Name" *@
-
-        <select class="filter-select">
-            <option>All</option>
-            <option>Pending</option>
-            <option>Completed</option>
-            <option>Urgent</option>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by patient name or test name..." />
+        <select id="statusFilter" class="filter-select">
+            <option value="All">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="InProgress">In Progress</option>
+            <option value="Completed">Completed</option>
         </select>
     </div>
 
-    <!-- TABLE -->
     <div class="glass-card">
+        @if (Model.Orders != null && Model.Orders.Any())
+        {
         <table>
             <thead>
                 <tr>
                     <th>Patient</th>
                     <th>Test</th>
                     <th>Status</th>
-                    <th>Date</th>
+                        <th>Order Date</th>
+                        <th>Completed Date</th>
                     <th>Report</th>
                 </tr>
             </thead>
-
             <tbody>
-
-                <!-- 1 -->
+                    @foreach (var order in Model.Orders)
+                    {
                 <tr>
-                    <td>Sarah Khan</td>
-                    <td>Blood CBC</td>
-                    <td><span class="pill pill-orange">Pending</span></td>
-                    <td>24 Nov 2025</td>
-                    <td>
-                        <a class="btn-view">View</a>
-                        @* asp-route-id="@report.LabReportId" *@
+                            <td>@order.PatientName</td>
+                            <td>@order.TestName</td>
+                            <td>
+                                @if (order.Status == "Completed")
+                                {
+                                    <span class="pill pill-green">Completed</span>
+                                }
+                                else if (order.Status == "InProgress")
+                                {
+                                    <span class="pill pill-orange">In Progress</span>
+                                }
+                                else
+                                {
+                                    <span class="pill pill-orange">Pending</span>
+                                }
+                    </td>
+                            <td>@order.OrderTime.ToString("MMM dd, yyyy HH:mm")</td>
+                            <td>
+                                @if (order.CompletedTime.HasValue)
+                                {
+                                    @order.CompletedTime.Value.ToString("MMM dd, yyyy HH:mm")
+                                }
+                                else
+                                {
+                                    <span style="color: #8f93a7;">-</span>
+                                }
+                    </td>
+                            <td>
+                                @if (order.Status == "Completed")
+                                {
+                                    <a asp-controller="Lab" asp-action="Details" asp-route-id="@order.LabOrderId" class="btn-view">View</a>
+                                }
+                                else
+                                {
+                                    <span style="color: #8f93a7;">Pending</span>
+                                }
                     </td>
                 </tr>
-
-                <!-- 2 -->
-                <tr>
-                    <td>Ahmed Ali</td>
-                    <td>X-Ray (Chest)</td>
-                    <td><span class="pill pill-green">Completed</span></td>
-                    <td>22 Nov 2025</td>
-                    <td>
-                        <a class="btn-view">View</a>
-                    </td>
-                </tr>
-
-                <!-- 3 -->
-                <tr>
-                    <td>Maria Hussain</td>
-                    <td>Thyroid Panel</td>
-                    <td><span class="pill pill-red">Urgent</span></td>
-                    <td>21 Nov 2025</td>
-                    <td>
-                        <a class="btn-view">View</a>
-                    </td>
-                </tr>
-
-                <!-- 4 -->
-                <tr>
-                    <td>Bilal Qureshi</td>
-                    <td>Blood Glucose</td>
-                    <td><span class="pill pill-green">Completed</span></td>
-                    <td>20 Nov 2025</td>
-                    <td>
-                        <a class="btn-view">View</a>
-                    </td>
-                </tr>
-
+                    }
             </tbody>
         </table>
-    </div>
 
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); color: #bebfe7; font-size: 0.9rem;">
+                Total Lab Orders: <strong style="color: white;">@Model.TotalCount</strong>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon">📄</div>
+                <h3 style="color: #d4d6e8; margin-bottom: 0.5rem;">No Lab Reports Found</h3>
+                <p>No lab orders have been created yet. Lab reports will appear here once orders are placed.</p>
+            </div>
+        }
+    </div>
 </div>
 
     <script>
         // SEARCH FILTER
-        const searchInput = document.querySelector(".search-input");
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
         const rows = document.querySelectorAll("tbody tr");
 
-        searchInput.addEventListener("keyup", function () {
-            const value = this.value.toLowerCase();
+    function filterTable() {
+        const searchValue = searchInput.value.toLowerCase();
+        const statusValue = statusFilter.value;
 
             rows.forEach(row => {
                 const patientName = row.children[0].textContent.toLowerCase();
+            const testName = row.children[1].textContent.toLowerCase();
+            const statusText = row.querySelector(".pill")?.textContent.trim() || "";
 
-                row.style.display =
-                    patientName.includes(value) ? "" : "none";
-            });
+            const matchesSearch = patientName.includes(searchValue) || testName.includes(searchValue);
+            const matchesStatus = statusValue === "All" || 
+                                 (statusValue === "Pending" && statusText === "Pending") ||
+                                 (statusValue === "InProgress" && statusText === "In Progress") ||
+                                 (statusValue === "Completed" && statusText === "Completed");
+
+            row.style.display = (matchesSearch && matchesStatus) ? "" : "none";
         });
+    }
 
-        // STATUS DROPDOWN FILTER
-        const statusFilter = document.querySelector(".filter-select");
-
-        statusFilter.addEventListener("change", function () {
-            const filter = this.value;
-
-            rows.forEach(row => {
-                const statusText = row.querySelector(".pill").textContent.trim();
-
-                if (filter === "All" || statusText === filter) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        });
+    searchInput.addEventListener("keyup", filterTable);
+    statusFilter.addEventListener("change", filterTable);
     </script>
-
-
