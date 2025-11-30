@@ -1,0 +1,123 @@
+@model WebManagementSystem.Models.ViewModels.CreatePrescriptionViewModel
+@{
+    ViewData["Title"] = "Create Prescription";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <h2 class="mb-4">Create New Prescription</h2>
+
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Create" method="post" id="prescriptionForm">
+                        <input type="hidden" asp-for="VisitId" />
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Patient Name</label>
+                                <input type="text" class="form-control" value="@Model.PatientName" readonly />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Doctor Name</label>
+                                <input type="text" class="form-control" value="@Model.DoctorName" readonly />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Instructions" class="form-label">General Instructions</label>
+                            <textarea asp-for="Instructions" class="form-control" rows="2"></textarea>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="mb-0">Medications</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="medicationItems">
+                                    <div class="medication-item border p-3 mb-3">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Medication</label>
+                                                <select class="form-select medication-select" name="MedicationIds" required>
+                                                    <option value="">Select Medication</option>
+                                                    @foreach (var med in Model.AvailableMedications)
+                                                    {
+                                                        <option value="@med.MedicationId">@med.Name - @med.Strength</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Quantity</label>
+                                                <input type="number" class="form-control" name="Quantities" min="1" required />
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">Dosage</label>
+                                                <input type="text" class="form-control" name="Dosages" placeholder="e.g., 1 tablet twice daily" required />
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Duration</label>
+                                                <input type="text" class="form-control" name="Durations" placeholder="e.g., 7 days" />
+                                            </div>
+                                            <div class="col-md-1 d-flex align-items-end">
+                                                <button type="button" class="btn btn-danger btn-sm remove-item" style="display:none;">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-secondary btn-sm" id="addMedication">
+                                    <i class="bi bi-plus"></i> Add Another Medication
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Create Prescription
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let itemCount = 1;
+        
+        document.getElementById('addMedication').addEventListener('click', function() {
+            const template = document.querySelector('.medication-item').cloneNode(true);
+            template.querySelectorAll('input, select').forEach(input => input.value = '');
+            template.querySelector('.remove-item').style.display = 'block';
+            document.getElementById('medicationItems').appendChild(template);
+            itemCount++;
+            updateRemoveButtons();
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-item')) {
+                e.target.closest('.medication-item').remove();
+                itemCount--;
+                updateRemoveButtons();
+            }
+        });
+
+        function updateRemoveButtons() {
+            const items = document.querySelectorAll('.medication-item');
+            items.forEach((item, index) => {
+                const removeBtn = item.querySelector('.remove-item');
+                if (items.length > 1) {
+                    removeBtn.style.display = 'block';
+                } else {
+                    removeBtn.style.display = 'none';
+                }
+            });
+        }
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

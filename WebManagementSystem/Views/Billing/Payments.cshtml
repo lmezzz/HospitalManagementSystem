@@ -104,7 +104,7 @@
     .empty-state-icon {
         font-size: 4rem;
         margin-bottom: 1rem;
-    }
+        }
 </style>
 
 <div class="patient-section">
@@ -114,66 +114,66 @@
     {
         @if (Model.BillId.HasValue)
         {
-            <div class="bill-card">
+    <div class="bill-card">
                 <div class="bill-title">Payments for Bill #@Model.BillId</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Payment ID</th>
-                            <th>Amount Paid</th>
-                            <th>Method</th>
-                            <th>Date & Time</th>
+        <table>
+            <thead>
+                <tr>
+                    <th>Payment ID</th>
+                    <th>Amount Paid</th>
+                    <th>Method</th>
+                    <th>Date & Time</th>
                             <th>Reference</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                </tr>
+            </thead>
+            <tbody>
                         @foreach (var payment in Model.Payments)
                         {
-                            <tr>
+                <tr>
                                 <td>#@payment.PaymentId</td>
                                 <td>Rs. @payment.AmountPaid.ToString("N2")</td>
                                 <td>@payment.PaymentMethod</td>
                                 <td>@payment.PaymentTime.ToString("MMM dd, yyyy HH:mm")</td>
                                 <td>@payment.ReferenceNumber</td>
-                            </tr>
+                </tr>
                         }
-                    </tbody>
-                </table>
-            </div>
+            </tbody>
+        </table>
+    </div>
         }
         else
         {
             @foreach (var paymentGroup in Model.Payments.GroupBy(p => p.BillId))
             {
-                <div class="bill-card">
+    <div class="bill-card">
                     <div class="bill-title">Bill #@paymentGroup.Key - @paymentGroup.First().BillNumber</div>
                     <div class="row">
                         <span class="label">Patient:</span> @paymentGroup.First().PatientName
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Payment ID</th>
-                                <th>Amount Paid</th>
-                                <th>Method</th>
-                                <th>Date & Time</th>
+        <table>
+            <thead>
+                <tr>
+                    <th>Payment ID</th>
+                    <th>Amount Paid</th>
+                    <th>Method</th>
+                    <th>Date & Time</th>
                                 <th>Reference</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                </tr>
+            </thead>
+            <tbody>
                             @foreach (var payment in paymentGroup)
                             {
-                                <tr>
+                <tr>
                                     <td>#@payment.PaymentId</td>
                                     <td>Rs. @payment.AmountPaid.ToString("N2")</td>
                                     <td>@payment.PaymentMethod</td>
                                     <td>@payment.PaymentTime.ToString("MMM dd, yyyy HH:mm")</td>
                                     <td>@payment.ReferenceNumber</td>
-                                </tr>
+                </tr>
                             }
-                        </tbody>
-                    </table>
-                </div>
+            </tbody>
+        </table>
+    </div>
             }
         }
     }

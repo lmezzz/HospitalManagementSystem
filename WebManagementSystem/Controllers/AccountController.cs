@@ -145,8 +145,13 @@ public class AccountController : Controller
         _context.Patients.Add(patient);
         await _context.SaveChangesAsync();
 
-
+        TempData["SuccessMessage"] = "Account created successfully! Please login with your credentials.";
         return RedirectToAction("Login", "Account");
+    }
+
+    public IActionResult Unauthorized()
+    {
+        return View();
     }
 
 }

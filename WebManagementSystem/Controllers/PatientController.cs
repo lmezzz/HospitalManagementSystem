@@ -411,7 +411,7 @@ public class PatientController : Controller
 
         try
         {
-            await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Profile updated successfully! Database updated.";
         }
         catch (Exception ex)

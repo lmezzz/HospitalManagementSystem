@@ -1,4 +1,5 @@
-﻿@{
+﻿@model WebManagementSystem.Models.ViewModels.CreateUserViewModel
+@{
     Layout = "_Layout";
 }
 
@@ -130,14 +131,25 @@
         .submit-btn:hover {
             opacity: .85;
         }
+
+    .text-danger {
+        color: #ff6b6b;
+        font-size: 0.85rem;
+        margin-top: -0.8rem;
+        margin-bottom: 0.8rem;
+        display: block;
+    }
 </style>
 
 <!-- SIDEBAR -->
 <div class="sidebar">
     <div class="brand">MedicaLux</div>
 
-    <a asp-action="Admin" class="active">➕ Add Doctor</a>
+    <a asp-action="Dashboard">🏠 Dashboard</a>
+    <a asp-action="Users">👥 Users</a>
+    <a asp-action="CreateUser" class="active">➕ Add User</a>
     <a asp-action="DoctorList">🧑‍⚕️ View Doctors</a>
+    <a asp-action="SystemReport">📊 Reports</a>
     <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
         <button type="submit" style="background: none; border: none; color: #c9cbe8; padding: .7rem .8rem; border-radius: 10px; cursor: pointer; font-size: .95rem; width: 100%; text-align: left;">🚪 Logout</button>
     </form>
@@ -146,43 +158,56 @@
 <!-- MAIN -->
 <div class="admin-section">
 
-    <div class="page-title">➕ Register New Doctor</div>
+    <div class="page-title">➕ Register New User</div>
 
     <div class="glass-card">
+        <form asp-action="CreateUser" method="post">
+            
+            <label asp-for="FullName">Full Name *</label>
+            <input asp-for="FullName" placeholder="Enter full name" required />
+            <span asp-validation-for="FullName" class="text-danger"></span>
 
-        <label>Full Name</label>
-        <input placeholder="Enter doctor's full name" />
+            <label asp-for="Email">Email *</label>
+            <input asp-for="Email" type="email" placeholder="user@example.com" required />
+            <span asp-validation-for="Email" class="text-danger"></span>
 
-        <label>Email</label>
-        <input type="email" placeholder="doctor@example.com" />
+            <label asp-for="Username">Username *</label>
+            <input asp-for="Username" placeholder="Choose a username" required />
+            <span asp-validation-for="Username" class="text-danger"></span>
 
-        <label>Phone</label>
-        <input placeholder="03XX-XXXXXXX" />
+            <label asp-for="Password">Password *</label>
+            <input asp-for="Password" type="password" placeholder="Create password" required />
+            <span asp-validation-for="Password" class="text-danger"></span>
 
-        <label>Specialization</label>
-        <select>
-            <option>General Physician</option>
-            <option>Cardiologist</option>
-            <option>Dermatologist</option>
-            <option>Neurologist</option>
-            <option>Orthopedic</option>
-        </select>
+            <label asp-for="Phone">Phone</label>
+            <input asp-for="Phone" placeholder="03XX-XXXXXXX" />
+            <span asp-validation-for="Phone" class="text-danger"></span>
 
-        <label>Gender</label>
-        <select>
-            <option>Male</option>
-            <option>Female</option>
-            <option>Other</option>
-        </select>
+            <label asp-for="RoleId">Role *</label>
+            <select asp-for="RoleId" required>
+                <option value="">Select Role</option>
+                <option value="1">Admin</option>
+                <option value="2">Receptionist</option>
+                <option value="3">Doctor</option>
+                <option value="4">Lab Technician</option>
+                <option value="5">Pharmacist</option>
+                <option value="6">Billing Staff</option>
+            </select>
+            <span asp-validation-for="RoleId" class="text-danger"></span>
 
-        <label>CNIC / ID</label>
-        <input placeholder="e.g. 42101-1234567-8" />
+            <label asp-for="IsActive">Status</label>
+            <select asp-for="IsActive">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
 
-        <label>Password</label>
-        <input type="password" placeholder="Create password" />
+            <button type="submit" class="submit-btn">Create User</button>
 
-        <button class="submit-btn">Add Doctor</button>
-
+        </form>
     </div>
 
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

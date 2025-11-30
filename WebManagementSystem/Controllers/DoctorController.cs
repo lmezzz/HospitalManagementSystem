@@ -204,7 +204,7 @@ public class DoctorController : Controller
         {
             TempData["InfoMessage"] = "No active session found. Start a session from today's appointments.";
             return RedirectToAction("Dashboard");
-        }
+    }
 
         return RedirectToAction(nameof(CurrentSession), new { appointmentId = appointment.AppointmentId });
     }
@@ -410,7 +410,7 @@ public class DoctorController : Controller
         var selectedDate = date ?? DateTime.Today;
 
         var scheduleDate = DateOnly.FromDateTime(selectedDate);
-        
+
         var schedules = await _context.Schedules
             .Where(s => s.DoctorId == userId &&
                        s.SlotDate == scheduleDate)

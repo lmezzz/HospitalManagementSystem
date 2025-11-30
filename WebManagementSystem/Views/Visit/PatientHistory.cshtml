@@ -1,0 +1,80 @@
+@model WebManagementSystem.Models.ViewModels.PatientMedicalHistoryViewModel
+@{
+    ViewData["Title"] = "Patient Medical History";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Patient Medical History</h2>
+
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Patient Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>Name:</strong> @Model.PatientName</p>
+                            <p><strong>Age:</strong> @Model.Age years</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Gender:</strong> @Model.Gender</p>
+                            <p><strong>Date of Birth:</strong> @Model.DateOfBirth?.ToString("MMMM dd, yyyy")</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Allergies:</strong> @(Model.Allergies ?? "None")</p>
+                            <p><strong>Chronic Conditions:</strong> @(Model.ChronicConditions ?? "None")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Visit History</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.VisitHistory.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Visit Date</th>
+                                        <th>Doctor</th>
+                                        <th>Symptoms</th>
+                                        <th>Diagnosis</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var visit in Model.VisitHistory)
+                                    {
+                                        <tr>
+                                            <td>@visit.VisitTime.ToString("MMM dd, yyyy")</td>
+                                            <td>@visit.DoctorName</td>
+                                            <td>@visit.Symptoms</td>
+                                            <td>@visit.Diagnosis</td>
+                                            <td>
+                                                <a asp-action="Details" asp-route-id="@visit.VisitId" class="btn btn-sm btn-info">
+                                                    <i class="bi bi-eye"></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> No visit history available for this patient.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

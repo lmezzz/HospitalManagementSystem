@@ -442,6 +442,8 @@ public class AppointmentController : Controller
     {
         var scheduleDate = DateOnly.FromDateTime(date);
         
+        await EnsureDefaultScheduleAsync(doctorId, scheduleDate);
+
         // Get all schedules for the doctor on this date
         var allSchedules = await _context.Schedules
             .Where(s => s.DoctorId == doctorId &&
@@ -603,6 +605,8 @@ public class AppointmentController : Controller
     public async Task<IActionResult> GetDoctorSchedule(int doctorId, DateTime date)
     {
         var scheduleDate = DateOnly.FromDateTime(date);
+
+        await EnsureDefaultScheduleAsync(doctorId, scheduleDate);
         
         var schedules = await _context.Schedules
             .Where(s => s.DoctorId == doctorId &&
@@ -619,5 +623,44 @@ public class AppointmentController : Controller
             .ToListAsync();
 
         return Json(schedules);
+    }
+
+    private async Task EnsureDefaultScheduleAsync(int doctorId, DateOnly slotDate)
+    {
+        var hasSchedules = await _context.Schedules
+            .AnyAsync(s => s.DoctorId == doctorId && s.SlotDate == slotDate);
+
+        if (hasSchedules)
+            return;
+
+        var defaultSlots = new List<Schedule>();
+        var openingTime = new TimeOnly(9, 0);
+        var closingTime = new TimeOnly(17, 0);
+        var slotDuration = TimeSpan.FromMinutes(30);
+
+        var currentStart = openingTime;
+        while (currentStart < closingTime)
+        {
+            var currentEnd = currentStart.Add(slotDuration);
+            if (currentEnd > closingTime)
+                break;
+
+            defaultSlots.Add(new Schedule
+            {
+                DoctorId = doctorId,
+                SlotDate = slotDate,
+                StartTime = currentStart,
+                EndTime = currentEnd,
+                IsAvailable = true
+            });
+
+            currentStart = currentEnd;
+        }
+
+        if (defaultSlots.Count == 0)
+            return;
+
+        _context.Schedules.AddRange(defaultSlots);
+        await _context.SaveChangesAsync();
     }
 }

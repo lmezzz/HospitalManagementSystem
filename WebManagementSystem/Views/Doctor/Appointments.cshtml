@@ -203,7 +203,7 @@
                 {
                     @foreach (var appointment in Model.Appointments)
                     {
-                        <tr>
+                <tr>
                             <td>@appointment.PatientName</td>
                             <td>@(string.IsNullOrEmpty(appointment.Reason) ? "General Checkup" : appointment.Reason)</td>
                             <td>
@@ -232,16 +232,16 @@
                             <td>
                                 <a asp-action="CurrentSession" asp-route-appointmentId="@appointment.AppointmentId" class="btn-view">View</a>
                             </td>
-                        </tr>
+                </tr>
                     }
                 }
                 else
                 {
-                    <tr>
+                <tr>
                         <td colspan="5" style="text-align: center; padding: 2rem; color: #8f93a7;">
                             No appointments found.
                         </td>
-                    </tr>
+                </tr>
                 }
             </tbody>
         </table>

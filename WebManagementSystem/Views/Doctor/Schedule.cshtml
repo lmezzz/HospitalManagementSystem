@@ -172,88 +172,84 @@
 
     <h1 class="page-title">📅 Appointments</h1>
 
-    <!-- SEARCH + FILTER -->
+    <!-- DATE SELECTOR -->
     <div class="search-row">
-        <input type="text" class="search-input" placeholder="Search patient name..." />
-        @* placeholder="Search @Model.Patient.Name" *@
-
-        <select class="filter-select">
-            <option>All</option>
-            <option>Upcoming</option>
-            <option>Completed</option>
-            <option>Cancelled</option>
-        </select>
+        <form method="get" asp-action="Schedule" style="display: flex; gap: 1rem; width: 100%;">
+            <input type="date" name="date" value="@ViewBag.SelectedDate.ToString("yyyy-MM-dd")" 
+                   class="search-input" style="flex: 0 0 250px;" onchange="this.form.submit()" />
+            <button type="submit" class="btn-view" style="padding: 0.75rem 2rem;">Load Schedule</button>
+        </form>
     </div>
 
-    <!-- APPOINTMENTS TABLE -->
+    <!-- SCHEDULE TABLE -->
     <div class="glass-card">
-        <table>
-            <thead>
-                <tr>
-                    <th>Patient</th>
-                    <th>Problem</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>View</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr>
-                    <td>Sarah Khan</td>
-                    <td>Fever & Flu</td>
-                    <td>25 Nov 2025 — 2:00 PM</td>
-                    <td><span class="pill pill-upcoming">Upcoming</span></td>
-                    <td><a class="btn-view">View</a> @* asp-route-id="@appointment.Id" *@</td>
-                </tr>
-
-                <tr>
-                    <td>Ahmed Ali</td>
-                    <td>Chest Pain</td>
-                    <td>22 Nov 2025 — 12:00 PM</td>
-                    <td><span class="pill pill-completed">Completed</span></td>
-                    <td><a class="btn-view">View</a></td>
-                </tr>
-
-                <tr>
-                    <td>Maria Hussain</td>
-                    <td>Migraine</td>
-                    <td>20 Nov 2025 — 5:30 PM</td>
-                    <td><span class="pill pill-cancelled">Cancelled</span></td>
-                    <td><a class="btn-view">View</a></td>
-                </tr>
-
-            </tbody>
-        </table>
+        <h3 style="color: var(--gold-light); margin-bottom: 1.5rem;">
+            Schedule for @ViewBag.SelectedDate.ToString("MMMM dd, yyyy")
+        </h3>
+        
+        @if (ViewBag.Schedules != null && ((List<WebManagementSystem.Models.Schedule>)ViewBag.Schedules).Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time Slot</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var schedule in (List<WebManagementSystem.Models.Schedule>)ViewBag.Schedules)
+                    {
+                        var hasAppointment = Context.RequestServices.GetService<WebManagementSystem.Models.HmsContext>()!
+                            .Appointments.Any(a => a.ScheduleId == schedule.ScheduleId && a.Status != "Cancelled");
+                        
+                        <tr>
+                            <td>Slot #@schedule.ScheduleId</td>
+                            <td>@schedule.StartTime.ToString(@"hh\:mm tt")</td>
+                            <td>@schedule.EndTime.ToString(@"hh\:mm tt")</td>
+                            <td>
+                                @if (hasAppointment)
+                                {
+                                    <span class="pill pill-upcoming">Booked</span>
+                                }
+                                else if (schedule.IsAvailable == true)
+                                {
+                                    <span class="pill pill-completed">Available</span>
+                                }
+                                else
+                                {
+                                    <span class="pill pill-cancelled">Unavailable</span>
+                                }
+                            </td>
+                            <td>
+                                @if (hasAppointment)
+                                {
+                                    var appointment = Context.RequestServices.GetService<WebManagementSystem.Models.HmsContext>()!
+                                        .Appointments.FirstOrDefault(a => a.ScheduleId == schedule.ScheduleId && a.Status != "Cancelled");
+                                    if (appointment != null)
+                                    {
+                                        <a asp-controller="Appointment" asp-action="Details" asp-route-id="@appointment.AppointmentId" class="btn-view">View Appointment</a>
+                                    }
+                                }
+                                else
+                                {
+                                    <span style="color: #8f93a7;">—</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div style="text-align: center; padding: 3rem; color: #8f93a7;">
+                <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">📅 No schedule slots for this date</p>
+                <p>Schedule slots will be automatically created when patients book appointments for this date.</p>
+            </div>
+        }
     </div>
 
 </div>
-
-@section Scripts {
-    <script>
-        const searchInput = document.querySelector(".search-input");
-        const filterSelect = document.querySelector(".filter-select");
-        const rows = document.querySelectorAll("tbody tr");
-
-        searchInput.addEventListener("keyup", () => {
-            const value = searchInput.value.toLowerCase();
-
-            rows.forEach(row => {
-                const name = row.children[0].textContent.toLowerCase();
-                row.style.display = name.includes(value) ? "" : "none";
-            });
-        });
-
-        filterSelect.addEventListener("change", () => {
-            const filter = filterSelect.value;
-
-            rows.forEach(row => {
-                const status = row.querySelector(".pill").textContent.trim();
-
-                if (filter === "All" || status === filter) {
-                    row.style.display = "";
-                } else row.style.display = "none";
-            });
-        });
-    </script>
-}

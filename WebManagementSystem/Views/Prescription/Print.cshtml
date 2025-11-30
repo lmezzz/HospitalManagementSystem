@@ -1,0 +1,140 @@
+@model WebManagementSystem.Models.ViewModels.PrescriptionDetailsViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Prescription - @Model.PrescriptionId</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #007bff;
+        }
+        .info-section {
+            margin-bottom: 30px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .info-label {
+            font-weight: bold;
+            width: 150px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .instructions {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin-top: 20px;
+        }
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+        @@media print {
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PRESCRIPTION</h1>
+        <p>Hospital Management System</p>
+    </div>
+
+    <div class="info-section">
+        <div class="info-row">
+            <div><span class="info-label">Prescription ID:</span> @Model.PrescriptionId</div>
+            <div><span class="info-label">Date:</span> @Model.CreatedAt?.ToString("MMMM dd, yyyy")</div>
+        </div>
+        <div class="info-row">
+            <div><span class="info-label">Patient Name:</span> @Model.PatientName</div>
+            <div><span class="info-label">Doctor:</span> Dr. @Model.DoctorName</div>
+        </div>
+    </div>
+
+    <h3>Prescribed Medications</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Medication</th>
+                <th>Strength</th>
+                <th>Quantity</th>
+                <th>Dosage Instructions</th>
+                <th>Duration</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.MedicationName</td>
+                    <td>@item.Strength</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Dosage</td>
+                    <td>@item.Duration</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!string.IsNullOrEmpty(Model.Instructions))
+    {
+        <div class="instructions">
+            <strong>General Instructions:</strong><br />
+            @Model.Instructions
+        </div>
+    }
+
+    <div class="footer">
+        <p>This is a computer-generated prescription.</p>
+        <p>Doctor's Signature: _________________________</p>
+        <p>Date: @DateTime.Now.ToString("MMMM dd, yyyy")</p>
+    </div>
+
+    <div class="no-print" style="text-align: center; margin-top: 30px;">
+        <button onclick="window.print()" class="btn btn-primary">Print Prescription</button>
+        <button onclick="window.close()" class="btn btn-secondary">Close</button>
+    </div>
+
+    <script>
+        // Auto-print on load (optional)
+        // window.onload = function() { window.print(); }
+    </script>
+</body>
+</html>

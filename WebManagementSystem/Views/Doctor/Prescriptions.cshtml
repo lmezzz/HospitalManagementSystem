@@ -164,36 +164,40 @@
     <div class="page-title">💊 Manage Prescriptions</div>
 
     <div class="glass-card">
-        <div class="section-title">Add Prescription Item</div>
-
-        <label>Patient</label>
-        <select>
-            <option>Sarah Khan</option>
-            <option>Ahmed Ali</option>
-            <option>Maria Hussain</option>
-        </select>
-
-        <label>Medication</label>
-        <select>
-            <option>Panadol</option>
-            <option>Augmentin</option>
-            <option>Zyrtec</option>
-            <option>Vitamin D</option>
-        </select>
-
-        <label>Dosage</label>
-        <input placeholder="e.g., 500mg" />
-
-        <label>Frequency</label>
-        <input placeholder="e.g., 3 times a day" />
-
-        <label>Duration</label>
-        <input placeholder="e.g., 5 days" />
-
-        <label>Quantity</label>
-        <input placeholder="e.g., 10 tablets" />
-
-        <button class="add-btn">Add Prescription Item</button>
+        <div class="section-title">Prescriptions List</div>
+        
+        @if (Model.Prescriptions != null && Model.Prescriptions.Any())
+        {
+            <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                <thead>
+                    <tr style="background: rgba(255,255,255,0.1);">
+                        <th style="padding: 0.8rem; text-align: left;">Patient</th>
+                        <th style="padding: 0.8rem; text-align: left;">Date</th>
+                        <th style="padding: 0.8rem; text-align: left;">Items</th>
+                        <th style="padding: 0.8rem; text-align: left;">Status</th>
+                        <th style="padding: 0.8rem; text-align: left;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var prescription in Model.Prescriptions)
+                    {
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.8rem;">@prescription.PatientName</td>
+                            <td style="padding: 0.8rem;">@prescription.CreatedAt?.ToString("MMM dd, yyyy")</td>
+                            <td style="padding: 0.8rem;">@prescription.ItemCount items</td>
+                            <td style="padding: 0.8rem;">@prescription.Status</td>
+                            <td style="padding: 0.8rem;">
+                                <a asp-controller="Prescription" asp-action="Details" asp-route-id="@prescription.PrescriptionId" class="add-btn" style="padding: 0.5rem 1rem; display: inline-block; text-decoration: none;">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p style="text-align: center; color: #8f93a7; padding: 2rem;">No prescriptions found. Create prescriptions from visit records.</p>
+        }
     </div>
 
 </div>

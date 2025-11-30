@@ -129,7 +129,7 @@
                 {
                     @foreach (var order in Model.Orders)
                     {
-                        <tr>
+                <tr>
                             <td>@order.PatientName</td>
                             <td>@order.TestName</td>
                             <td style="color: @(order.Priority == "Urgent" || order.Priority == "Stat" ? "#ff6b6b" : order.Priority == "Normal" ? "#ffd36e" : "#c9cbe8"); font-weight:700;">@order.Priority</td>
@@ -141,14 +141,14 @@
                                     @order.Status
                                 </span>
                             </td>
-                        </tr>
+                </tr>
                     }
                 }
                 else
                 {
-                    <tr>
+                <tr>
                         <td colspan="5" style="text-align: center; padding: 2rem; color: #8f93a7;">No lab orders found</td>
-                    </tr>
+                </tr>
                 }
             </tbody>
         </table>

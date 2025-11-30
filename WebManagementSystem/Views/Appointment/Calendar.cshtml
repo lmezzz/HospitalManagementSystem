@@ -1,0 +1,125 @@
+@{
+    ViewData["Title"] = "Appointment Calendar";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .calendar-section {
+        padding: 2rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    #calendar {
+        background: rgba(255,255,255,0.06);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255,255,255,0.15);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+        backdrop-filter: blur(15px);
+    }
+
+    /* FullCalendar custom styling */
+    .fc {
+        color: white;
+    }
+
+    .fc-theme-standard td, .fc-theme-standard th {
+        border-color: rgba(255,255,255,0.1);
+    }
+
+    .fc-col-header-cell {
+        background: rgba(255,255,255,0.1);
+    }
+
+    .fc-daygrid-day {
+        background: rgba(255,255,255,0.03);
+    }
+
+    .fc-daygrid-day:hover {
+        background: rgba(255,255,255,0.08);
+    }
+
+    .fc-button {
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end)) !important;
+        border: none !important;
+    }
+
+    .fc-button:hover {
+        opacity: 0.9;
+    }
+
+    .fc-event {
+        border-radius: 5px;
+        padding: 2px 5px;
+    }
+</style>
+
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.css' rel='stylesheet' />
+
+<div class="calendar-section">
+    <div class="page-title">📅 Appointment Calendar</div>
+
+    <div id="calendar"></div>
+</div>
+
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: function(info, successCallback, failureCallback) {
+                // Fetch events from server
+                fetch(`/Appointment/GetCalendarEvents?start=${info.startStr}&end=${info.endStr}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const events = data.map(event => ({
+                            id: event.appointmentId,
+                            title: event.title,
+                            start: event.start,
+                            end: event.end,
+                            backgroundColor: event.color,
+                            borderColor: event.color
+                        }));
+                        successCallback(events);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching events:', error);
+                        failureCallback(error);
+                    });
+            },
+            eventClick: function(info) {
+                // Redirect to appointment details
+                window.location.href = `/Appointment/Details/${info.event.id}`;
+            },
+            height: 'auto',
+            themeSystem: 'standard'
+        });
+        calendar.render();
+    });
+</script>

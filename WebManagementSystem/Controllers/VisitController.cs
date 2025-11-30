@@ -162,7 +162,7 @@ public class VisitController : Controller
 
         try
         {
-            await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = $"Visit #{visit.VisitId} created successfully! Database updated.";
         }
         catch (Exception ex)
@@ -285,7 +285,7 @@ public class VisitController : Controller
 
         try
         {
-            await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = $"Visit #{model.VisitId} updated successfully! Database updated.";
         }
         catch (Exception ex)

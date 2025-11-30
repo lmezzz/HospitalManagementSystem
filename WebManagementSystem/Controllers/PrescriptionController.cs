@@ -216,7 +216,8 @@ public class PrescriptionController : Controller
             CreatedAt = prescription.CreatedAt ?? DateTime.MinValue,
             VisitDate = prescription.Visit?.VisitTime,
             Diagnosis = prescription.Visit?.Diagnosis,
-            Status = "Pending" // TODO: Check dispensing status
+            Status = "Pending", // Status determined by dispensing
+            IsDispensed = false
         };
 
         viewModel.Items = prescription.PrescriptionItems.Select(i => new PrescriptionItemDetailDto
@@ -229,7 +230,7 @@ public class PrescriptionController : Controller
             Quantity = i.Quantity ?? 0,
             UnitPrice = i.Medication?.UnitPrice ?? 0,
             TotalPrice = (i.Quantity ?? 0) * (i.Medication?.UnitPrice ?? 0),
-            IsDispensed = false // TODO: Check dispensing status
+            IsDispensed = i.IsDispensed ?? false
         }).ToList();
 
         return View(viewModel);

@@ -214,7 +214,7 @@
     }
     else
     {
-        <div class="glass-card">
+    <div class="glass-card">
             <div class="section-title">Patient Details</div>
             <div class="info-text"><strong>Patient:</strong> @Model.Form.PatientName</div>
             <div class="info-text"><strong>Doctor:</strong> @Model.Form.DoctorName</div>
@@ -247,18 +247,18 @@
                     }
                 </div>
 
-                <label>Priority</label>
+        <label>Priority</label>
                 <select name="Priority">
                     <option value="Normal" selected>Normal</option>
                     <option value="Urgent">Urgent</option>
                     <option value="Stat">Stat</option>
-                </select>
+        </select>
 
                 <label>Clinical Notes</label>
                 <textarea name="ClinicalNotes" placeholder="Add any notes or instructions">@Model.Form.ClinicalNotes</textarea>
 
                 <button type="submit" class="submit-btn">Submit Lab Request</button>
             </form>
-        </div>
+    </div>
     }
 </div>

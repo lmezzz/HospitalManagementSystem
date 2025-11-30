@@ -189,22 +189,22 @@
     {
         @foreach (var appointment in Model.Appointments)
         {
-            <div class="appointment-card">
-                <div class="appt-header">
+    <div class="appointment-card">
+        <div class="appt-header">
                     @appointment.DoctorName
-                </div>
+        </div>
 
-                <div class="appt-info">
+        <div class="appt-info">
                     📅 Date: <strong>@(appointment.ScheduledTime?.ToString("dd MMM yyyy") ?? "N/A")</strong>
 
-                    <br>
+            <br>
 
                     ⏰ Time: <strong>@(appointment.ScheduledTime?.ToString("hh:mm tt") ?? "N/A")</strong>
 
-                    <br>
+            <br>
 
                     📝 Reason: <strong>@(appointment.Reason ?? "General Checkup")</strong>
-                </div>
+        </div>
 
                 @{
                     var statusClass = appointment.Status?.ToLower() switch
@@ -216,7 +216,7 @@
                     };
                 }
                 <span class="badge @statusClass">@(appointment.Status ?? "Scheduled")</span>
-            </div>
+    </div>
         }
     }
     else

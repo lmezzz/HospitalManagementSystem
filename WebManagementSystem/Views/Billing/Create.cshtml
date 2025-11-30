@@ -1,0 +1,207 @@
+@model WebManagementSystem.Models.ViewModels.CreateBillViewModel
+@{
+    ViewData["Title"] = "Create Bill";
+}
+
+<style>
+    :root {
+        --navy: #050816;
+        --glass: rgba(255,255,255,0.08);
+        --gradient-start: #8d79ff;
+        --gradient-end: #ff9b61;
+        --gold-light: #ffce70;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, #20254a, #050816 60%);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .create-bill-section {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .bill-card {
+        background: rgba(255,255,255,0.06);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255,255,255,0.15);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+        backdrop-filter: blur(15px);
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    label {
+        display: block;
+        font-weight: 600;
+        color: var(--gold-light);
+        margin-bottom: 0.5rem;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 0.8rem;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+    }
+
+    select {
+        color-scheme: dark;
+    }
+
+    select option {
+        background: #0d1128;
+    }
+
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+    .items-table th {
+        background: rgba(255,255,255,0.12);
+        padding: 0.8rem;
+        text-align: left;
+        color: var(--gold-light);
+    }
+
+    .items-table td {
+        padding: 0.8rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .total-section {
+        background: rgba(141, 121, 255, 0.1);
+        border: 1px solid rgba(141, 121, 255, 0.3);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--gold-light);
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        color: white;
+        margin-top: 2rem;
+    }
+
+    .btn-submit:hover {
+        opacity: 0.9;
+    }
+</style>
+
+<div class="create-bill-section">
+    <div class="page-title">📄 Create New Bill</div>
+
+    <div class="bill-card">
+        <form asp-action="Create" method="post">
+            <input type="hidden" asp-for="VisitId" />
+
+            <div class="form-group">
+                <label>Patient Name</label>
+                <input type="text" value="@Model.PatientName" readonly style="background: rgba(255,255,255,0.04);" />
+            </div>
+
+            <h3 style="color: var(--gold-light); margin-top: 2rem; margin-bottom: 1rem;">Bill Items</h3>
+
+            @if (Model.Items != null && Model.Items.Any())
+            {
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>Item Type</th>
+                            <th>Description</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Items.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="hidden" name="Items[@i].ItemType" value="@Model.Items[i].ItemType" />
+                                    @Model.Items[i].ItemType
+                                </td>
+                                <td>
+                                    <input type="hidden" name="Items[@i].Description" value="@Model.Items[i].Description" />
+                                    <input type="hidden" name="Items[@i].ReferenceId" value="@Model.Items[i].ReferenceId" />
+                                    @Model.Items[i].Description
+                                </td>
+                                <td>
+                                    <input type="hidden" name="Items[@i].Quantity" value="@Model.Items[i].Quantity" />
+                                    @Model.Items[i].Quantity
+                                </td>
+                                <td>
+                                    <input type="hidden" name="Items[@i].UnitPrice" value="@Model.Items[i].UnitPrice" />
+                                    Rs. @Model.Items[i].UnitPrice.ToString("N2")
+                                </td>
+                                <td>
+                                    <input type="hidden" name="Items[@i].Amount" value="@Model.Items[i].Amount" />
+                                    Rs. @Model.Items[i].Amount.ToString("N2")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p style="color: #8f93a7; text-align: center; padding: 2rem;">No items to bill.</p>
+            }
+
+            <div class="total-section">
+                <div class="total-row">
+                    <span>Total Amount:</span>
+                    <span>Rs. @Model.TotalAmount.ToString("N2")</span>
+                </div>
+            </div>
+
+            <input type="hidden" asp-for="PatientId" />
+            <input type="hidden" asp-for="SubTotal" />
+            <input type="hidden" asp-for="TotalAmount" />
+
+            <button type="submit" class="btn-submit">
+                💰 Create Bill
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

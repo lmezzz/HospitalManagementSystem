@@ -1,0 +1,66 @@
+@model WebManagementSystem.Models.ViewModels.CreateVisitViewModel
+@{
+    ViewData["Title"] = "Create Visit";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h2 class="mb-4">Create New Visit</h2>
+
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <input type="hidden" asp-for="AppointmentId" />
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Patient Name</label>
+                                <input type="text" class="form-control" value="@Model.PatientName" readonly />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Doctor Name</label>
+                                <input type="text" class="form-control" value="@Model.DoctorName" readonly />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Symptoms" class="form-label">Symptoms</label>
+                            <textarea asp-for="Symptoms" class="form-control" rows="3" required></textarea>
+                            <span asp-validation-for="Symptoms" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Diagnosis" class="form-label">Diagnosis</label>
+                            <textarea asp-for="Diagnosis" class="form-control" rows="3" required></textarea>
+                            <span asp-validation-for="Diagnosis" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Treatment" class="form-label">Treatment Plan</label>
+                            <textarea asp-for="Treatment" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Treatment" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label">Clinical Notes</label>
+                            <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Create Visit
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

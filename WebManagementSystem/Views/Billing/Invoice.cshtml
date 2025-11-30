@@ -1,0 +1,205 @@
+@model WebManagementSystem.Models.ViewModels.InvoiceViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Invoice - @Model.InvoiceNumber</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #007bff;
+        }
+        .header p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .invoice-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .info-section h3 {
+            margin: 0 0 10px 0;
+            color: #007bff;
+        }
+        .info-section p {
+            margin: 5px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .totals {
+            float: right;
+            width: 300px;
+            margin-top: 20px;
+        }
+        .totals table {
+            margin: 0;
+        }
+        .totals td {
+            border: none;
+            padding: 8px;
+        }
+        .totals .total-row {
+            font-weight: bold;
+            font-size: 1.2em;
+            background-color: #f8f9fa;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status-paid {
+            background-color: #28a745;
+            color: white;
+        }
+        .status-unpaid {
+            background-color: #dc3545;
+            color: white;
+        }
+        .status-partial {
+            background-color: #ffc107;
+            color: #333;
+        }
+        .footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+        @@media print {
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>HOSPITAL MANAGEMENT SYSTEM</h1>
+        <p>Medical Invoice</p>
+    </div>
+
+    <div class="invoice-info">
+        <div class="info-section">
+            <h3>Invoice Details</h3>
+            <p><strong>Invoice Number:</strong> @Model.InvoiceNumber</p>
+            <p><strong>Bill ID:</strong> #@Model.BillId</p>
+            <p><strong>Date:</strong> @Model.InvoiceDate.ToString("MMMM dd, yyyy")</p>
+            <p><strong>Status:</strong> 
+                @if (Model.Status == "Paid")
+                {
+                    <span class="status-badge status-paid">PAID</span>
+                }
+                else if (Model.Status == "Unpaid")
+                {
+                    <span class="status-badge status-unpaid">UNPAID</span>
+                }
+                else if (Model.Status == "Partial")
+                {
+                    <span class="status-badge status-partial">PARTIAL</span>
+                }
+            </p>
+        </div>
+        <div class="info-section">
+            <h3>Patient Information</h3>
+            <p><strong>Name:</strong> @Model.PatientName</p>
+            <p><strong>Phone:</strong> @Model.PatientPhone</p>
+            <p><strong>Address:</strong> @Model.PatientAddress</p>
+        </div>
+    </div>
+
+    <h3>Bill Items</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Item Type</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.Description</td>
+                    <td>@item.ItemType</td>
+                    <td>@item.Quantity</td>
+                    <td>Rs. @item.UnitPrice.ToString("N2")</td>
+                    <td>Rs. @item.Amount.ToString("N2")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="totals">
+        <table>
+            <tr>
+                <td>Subtotal:</td>
+                <td style="text-align: right;">Rs. @Model.SubTotal.ToString("N2")</td>
+            </tr>
+            <tr class="total-row">
+                <td>Total Amount:</td>
+                <td style="text-align: right;">Rs. @Model.TotalAmount.ToString("N2")</td>
+            </tr>
+            <tr>
+                <td>Amount Paid:</td>
+                <td style="text-align: right;">Rs. @Model.TotalPaid.ToString("N2")</td>
+            </tr>
+            <tr class="total-row" style="background-color: #fff3cd;">
+                <td>Balance Due:</td>
+                <td style="text-align: right;">Rs. @Model.Balance.ToString("N2")</td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="clear: both;"></div>
+
+    <div class="footer">
+        <p>This is a computer-generated invoice.</p>
+        <p>Thank you for choosing our services!</p>
+        <p>For queries, please contact our billing department.</p>
+    </div>
+
+    <div class="no-print" style="text-align: center; margin-top: 30px;">
+        <button onclick="window.print()" style="padding: 10px 30px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-right: 10px;">
+            Print Invoice
+        </button>
+        <button onclick="window.close()" style="padding: 10px 30px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+            Close
+        </button>
+    </div>
+</body>
+</html>
